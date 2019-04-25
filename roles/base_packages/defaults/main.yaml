@@ -1,0 +1,10 @@
+global_prerequisites_list:
+  # Arch's base packages
+  - base
+  - base-devel
+  # Additional tools needed to run Ansible and het network connectivity
+  # after we reboot
+  - sudo
+  - networkmanager
+  - openssh
+  - python3

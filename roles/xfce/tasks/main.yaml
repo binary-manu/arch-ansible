@@ -1,0 +1,9 @@
+- name: Install xfce
+  pacman:
+    name: "{{ xfce_packages }}"
+
+- name: Copy xfce's xinitrc to user home
+  copy:
+    src: xinitrc
+    dest: /home/{{ item }}/.xinitrc
+  loop: "{{ global_admins }}"

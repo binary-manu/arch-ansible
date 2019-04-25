@@ -1,0 +1,5 @@
+- name: Install VirtualBox guest additions
+  pacman:
+    name: "{{ vboxguest_packages }}"
+  notify: Start VirtualBox service
+  changed_when: run_handlers | default(false)

@@ -1,0 +1,11 @@
+# Inputs:
+# package_name: name of the package to download and build (i.e. yay-bin)
+# build_user: user we will sudo to when building. Must be able to use
+#             passwordless sudo
+
+- name: Run yay for {{ package_name }}
+  become: yes
+  become_user: "{{ build_user }}"
+  command: yay -S {{ package_name }} --needed -a
+    --answerclean none --answeredit none --answerupgrade none --answerdiff none
+    --removemake

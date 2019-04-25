@@ -1,0 +1,14 @@
+- name: Set timezone
+  timezone:
+    name: "{{ global_timezone }}"
+    hwclock: UTC
+
+- name: Generate locale
+  locale_gen:
+    name: "{{ global_locale }}"
+
+- name: Set locale
+  command: localectl set-locale {{ global_locale }}
+
+- name: Set keymap
+  command: localectl set-keymap {{ global_keymap }}

@@ -1,0 +1,37 @@
+- name: Enable services on installed system
+  command: arch-chroot {{ global_mount_point}}
+    systemctl enable {{ item }}
+  loop:
+    - sshd
+    - NetworkManager
+
+- name: Create root's .ssh
+  file:
+    state: directory
+    path:  "{{ global_mount_point }}/root/.ssh/"
+
+- name: Copy root's autorized keys
+  copy:
+    remote_src: yes
+    src: /root/.ssh/authorized_keys
+    dest: "{{ global_mount_point }}/root/.ssh/"
+
+- name: Copy ssh host keys
+  copy:
+    remote_src: yes
+    src: /etc/ssh/{{ item }}
+    dest: "{{ global_mount_point }}/etc/ssh/{{ item }}"
+    mode: "0600"
+  loop:
+    - ssh_host_rsa_key
+    - ssh_host_ecdsa_key
+    - ssh_host_dsa_key
+    - ssh_host_ed25519_key
+    - ssh_host_rsa_key.pub
+    - ssh_host_ecdsa_key.pub
+    - ssh_host_dsa_key.pub
+    - ssh_host_ed25519_key.pub
+
+- name: Set hostname
+  command: arch-chroot {{ global_mount_point}}
+    hostnamectl set-hostname {{ global_hostname }}

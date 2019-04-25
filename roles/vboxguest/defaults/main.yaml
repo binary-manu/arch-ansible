@@ -1,0 +1,3 @@
+vboxguest_packages:
+  - linux-headers
+  - virtualbox-guest-utils

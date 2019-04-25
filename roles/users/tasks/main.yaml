@@ -1,0 +1,20 @@
+- name: Add initial users
+  user:
+    shell: /bin/bash
+    name: "{{ item }}"
+    groups: wheel
+    password: "{{ item | password_hash('sha512', '7837hf87gf8' )}}"
+  loop: "{{ global_admins }}"
+
+- name: Set root password
+  user:
+    name: root
+    password: "{{ 'root' | password_hash('sha512', 'ksjdfg4hfg' )}}"
+
+- name: Allow admins to sudo by authorizing the wheel group
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: '^%wheel ALL='
+    line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+    validate: '/usr/sbin/visudo -cf %s'

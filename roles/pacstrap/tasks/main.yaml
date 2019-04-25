@@ -1,0 +1,3 @@
+- name: Run pacstrap
+  command: pacstrap {{ global_mount_point }} --needed
+    {{ package_list | join(' ') }}

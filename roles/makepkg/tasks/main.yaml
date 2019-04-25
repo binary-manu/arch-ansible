@@ -1,0 +1,11 @@
+# Inputs:
+# package_name: name of the package to download and build (i.e. yay-bin)
+# build_user: user we will sudo to when building. Must be able to use
+#             passwordless sudo
+
+- name: Check for yay
+  shell: helper=$(which yay); if [ -z "$helper" ]; then echo makepkg; else echo yay; fi
+  register: helper
+
+- name: Run the installation backend
+  include_tasks: backend-{{ helper.stdout }}.yaml

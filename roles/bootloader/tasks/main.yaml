@@ -1,0 +1,36 @@
+- name: Install syslinux package
+  vars:
+    package_list:
+      - syslinux
+  import_role:
+    name: pacstrap
+
+- name: Create syslinux directory
+  file:
+    state: directory
+    path: "{{ global_mount_point }}/boot/syslinux"
+
+- name: Copy syslinux files to /boot
+  shell: cp {{ global_mount_point }}/usr/lib/syslinux/bios/*.c32
+    {{ global_mount_point }}/boot/syslinux/
+
+- name: Install syslinux
+  command: extlinux --install {{ global_mount_point }}/boot/syslinux
+
+- name: Get root's UUID
+  command: lsblk -n -o UUID {{ global_device_node }}1
+  register: uuid
+
+- name: Copy syslinux configuration
+  vars:
+    root_uuid: "{{ uuid.stdout }}"
+  template:
+    src: syslinux.cfg.j2
+    dest: "{{ global_mount_point }}/boot/syslinux/syslinux.cfg"
+
+- name: Install IPL
+  command: dd
+    if={{ global_mount_point }}/usr/lib/syslinux/bios/mbr.bin
+    of={{ global_device_node }}
+    bs=440
+    count=1

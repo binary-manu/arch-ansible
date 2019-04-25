@@ -1,0 +1,4 @@
+- name: Remove temporary build directory
+  file:
+    state: absent
+    path: "{{ tempdir.path }}"

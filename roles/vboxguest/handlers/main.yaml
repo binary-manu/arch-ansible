@@ -1,0 +1,6 @@
+  - name: Start VirtualBox service
+    systemd:
+      name: vboxservice
+      state: started
+      enabled: yes
+

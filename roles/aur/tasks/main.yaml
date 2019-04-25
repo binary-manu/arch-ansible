@@ -1,0 +1,7 @@
+- name: Build AUR packages
+  include_role:
+    name: makepkg
+  vars:
+    package_name: "{{ item }}"
+    build_user: "{{ global_admins[0] }}"
+  loop: "{{ aur_packages }}"

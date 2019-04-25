@@ -1,0 +1,22 @@
+- name: Create a MBR partition table and one partition
+  parted:
+    device: "{{ global_device_node }}"
+    state: present
+    label: msdos
+    number: 1
+    flags:
+      - boot
+
+- name: Format the partition
+  filesystem:
+    dev:  "{{ global_device_node }}1"
+    fstype: ext4
+    opts: -O ^64bit
+
+- name: Mount the root partition
+  mount:
+    state: mounted
+    src: "{{ global_device_node }}1"
+    path: "{{ global_mount_point }}"
+    fstype: ext4
+    opts: rw,relatime

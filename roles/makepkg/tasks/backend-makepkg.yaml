@@ -1,0 +1,29 @@
+# Inputs:
+# package_name: name of the package to download and build (i.e. yay-bin)
+# build_user: user we will sudo to when building. Must be able to use
+#             passwordless sudo
+
+- name: Check if package {{ package_name }} is already installed
+  shell: set -o pipefail || exit 1; pacman -Qsq |
+    { grep '^{{ package_name }}$' ; [ $? -lt 2 ]; }
+  register: package_installed
+
+- name: Make and install {{ package_name }}
+  become: yes
+  become_user: "{{ build_user }}"
+  when: package_installed.stdout == ""
+  block:
+    - name: Create temporary build directory
+      tempfile:
+        state: directory
+      register: tempdir
+      notify: Remove temporary build directory
+      
+    - name: Download package from the AUR
+      unarchive:
+        remote_src: yes
+        src: "{{ aur_url }}{{ package_name }}.tar.gz"
+        dest: "{{ tempdir.path }}"
+        
+    - name: Run makepkg
+      shell: cd '{{ tempdir.path }}/{{ package_name }}' && makepkg -rsi --noconfirm

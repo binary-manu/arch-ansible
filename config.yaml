@@ -1,0 +1,10 @@
+global_device_node: /dev/sda
+global_mount_point: /mnt
+global_admins:
+  # There must be at least one user if the aur role is used, because the first
+  # one will be used to build packages
+  - manu
+global_timezone: Europe/Rome
+global_locale: it_IT.UTF-8
+global_keymap: it
+global_hostname: archlinux
