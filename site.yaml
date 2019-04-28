@@ -36,6 +36,8 @@
       tags: [xfce]
     - role: proxy
       tags: [proxy]
+    - role: yay_user_customizations
+      tags: [yay]
   post_tasks:
     - import_role:
         name: passwordless_sudo_user
