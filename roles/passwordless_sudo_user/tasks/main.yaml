@@ -1,1 +1,17 @@
-- include_tasks: "{{ state | default('present') }}_user.yaml"
+- name: Create a user that can use passwordless sudo
+  user:
+    name: "{{ global_passwordless_sudo_user }}"
+    shell: /bin/bash
+    password: "!"
+    system: yes
+  notify: Delete passwordless sudo user
+  changed_when: yes # Always mark as changed, so that the handler can be invoked
+
+- name: Allow passwordless sudo for {{ global_passwordless_sudo_user }}
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: "{{ global_passwordless_sudo_user }} "
+    line: "{{ global_passwordless_sudo_user }} ALL=(ALL) NOPASSWD: ALL"
+    validate: '/usr/sbin/visudo -cf %s'
+

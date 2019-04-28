@@ -39,9 +39,5 @@
     - role: yay_user_customizations
       tags: [yay]
   post_tasks:
-    - import_role:
-        name: passwordless_sudo_user
-      vars:
-        state: absent
     - reboot:
       tags: reboot
