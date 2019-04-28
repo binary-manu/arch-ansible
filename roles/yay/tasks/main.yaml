@@ -2,5 +2,6 @@
   include_role:
     name: makepkg
   vars:
-    package_name: yay-bin
+    packages:
+      - yay-bin
     build_user: "{{ global_passwordless_sudo_user }}"

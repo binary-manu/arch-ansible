@@ -7,10 +7,8 @@
   include_role:
     name: makepkg
   vars:
-    package_name: "{{ item }}"
+    packages:  "{{ xfce_user_customization_aur }}"
     build_user: "{{ global_passwordless_sudo_user }}"
-  loop: "{{ xfce_user_customization_aur }}"
-
 
 - name: Copy xfce's xinitrc to user home
   become: yes

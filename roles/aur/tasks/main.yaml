@@ -2,6 +2,5 @@
   include_role:
     name: makepkg
   vars:
-    package_name: "{{ item }}"
+    packages: "{{ aur_packages }}"
     build_user: "{{ global_passwordless_sudo_user }}"
-  loop: "{{ aur_packages }}"
