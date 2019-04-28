@@ -3,6 +3,10 @@
 # build_user: user we will sudo to when building. Must be able to use
 #             passwordless sudo
 
+- name: Check if package {{ package_name }} is already installed
+  shell: set -o pipefail || exit 1; pacman -Qsq |
+    { grep '^{{ package_name }}$' ; [ $? -lt 2 ]; }
+  register: package_installed
 - name: Run yay for {{ package_name }}
   become: yes
   become_user: "{{ build_user }}"
