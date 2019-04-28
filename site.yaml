@@ -33,3 +33,8 @@
       tags: [xfce]
     - role: aur
       tags: [aur]
+  post_tasks:
+    - import_role:
+        name: passwordless_sudo_user
+      vars:
+        state: absent

@@ -1,0 +1,12 @@
+- name: Disallow passwordless sudo for {{ global_passwordless_sudo_user }}
+  lineinfile:
+    path: /etc/sudoers
+    state: absent
+    regexp: "{{ global_passwordless_sudo_user }} ALL=\\(ALL\\) NOPASSWD: ALL"
+    validate: '/usr/sbin/visudo -cf %s'
+
+- name: Delete passwordless sudo user
+  user:
+    name: "{{ global_passwordless_sudo_user }}"
+    state: absent
+

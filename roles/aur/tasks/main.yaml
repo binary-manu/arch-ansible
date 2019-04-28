@@ -3,5 +3,5 @@
     name: makepkg
   vars:
     package_name: "{{ item }}"
-    build_user: "{{ global_admins[0] }}"
+    build_user: "{{ global_passwordless_sudo_user }}"
   loop: "{{ aur_packages }}"
