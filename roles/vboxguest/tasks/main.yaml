@@ -2,4 +2,5 @@
   pacman:
     name: "{{ vboxguest_packages }}"
   notify: Start VirtualBox service
-  changed_when: run_handlers | default(false)
+  register: vboxinstalled
+  changed_when: vboxinstalled.changed or (run_handlers | default(false))
