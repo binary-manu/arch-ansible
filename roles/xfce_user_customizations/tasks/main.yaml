@@ -1,0 +1,29 @@
+- name: Install themes for XFCE from repos
+  pacman:
+    name:  "{{ xfce_user_customization_packages }}"
+    state: present
+
+- name: Install themes for XFCE from AUR
+  include_role:
+    name: makepkg
+  vars:
+    package_name: "{{ item }}"
+    build_user: "{{ global_passwordless_sudo_user }}"
+  loop: "{{ xfce_user_customization_aur }}"
+
+
+- name: Copy xfce's xinitrc to user home
+  become: yes
+  become_user: "{{ item }}"
+  copy:
+    src: xinitrc
+    dest: /home/{{ item }}/.xinitrc
+  loop: "{{ global_admins }}"
+
+- name: Copy xfce's configuration for themes
+  become: yes
+  become_user: "{{ item }}"
+  copy:
+    src: xfconf/
+    dest: /home/{{ item }}/.config/xfce4/xfconf/
+  loop: "{{ global_admins }}"
