@@ -16,6 +16,7 @@
       tags: [configure]
   post_tasks:
    - name: Reboot into the system
+     tags: reboot
      reboot:
 
 - name: Configure the installed system
@@ -40,3 +41,5 @@
         name: passwordless_sudo_user
       vars:
         state: absent
+    - reboot:
+      tags: reboot
