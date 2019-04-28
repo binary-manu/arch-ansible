@@ -3,6 +3,7 @@
     name: "{{ global_passwordless_sudo_user }}"
     shell: /bin/bash
     password: "!"
+    system: yes
 
 - name: Allow passwordless sudo for {{ global_passwordless_sudo_user }}
   lineinfile:
