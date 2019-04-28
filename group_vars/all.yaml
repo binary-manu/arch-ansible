@@ -1,6 +1,7 @@
-# This disk will be MBR partitioned with a single, large ext4 volume.  The rrot
+# This disk will be MBR partitioned with a single, large ext4 volume.  The root
 # will be mounted under global_mount_point
 global_device_node: /dev/sda
+global_partition_number: 1
 global_mount_point: /mnt
 
 # Initial users to create. They will all be added to the whhel group and

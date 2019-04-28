@@ -9,14 +9,14 @@
 
 - name: Format the partition
   filesystem:
-    dev:  "{{ global_device_node }}1"
+    dev:  "{{ global_device_node }}{{ global_partition_number }}"
     fstype: ext4
     opts: -O ^64bit
 
 - name: Mount the root partition
   mount:
     state: mounted
-    src: "{{ global_device_node }}1"
+    src: "{{ global_device_node }}{{ global_partition_number }}"
     path: "{{ global_mount_point }}"
     fstype: ext4
     opts: rw,relatime

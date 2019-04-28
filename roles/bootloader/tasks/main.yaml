@@ -18,7 +18,7 @@
   command: extlinux --install {{ global_mount_point }}/boot/syslinux
 
 - name: Get root's UUID
-  command: lsblk -n -o UUID {{ global_device_node }}1
+  command: lsblk -n -o UUID {{ global_device_node }}{{ global_partition_number }}
   register: uuid
 
 - name: Copy syslinux configuration
