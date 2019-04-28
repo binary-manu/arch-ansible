@@ -1,38 +1,40 @@
 - name: Install the base system
   hosts: all
   tags: bootstrap
-  vars_files:
-    - config.yaml
   pre_tasks:
     - fail:
         msg: Security check! Target is not a VM
       when: ansible_virtualization_role != "guest"
   roles:
-    - partitioning
-    - base_packages
-    - bootloader
-    - configure
+    - role: partitioning
+      tags: [partitioning]
+    - role: base_packages
+      tags: [base_packages]
+    - role: bootloader
+      tags: [bootloader]
+    - role: configure
+      tags: [configure]
   post_tasks:
    - name: Reboot into the system
      reboot:
 
 - name: Configure the installed system
   hosts: all
-  vars_files:
-    - config.yaml
+  tags: mainconfig
   roles:
     - role: users
       tags: [users]
     - role: locale
       tags: [locale]
-    - role: packages
-      tags: [packages]
     - role: vboxguest
       tags: [vboxguest]
-    - role: xfce
-      tags: [xfce]
+    - role: packages
+      tags: [packages]
     - role: aur
       tags: [aur]
+      # This role will pull xfce and xorg
+    - role: xfce_user_customizations
+      tags: [xfce]
   post_tasks:
     - import_role:
         name: passwordless_sudo_user
