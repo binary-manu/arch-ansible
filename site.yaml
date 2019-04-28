@@ -34,6 +34,8 @@
       # This role will pull xfce and xorg
     - role: xfce_user_customizations
       tags: [xfce]
+    - role: proxy
+      tags: [proxy]
   post_tasks:
     - import_role:
         name: passwordless_sudo_user
