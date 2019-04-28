@@ -1,10 +1,4 @@
 package_list:
-  # Xorg
-  - xorg
-  - xorg-apps
-  - xorg-drivers
-  - xorg-apps
-  - xorg-fonts
   # Extra fonts
   - ttf-bitstream-vera
   - ttf-dejavu
@@ -34,6 +28,4 @@ package_list:
   - firefox
   - filezilla
   - x11-ssh-askpass
-  # Themes
-  - gtk-engine-murrine
-  - numix-gtk-theme
+  - net-tools
