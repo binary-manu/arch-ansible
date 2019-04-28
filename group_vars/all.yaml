@@ -1,9 +1,26 @@
+# This disk will be MBR partitioned with a single, large ext4 volume.  The rrot
+# will be mounted under global_mount_point
 global_device_node: /dev/sda
 global_mount_point: /mnt
+
+# Initial users to create. They will all be added to the whhel group and
+# allowed to call sudo (password required).
 global_admins:
   - manu
+
+# Timezone/locale/hostname  info
 global_timezone: Europe/Rome
 global_locale: it_IT.UTF-8
 global_keymap: it
 global_hostname: archlinux
+
+# This user will be created during the setup to build AUR packages, and will be
+# removed before finalizing the installation. There is no need to change the
+# name.
 global_passwordless_sudo_user: package_builder
+
+# If working behind a proxy, uncomment variable definitions
+global_proxy_env: {
+#  http_proxy: "http://your.proxy",
+#  https_proxy: "http://your.proxy"
+}

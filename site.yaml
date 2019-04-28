@@ -1,10 +1,7 @@
 - name: Install the base system
   hosts: all
   tags: bootstrap
-  pre_tasks:
-    - fail:
-        msg: Security check! Target is not a VM
-      when: ansible_virtualization_role != "guest"
+  environment: "{{ global_proxy_env }}"
   roles:
     - role: partitioning
       tags: [partitioning]
@@ -22,6 +19,7 @@
 - name: Configure the installed system
   hosts: all
   tags: mainconfig
+  environment: "{{ global_proxy_env }}"
   roles:
     - role: users
       tags: [users]
