@@ -17,7 +17,6 @@
       tempfile:
         state: directory
       register: tempdir
-      notify: Remove temporary build directory
       
     - name: Download package from the AUR
       unarchive:
@@ -27,3 +26,8 @@
         
     - name: Run makepkg
       shell: cd '{{ tempdir.path }}/{{ package_name }}' && makepkg -rsi --noconfirm
+  always: name: Remove temporary build directory
+  file:
+    state: absent
+    path: "{{ tempdir.path }}"
+
