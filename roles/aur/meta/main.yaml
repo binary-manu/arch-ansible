@@ -1,0 +1,5 @@
+dependencies:
+  - role: passwordless_sudo_user
+    vars:
+      state: present
+  - role: yay
