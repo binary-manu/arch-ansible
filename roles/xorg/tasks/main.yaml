@@ -1,0 +1,3 @@
+- name: Install X.org
+  pacman:
+    name: "{{ xorg_packages }}"
