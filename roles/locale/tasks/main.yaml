@@ -8,7 +8,15 @@
     name: "{{ global_locale }}"
 
 - name: Set locale
-  command: localectl set-locale {{ global_locale }}
+  lineinfile:
+    path: /etc/locale.conf
+    regexp: "^LANG="
+    line: "LANG={{ global_locale }}"
+    create: yes
 
 - name: Set keymap
-  command: localectl set-keymap {{ global_keymap }}
+  lineinfile:
+    path: /etc/vconsole.conf
+    regexp: "^KEYMAP="
+    line: "KEYMAP={{ global_keymap }}"
+    create: yes
