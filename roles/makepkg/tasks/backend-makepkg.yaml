@@ -26,8 +26,9 @@
         
     - name: Run makepkg
       shell: cd '{{ tempdir.path }}/{{ package_name }}' && makepkg -rsi --noconfirm
-  always: name: Remove temporary build directory
-  file:
-    state: absent
-    path: "{{ tempdir.path }}"
+  always:
+    - name: Remove temporary build directory
+      file:
+        state: absent
+        path: "{{ tempdir.path }}"
 
