@@ -8,7 +8,19 @@
     name: "{{ global_locale }}"
 
 - name: Set locale
-  command: localectl set-locale {{ global_locale }}
+  shell: set -o pipefail;
+    { localectl status &&
+      localectl set-locale {{ global_locale }} &&
+      localectl status
+    ;} | sort | uniq -u
+  register: locale_changed
+  changed_when: locale_changed.stdout != ""
 
 - name: Set keymap
-  command: localectl set-keymap {{ global_keymap }}
+  shell: set -o pipefail;
+    { localectl status &&
+      localectl set-keymap {{ global_keymap }} &&
+      localectl status
+    ;} | sort | uniq -u
+  register: keymap_changed
+  changed_when: keymap_changed.stdout != ""
