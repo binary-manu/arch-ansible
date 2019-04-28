@@ -1,0 +1,8 @@
+- name: Export proxy variables from shell profile
+  template:
+    src: proxy.sh.j2
+    dest: /etc/profile.d/proxy.sh
+  vars:
+    http_proxy: "{{ global_proxy_env.http_proxy }}"
+    https_proxy: "{{ global_proxy_env.https_proxy }}"
+  when: global_proxy_env
