@@ -1,5 +1,1 @@
-aur_packages:
-  - yay-bin
-  - numix-cursor-theme-git
-  - numix-icon-theme-git
-  - numix-square-icon-theme-git
+aur_packages: []
