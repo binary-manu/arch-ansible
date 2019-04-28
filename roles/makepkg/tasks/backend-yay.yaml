@@ -7,9 +7,12 @@
   shell: set -o pipefail || exit 1; pacman -Qsq |
     { grep '^{{ package_name }}$' ; [ $? -lt 2 ]; }
   register: package_installed
+  changed_when: no
+
 - name: Run yay for {{ package_name }}
   become: yes
   become_user: "{{ build_user }}"
   command: yay -S {{ package_name }} --needed -a
     --answerclean none --answeredit none --answerupgrade none --answerdiff none
     --removemake --noconfirm
+  when: package_installed.stdout == ""

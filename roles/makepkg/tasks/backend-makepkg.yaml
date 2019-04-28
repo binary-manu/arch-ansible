@@ -7,6 +7,7 @@
   shell: set -o pipefail || exit 1; pacman -Qsq |
     { grep '^{{ package_name }}$' ; [ $? -lt 2 ]; }
   register: package_installed
+  changed_when: no
 
 - name: Make and install {{ package_name }}
   become: yes
