@@ -25,6 +25,8 @@
       tags: [users]
     - role: locale
       tags: [locale]
+    - role: proxy
+      tags: [proxy]
     - role: vboxguest
       tags: [vboxguest]
     - role: packages
@@ -34,8 +36,6 @@
       # This role will pull xfce and xorg
     - role: xfce_user_customizations
       tags: [xfce]
-    - role: proxy
-      tags: [proxy]
     - role: yay_user_customizations
       tags: [yay]
   post_tasks:

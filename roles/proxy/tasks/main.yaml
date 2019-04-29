@@ -6,3 +6,11 @@
     http_proxy: "{{ global_proxy_env.http_proxy }}"
     https_proxy: "{{ global_proxy_env.https_proxy }}"
   when: global_proxy_env
+
+- name: Pass http{,s}_proxy through sudo
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    line: 'Defaults env_keep += "http_proxy https_proxy no_proxy"'
+    validate: '/usr/sbin/visudo -cf %s'
+  when: global_proxy_env
