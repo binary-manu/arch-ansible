@@ -11,3 +11,4 @@
   user:
     name: "{{ global_passwordless_sudo_user }}"
     state: absent
+    remove: yes
