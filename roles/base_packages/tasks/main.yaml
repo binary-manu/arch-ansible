@@ -1,5 +1,0 @@
-- name: Install base package
-  import_role:
-    name: pacstrap
-  vars:
-    package_list: "{{ global_prerequisites_list }}"

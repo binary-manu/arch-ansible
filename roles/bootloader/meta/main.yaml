@@ -1,0 +1,7 @@
+dependencies:
+  - role: partitioning
+  - role: pacstrap
+    vars:
+      packages:
+        - syslinux
+      chroot: "{{ global_mount_point }}"
