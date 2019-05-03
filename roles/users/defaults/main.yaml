@@ -2,7 +2,7 @@
 # encrypted with ansible-vault.
 
 users_info:
-  - root:
-      password: "abcd$1234_root"
-  - manu:
-      password: "abcd$1234_manu"
+  root:
+    password: "abcd$1234_root"
+  manu:
+    password: "abcd$1234_manu"
