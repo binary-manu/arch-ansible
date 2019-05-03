@@ -1,3 +1,8 @@
+- name: Install git for yay to use
+  pacman:
+    name: git
+    state: present
+
 - name: Install yay
   include_role:
     name: makepkg
