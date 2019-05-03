@@ -27,9 +27,6 @@
       tags: [vboxguest]
     - role: packages
       tags: [packages]
-    - role: aur
-      tags: [aur]
-      # This role will pull xfce and xorg
     - role: xfce_user_customizations
       tags: [xfce]
     - role: yay_user_customizations

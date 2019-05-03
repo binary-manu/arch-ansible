@@ -1,6 +1,0 @@
-- name: Build AUR packages
-  include_role:
-    name: makepkg
-  vars:
-    packages: "{{ aur_packages }}"
-    build_user: "{{ global_passwordless_sudo_user }}"
