@@ -42,3 +42,15 @@
     line: "127.0.0.1 {{ global_hostname }}"
     state: present
     path: "{{ global_mount_point}}/etc/hosts"
+
+- name: Generate fstab
+  vars:
+    fstab: "{{ global_mount_point }}/etc/fstab"
+  shell: |
+    {
+      [ -f {{ fstab }} ] && cat {{ fstab }}
+      genfstab -U {{ global_mount_point }} > {{ fstab }}
+      cat {{ fstab }}
+    } | sort | uniq -u
+  register: fstab_created
+  changed_when: fstab_created.stdout
