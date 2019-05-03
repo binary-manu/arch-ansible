@@ -14,3 +14,12 @@
     line: 'Defaults env_keep += "http_proxy https_proxy no_proxy"'
     validate: '/usr/sbin/visudo -cf %s'
   when: global_proxy_env
+
+- name: Set pacman's XferCommand to curl
+  ini_file:
+    create: no
+    path: /etc/pacman.conf
+    section: options
+    option: XferCommand
+    value: /usr/bin/curl -L -C - -f -o %o %u
+  when: global_proxy_env

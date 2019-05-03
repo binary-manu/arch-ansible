@@ -1,2 +1,2 @@
 dependencies:
-  - role: pacman_xfer
+  - role: proxy
