@@ -1,3 +1,6 @@
-- name: Install packages
-  pacman:
-    name: "{{ package_list }}"
+- name: Install batch of packages
+  become: yes
+  become_user: "{{ global_passwordless_sudo_user }}"
+  command: yay -S {{ packages | join(' ') }}
+    --answerclean none --answeredit none --answerupgrade none --answerdiff none
+    --removemake --noconfirm --combinedupgrade --needed 

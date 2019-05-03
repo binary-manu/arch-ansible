@@ -25,12 +25,16 @@
       tags: [proxy]
     - role: vboxguest
       tags: [vboxguest]
-    - role: packages
-      tags: [packages]
     - role: xfce_user_customizations
       tags: [xfce]
     - role: yay_user_customizations
       tags: [yay]
+    - role: ttf_fonts
+      tags: [ttf_fonts]
+    - role: utils
+      tags: [utils]
+    - role: xutils
+      tags: [xutils]
   post_tasks:
     - reboot:
       tags: reboot

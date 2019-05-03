@@ -1,0 +1,11 @@
+dependencies:
+  - role: packages
+    vars:
+      packages:
+        - ntfs-3g
+        - p7zip
+        - rsync
+        - hexer
+        - net-tools
+        - iotop
+        - vim

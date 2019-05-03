@@ -1,0 +1,11 @@
+dependencies:
+  - role: packages
+    vars:
+      packages:
+        - ttf-bitstream-vera
+        - ttf-dejavu
+        - ttf-droid
+        - ttf-freefont
+        - ttf-inconsolata
+        - ttf-liberation
+        - ttf-ubuntu-font-family
