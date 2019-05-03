@@ -3,13 +3,15 @@
     shell: /bin/bash
     name: "{{ item }}"
     groups: wheel
-    password: "{{ item | password_hash('sha512', '7837hf87gf8' )}}"
+    password: "{{ users_info[item].password |
+        password_hash('sha512', 1000000 | random )}}"
   loop: "{{ global_admins }}"
 
 - name: Set root password
   user:
     name: root
-    password: "{{ 'root' | password_hash('sha512', 'ksjdfg4hfg' )}}"
+    password: "{{ users_info['root'].password |
+        password_hash('sha512', 1000000 | random )}}"
 
 - name: Allow admins to sudo by authorizing the wheel group
   lineinfile:

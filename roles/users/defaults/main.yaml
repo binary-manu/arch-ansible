@@ -1,0 +1,8 @@
+# In real deployments, this file shuould be customized with real passwords and
+# encrypted with ansible-vault.
+
+users_info:
+  - root:
+      password: "abcd$1234_root"
+  - manu:
+      password: "abcd$1234_manu"
