@@ -8,7 +8,7 @@
     name: "{{ global_locale }}"
 
 - name: Set locale
-  shell: set -o pipefail;
+  shell: set -o pipefail || exit 1;
     { localectl status &&
       localectl set-locale {{ global_locale }} &&
       localectl status
@@ -17,7 +17,7 @@
   changed_when: locale_changed.stdout != ""
 
 - name: Set keymap
-  shell: set -o pipefail;
+  shell: set -o pipefail || exit 1;
     { localectl status &&
       localectl set-keymap {{ global_keymap }} &&
       localectl status

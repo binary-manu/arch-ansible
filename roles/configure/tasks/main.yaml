@@ -47,8 +47,10 @@
   vars:
     fstab: "{{ global_mount_point }}/etc/fstab"
   shell: |
+    set -e
+    set -o pipefail
     {
-      [ -f {{ fstab }} ] && cat {{ fstab }}
+      if [ -f {{ fstab }} ]; then cat {{ fstab }}; fi
       genfstab -U {{ global_mount_point }} > {{ fstab }}
       cat {{ fstab }}
     } | sort | uniq -u
