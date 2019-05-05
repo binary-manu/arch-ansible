@@ -3,6 +3,7 @@
   tags: bootstrap
   environment: "{{ global_proxy_env }}"
   roles:
+    - role: custom_repos
     # These roles pull partitioning and base_packages
     - role: bootloader
       tags: [bootloader]
@@ -17,6 +18,7 @@
   tags: mainconfig
   environment: "{{ global_proxy_env }}"
   roles:
+    - role: custom_repos
     - role: users
     - role: locale
     - role: proxy
