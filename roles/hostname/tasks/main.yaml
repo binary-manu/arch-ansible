@@ -1,0 +1,10 @@
+- name: Set hostname in /etc/hostname
+  copy:
+    content: "{{ global_hostname }}\n"
+    dest: "{{ root }}/etc/hostname"
+
+- name: Set hostname in /etc/hosts
+  lineinfile:
+    line: "127.0.1.1 {{ global_hostname }}"
+    state: present
+    path: "{{ root }}/etc/hosts"

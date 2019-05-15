@@ -18,6 +18,12 @@
   tags: mainconfig
   environment: "{{ global_proxy_env }}"
   roles:
+    # The hostname is set once during bootstrap and once here. The idea is to
+    # set it as early as possible, but if bootstrap is skipped (i.e.
+    # provisioning with Vagrant) we do it again here.
+    - role: hostname
+      vars:
+        root: ""
     - role: custom_repos
     - role: users
     - role: locale

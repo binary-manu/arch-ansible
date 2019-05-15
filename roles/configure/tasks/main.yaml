@@ -32,17 +32,6 @@
     - ssh_host_dsa_key.pub
     - ssh_host_ed25519_key.pub
 
-- name: Set hostname in /etc/hostname
-  copy:
-    content: "{{ global_hostname }}"
-    dest: "{{ global_mount_point}}/etc/hostname"
-
-- name: Set hostname in /etc/hosts
-  lineinfile:
-    line: "127.0.0.1 {{ global_hostname }}"
-    state: present
-    path: "{{ global_mount_point}}/etc/hosts"
-
 - name: Generate fstab
   vars:
     fstab: "{{ global_mount_point }}/etc/fstab"
