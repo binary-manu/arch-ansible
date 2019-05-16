@@ -1,4 +1,3 @@
 dependencies:
   - role: users
   - role: xfce
-  - role: yay
