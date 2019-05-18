@@ -120,7 +120,8 @@ mount volumes there.
       - manu
 
 Initial users to create. They will all be added to the wheel group and
-allowed to call sudo (with password).
+allowed to call sudo (with password). Password for individual users
+(including root) can be set in `roles/users/defaults/main.yaml`.
 
     global_timezone: Europe/Rome
     global_locale: it_IT.UTF-8
