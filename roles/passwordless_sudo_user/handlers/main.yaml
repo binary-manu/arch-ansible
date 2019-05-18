@@ -1,5 +1,5 @@
 - listen: Delete passwordless sudo user
-  name: Disallow passwordless sudo for {{ global_passwordless_sudo_user }}
+  name: Remove passwordless sudo user from sudoers
   lineinfile:
     path: /etc/sudoers
     state: absent

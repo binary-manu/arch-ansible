@@ -7,7 +7,7 @@
   notify: Delete passwordless sudo user
   changed_when: yes # Always mark as changed, so that the handler can be invoked
 
-- name: Allow passwordless sudo for {{ global_passwordless_sudo_user }}
+- name: Add passwordless sudo user to sudoers
   lineinfile:
     path: /etc/sudoers
     state: present
