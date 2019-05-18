@@ -1,1 +1,3 @@
 *.retry
+group_vars/all/*
+!group_vars/all/00-default.yaml

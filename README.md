@@ -103,8 +103,8 @@ ensure a clean start. This can be disabled by skipping the `reboot` tag.
 
 ## Global configuration
 
-The file `group_vars/all.yaml` contains global configuration options
-that affect how the playbook work.
+The file `group_vars/all/00-default.yaml` contains global configuration
+options that affect how the playbook work.
 
     global_device_node: /dev/sda
     global_partition_number: 1
@@ -174,15 +174,15 @@ the same packages over and over again.
 
 ## Simple customization
 
-### Add a non X package
+### Add a non-X11 package
 
-If you want to add a new non-X package to every installation and it does
+If you want to add a new non-X11 package to every installation and it does
 not require special configuration, add it to the package list in
 `roles/utils/meta/main.yaml`.
 
-### Add an X package
+### Add an X11 package
 
-If you want to add a new X package to every installation and it does not
+If you want to add a new X11 package to every installation and it does not
 require special configuration, add it to the package list in
 `roles/xutils/meta/main.yaml`.
 
@@ -203,7 +203,7 @@ are fine since yay is used.
           - new_package_2
 
 This approach allows for the maximum flexibility (i.e. to install and
-configure an additional DE). If the package requires X, add the `xorg`
+configure an additional DE). If the package requires X11, add the `xorg`
 role to its dependencies.
 
 ## Running the playbook against the installation media
@@ -226,11 +226,7 @@ playbook will be used (including the bootstrap phase).
    simplest way is to give it a NAT adapter and configure port
    forwarding from a local port to SSH (i.e. 2222 -> 22);
 1. boot the machine;
-1. start `sshd`
-
-       systemctl start sshd
-
-   and set a password for root;
+1. start `sshd` and set a password for root;
 1. customize the playbook configuration (inventory and group\_vars);
 1. run the playbook. Use the `-k` option to force Ansible to ask for the
    SSH password.
