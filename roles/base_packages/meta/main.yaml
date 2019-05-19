@@ -2,5 +2,5 @@
     - role: partitioning
     - role: pacstrap
       vars:
-        packages: "{{ global_prerequisites_list }}"
+        packages: "{{ base_packages_list }}"
         chroot:   "{{ global_mount_point }}"

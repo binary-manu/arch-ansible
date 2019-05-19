@@ -2,7 +2,7 @@
   import_role:
     name: packages
   vars:
-    packages:  "{{ xfce_user_customization_packages }}"
+    packages:  "{{ xfce_user_customizations_packages }}"
 
 - name: Copy xfce's xinitrc to user home
   become: yes

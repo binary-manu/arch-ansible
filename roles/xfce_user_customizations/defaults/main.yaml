@@ -1,4 +1,4 @@
-xfce_user_customization_packages:
+xfce_user_customizations_packages:
   - gtk-engine-murrine
   - numix-gtk-theme
   - numix-cursor-theme-git

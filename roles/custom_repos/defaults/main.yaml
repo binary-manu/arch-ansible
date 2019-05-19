@@ -1,0 +1,7 @@
+custom_repos_list: [
+#  {
+#    name: cache,
+#    server: "http://10.0.2.2/x86_64/",
+#    siglevel: Optional TrustAll
+#  }
+]

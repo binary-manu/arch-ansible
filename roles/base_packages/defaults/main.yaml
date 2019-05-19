@@ -1,4 +1,4 @@
-global_prerequisites_list:
+base_packages_list:
   # Arch's base packages
   - base
   - base-devel

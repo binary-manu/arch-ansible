@@ -5,7 +5,7 @@
       [{{ item.name }}]
       Server = {{ item.server }}
       SigLevel = {{ item.siglevel }}
-  loop: "{{ global_custom_repos }}"
+  loop: "{{ custom_repos_list }}"
 
 - name: Include repository definitions in pacman.conf
   lineinfile:
@@ -15,4 +15,4 @@
     create: no
     state: present
     insertbefore: ^[[]core[]]$
-  loop: "{{ global_custom_repos }}"
+  loop: "{{ custom_repos_list }}"

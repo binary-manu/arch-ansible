@@ -2,16 +2,4 @@ dependencies:
   - role: xorg
   - role: packages
     vars:
-      packages:
-        - gvfs
-        - udisks2
-        - file-roller
-        - evince
-        - gnome-calculator
-        - gnome-keyring
-        - gvim
-        - network-manager-applet
-        - nm-connection-editor
-        - firefox
-        - filezilla
-        - x11-ssh-askpass
+      packages: "{{ xutils_packages }}"

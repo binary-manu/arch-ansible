@@ -1,0 +1,8 @@
+ttf_fonts_packages:
+  - ttf-bitstream-vera
+  - ttf-dejavu
+  - ttf-droid
+  - ttf-freefont
+  - ttf-inconsolata
+  - ttf-liberation
+  - ttf-ubuntu-font-family

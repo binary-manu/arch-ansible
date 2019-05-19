@@ -9,12 +9,6 @@ global_mount_point: /mnt
 global_admins:
   - manu
 
-# Timezone/locale/hostname  info
-global_timezone: Europe/Rome
-global_locale: it_IT.UTF-8
-global_keymap: it
-global_hostname: archlinux
-
 # This user will be created during the setup to build AUR packages, and will be
 # removed before finalizing the installation. There is no need to change the
 # name.
@@ -25,11 +19,3 @@ global_proxy_env: {
 #  http_proxy: "http://your.proxy",
 #  https_proxy: "http://your.proxy"
 }
-
-global_custom_repos: [
-#  {
-#    name: cache,
-#    server: "http://10.0.2.2/x86_64/",
-#    siglevel: Optional TrustAll
-#  }
-]

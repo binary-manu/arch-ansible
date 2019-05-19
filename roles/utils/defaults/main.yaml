@@ -1,0 +1,7 @@
+utils_packages:
+  - ntfs-3g
+  - p7zip
+  - rsync
+  - hexer
+  - net-tools
+  - iotop
