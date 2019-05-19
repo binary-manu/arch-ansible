@@ -13,7 +13,7 @@ user's `.xinitrc` is configured to launch XFCE when calling startx.
 A bunch of default utilities like a PDF reader or gvim a preinstalled.
 These are handled by the `utils` and `xutils` roles.
 
-Users (including `root`) get thheir passwords from
+Users (including `root`) get their passwords from
 `roles/users/defaults/main.yaml`. The file is stored in cleartext within
 this repository to show its structure and allow modification. In real
 scenarios, people should customize it and then encrypt it with
@@ -42,7 +42,7 @@ The playbook is broken into two big parts, identified by tags:
   packages, installing a DE, creating users and configuring locales. At
   the end, the system is read for use.
 
-Whn used together, they build a complete system from an installation
+When used together, they build a complete system from an installation
 media. `mainconfig` can also be run independently of `bootstrap`,
 provided that the initial system state allows for Ansible incoming
 connections.
@@ -89,9 +89,9 @@ can be skipped or selected one by one using tags:
 * `yay` copies `yay` settings to each user home folder;
 * `ttf_fonts` installs additional fonts;
 * `utils` installs some non-X utilities (listed in
-  `roles/utils/meta/main.yaml`
+  `roles/utils/defaults/main.yaml`
 * `xutils` installs some X utilities (listed in
-  `roles/xutils/meta/main.yaml`
+  `roles/xutils/defaults/main.yaml`
 
 Roles which install X apps will automatically pull X.org as a
 dependency.
@@ -101,7 +101,35 @@ dependency.
 After both `bootstrap` and `mainconfig` the system will be rebooted to
 ensure a clean start. This can be disabled by skipping the `reboot` tag.
 
-## Global configuration
+### Force handlers to run again
+
+If during execution, the playbook fails while executing a handler, the next
+time it is run the handler will not run again, because the notifying task
+will report an `ok` status.
+
+As a workaround, you can force all handlers to run again by setting the
+variable `run_handlers` to `true`. This works by causing all tasks that
+trigger a handler to report a `changed` status.
+
+It works differently than `--force-handlers`. As per Ansible documentation:
+
+> When handlers are forced, they will run when notified even if a task fails
+> on that host.
+
+while, in our scenario, handlers would _not_ be notified by tasks when they
+return `ok`.
+
+## Configuration
+
+By design, global configuration items are those which are used by multiple
+roles and are stored in `group_vars/all/00-defaults.yaml`. Other variables,
+which are local to a specific role, are stored under
+`roles/$ROLE/defaults/main.yaml`. Both groups can be overridden by placing a
+new file under `group_vars`, `host_vars` or using the command line. This way,
+one can keep the default configuration and just change the target system
+hostname or locale.
+
+### Global configuration
 
 The file `group_vars/all/00-default.yaml` contains global configuration
 options that affect how the playbook work.
@@ -122,13 +150,6 @@ mount volumes there.
 Initial users to create. They will all be added to the wheel group and
 allowed to call sudo (with password). Password for individual users
 (including root) can be set in `roles/users/defaults/main.yaml`.
-
-    global_timezone: Europe/Rome
-    global_locale: it_IT.UTF-8
-    global_keymap: it
-    global_hostname: archlinux
-
-Locale info and hostname. Self explanatory.
 
     global_passwordless_sudo_user: package_builder
 
@@ -158,20 +179,110 @@ If using a direct connection, leave the `global_proxy_env` empty object
 in place, as well as proxy-related tasks. They will be skipped
 automatically.
 
-    global_custom_repos: [
-    # Uncomment for additional, high-priority repositories
-    #  {
-    #    name: cache,
-    #    server: "http://10.0.2.2/x86_64/",
-    #    siglevel: Optional TrustAll
-    #  }
-    ]
+### Role configuration
 
-Add one or more additional pacman repositories. They are placed before
-`core`, so they are used before offical repositories. This is
-intentional: one use of such feature is to add a local repsitory holding
-a local copy of a recently downloaded pacman cache, to avoid downloading
-the same packages over and over again.
+`roles/base_packages/defaults/main.yaml`
+
+    base_packages_list:
+      - base
+      - base-devel
+      - ...
+
+List of base packages to be installed on the target system during the
+`bootstrap` phase.
+
+`roles/hostname/defaults/main.yaml`
+
+    hostname_hostname: archlinux
+
+Hostname information.
+
+`roles/locale/defaults/main.yaml`
+
+    locale_timezone: Europe/Rome
+    locale_locale: it_IT.UTF-8
+    locale_keymap: it
+
+Locale information.
+
+roles/makepkg/defaults/main.yaml
+
+    makepkg_aur_url: https://aur.archlinux.org/cgit/aur.git/snapshot/
+
+URL from which AUR packages are downloaded.
+
+`roles/ttf_fonts/defaults/main.yaml`
+
+    ttf_fonts_packages:
+      - ttf-bitstream-vera
+      - ttf-dejavu
+      - ...
+
+Packages installed by the `ttf_fonts` role.
+
+`roles/users/defaults/main.yaml`
+
+    users_info:
+      root:
+        password: "..."
+      manu:
+        password: "..."
+
+Passwords for new users created on the target system. This should contain
+passwords for all users defined in `global_admins`.
+
+`roles/utils/defaults/main.yaml`
+
+    utils_packages:
+      - ntfs-3g
+      - p7zip
+      - ...
+
+Packages installed by the `utils` role.
+
+`roles/vboxguest/defaults/main.yaml`
+
+    vboxguest_packages:
+      - linux-headers
+      - virtualbox-guest-utils
+
+Packages installed by the `vboxusers` role.
+
+`roles/xfce/defaults/main.yaml`
+
+    xfce_packages:
+      - xfce4
+      - xfce4-goodies
+
+Packages installed by the `xfce` role.
+
+`roles/xfce_user_customizations/defaults/main.yaml`
+
+    xfce_user_customizations_packages:
+      - gtk-engine-murrine
+      - numix-gtk-theme
+      - ...
+
+Packages installed by the `xfce_user_customizations` role.
+
+`roles/xorg/defaults/main.yaml`
+
+    xorg_packages:
+      - xorg
+      - xorg-apps
+      - ...
+
+Packages installed by the `xorg` role. These are pulled as dependencies by
+`xutils` and other roles that depend on a working X11 environment.
+
+`roles/xutils/defaults/main.yaml`
+
+    xutils_packages:
+      - gvfs
+      - udisks2
+      - ...
+
+Packages installed by the `xutils` role.
 
 ## Simple customization
 
