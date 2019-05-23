@@ -1,5 +1,5 @@
 dependencies:
+  - role: base_packages
   - role: hostname
     vars:
       root: "{{ global_mount_point }}"
-  - role: base_packages
