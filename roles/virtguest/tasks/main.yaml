@@ -1,0 +1,18 @@
+- name: Apply virtguest settings override
+  set_fact:
+    ansible_virtualization_role: guest
+    ansible_virtualization_type: "{{ virtguest_force }}"
+  when: virtguest_force != ""
+
+- name: Check if hypervisor is supported
+  assert:
+    that: ansible_virtualization_role | lower != "guest" or
+      (ansible_virtualization_type | lower in virtguest_supported_hypervisors)
+    fail_msg: Hypervisor {{ ansible_virtualization_type }} is not supported
+      by virtguest role
+    success_msg: "{% if ansible_virtualization_role | lower == 'guest' -%}
+      Hypervisor is supported {%- else -%} Installation on bare metal {%- endif %}"
+
+- name: Dispatch to specific hypervisor backend
+  include_tasks: backend_{{ ansible_virtualization_type | lower }}.yaml
+  when: ansible_virtualization_role | lower == "guest"

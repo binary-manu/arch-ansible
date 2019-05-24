@@ -1,6 +1,6 @@
 - name: Install VirtualBox guest additions
   pacman:
-    name: "{{ vboxguest_packages }}"
+    name: "{{ virtguest_virtualbox_packages }}"
   notify: Start VirtualBox service
   register: vboxinstalled
   changed_when: vboxinstalled.changed or (run_handlers | default(false))

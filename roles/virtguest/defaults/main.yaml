@@ -1,0 +1,10 @@
+# Set this to a value from virtguest_supported_hypervisors
+# to force the corresponding backend to be invoked
+virtguest_force: ""
+
+virtguest_supported_hypervisors:
+  - virtualbox
+
+virtguest_virtualbox_packages:
+  - linux-headers
+  - virtualbox-guest-utils

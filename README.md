@@ -22,8 +22,9 @@ ansible-vault before committing to a VCS.
 Currently only single-partition MBR installations are supported, using
 syslinux as the bootloader. Swap space is not configured.
 
-There is support for installing VirtualBox guest additions as part of
-the process. This can be disabled by skipping the `vboxguest` tag.
+There is support for installing hypervisor guest additions as part of
+the process.  This can be disabled by skipping the `virtguest` tag.  As
+of today, only VirtualBox is supported.
 
 The playbook relies on the [Yay](https://github.com/Jguer/yay) AUR
 helper to install packages. Using `yay` instead of the stock `pacman`
@@ -82,8 +83,7 @@ Additional steps include installing utilities and GUI apps, a desktop
 environment and applying default customizations to users. These steps
 can be skipped or selected one by one using tags:
 
-* `vboxguest` install VirtualBox guest additions and utilities for GUI
-  use;
+* `virtguest` install hypervisor guest additions;
 * `xfce` installs the XFCE DE plus some theme customizations for all
   non-root users;
 * `yay` copies `yay` settings to each user home folder;
@@ -240,13 +240,31 @@ passwords for all users defined in `global_admins`.
 
 Packages installed by the `utils` role.
 
-`roles/vboxguest/defaults/main.yaml`
+`roles/virtguest/defaults/main.yaml`
 
-    vboxguest_packages:
+    virtguest_force: ""
+
+    virtguest_supported_hypervisors:
+      - virtualbox
+
+    virtguest_virtualbox_packages:
       - linux-headers
       - virtualbox-guest-utils
 
-Packages installed by the `vboxusers` role.
+By default, the role uses facts to detect if the target system is
+running under an hypervisor. For bare metal installations, no additional
+steps are takes.  Under a supported hypervisor, guest additions are
+installed and enabled automatically. If the hypervisor is unsupported,
+the playbook bails out. To proceed under an unsupported hypervisor
+without its additions, skip the `virtguest` tag.
+
+Set `virtguest_force` to one of the members of
+`virtguest_supported_hypervisors` to force the installation of the
+corresponding additional packages. This may be useful in two cases:
+
+- Ansible's setup module misdetects the hypervisor for whatever reason;
+- the user wants to install guest packages that do not correspond to the
+  detected hypervisor.
 
 `roles/xfce/defaults/main.yaml`
 

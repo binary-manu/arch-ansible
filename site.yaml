@@ -28,8 +28,8 @@
     - role: users
     - role: locale
     - role: proxy
-    - role: vboxguest
-      tags: [vboxguest]
+    - role: virtguest
+      tags: [virtguest]
     - role: xfce_user_customizations
       tags: [xfce]
     - role: yay_user_customizations
