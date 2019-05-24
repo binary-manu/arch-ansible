@@ -10,11 +10,17 @@
     state: directory
     path:  "{{ global_mount_point }}/root/.ssh/"
 
-- name: Copy root's autorized keys
+- name: Check for root's autorized keys
+  stat:
+    path: /root/.ssh/authorized_keys
+  register: root_auth_keys
+
+- name: Copy root's authorized keys
   copy:
     remote_src: yes
     src: /root/.ssh/authorized_keys
     dest: "{{ global_mount_point }}/root/.ssh/"
+  when: root_auth_keys.stat.exists == true
 
 - name: Copy ssh host keys
   copy:
