@@ -4,6 +4,10 @@ Arch-Ansible is a playbook designed to install Arch Linux on a target
 machine. It was conceived to ease the preparation of virtual machines,
 but could be used to install on bare metal, with some tweaks.
 
+## Ansible version
+
+The playbook has been tested using Ansible 2.7 and higher.
+
 ## Installed system
 
 Unless some steps are skipped or customized, the installed system will
