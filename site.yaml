@@ -1,6 +1,8 @@
 - name: Install the base system
   hosts: all
-  tags: bootstrap
+  tags:
+    - bootstrap
+    - never
   environment: "{{ global_proxy_env }}"
   roles:
     - role: custom_repos
@@ -40,11 +42,22 @@
       tags: [utils]
     - role: xutils
       tags: [xutils]
+
+- name: Optional steps
+  hosts: all
+  tags: never
+  environment: "{{ global_proxy_env }}"
+  roles:
     - role: audio
       tags: [audio]
-  post_tasks:
-    - import_role:
-        name: pkgclean
+
+- name: Clean and reboot
+  hosts: all
+  tags: mainconfig
+  environment: "{{ global_proxy_env }}"
+  roles:
+    - role: pkgclean
       tags: pkgclean
+  post_tasks:
     - reboot:
       tags: reboot

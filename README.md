@@ -77,6 +77,9 @@ customized by editing `roles/base_packages/defaults/main.yaml`. It
 already contains a very minimal set of packages and there is no
 advantage is adding additional tools here.
 
+By default, this phase is disabled. To run it, add the `bootstrap` tag
+to the call.
+
 ### mainconfig
 
 This tag marks the tasks that does the heavy lifting. It configures
@@ -96,6 +99,8 @@ can be skipped or selected one by one using tags:
   `roles/utils/defaults/main.yaml`
 * `xutils` installs some X utilities (listed in
   `roles/xutils/defaults/main.yaml`
+* `audio` installs audio-related packages. It is disabled by default.
+  Add the tag to the call to enable it.
 
 Roles which install X apps will automatically pull X.org as a
 dependency.
