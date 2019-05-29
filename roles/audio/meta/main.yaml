@@ -1,0 +1,4 @@
+dependencies:
+  - role: packages
+    vars:
+      packages: "{{ audio_packages }}"

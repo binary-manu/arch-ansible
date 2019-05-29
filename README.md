@@ -306,6 +306,14 @@ Packages installed by the `xorg` role. These are pulled as dependencies by
 
 Packages installed by the `xutils` role.
 
+`roles/audio/defaults/main.yaml`
+
+    audio_packages:
+      - pulseaudio-alsa
+      - pavucontrol
+
+Packages installed by the `audio` role.
+
 ## Simple customization
 
 ### Add a non-X11 package

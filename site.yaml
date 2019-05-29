@@ -40,6 +40,8 @@
       tags: [utils]
     - role: xutils
       tags: [xutils]
+    - role: audio
+      tags: [audio]
   post_tasks:
     - reboot:
       tags: reboot
