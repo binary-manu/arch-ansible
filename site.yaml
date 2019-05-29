@@ -43,5 +43,8 @@
     - role: audio
       tags: [audio]
   post_tasks:
+    - import_role:
+        name: pkgclean
+      tags: pkgclean
     - reboot:
       tags: reboot
