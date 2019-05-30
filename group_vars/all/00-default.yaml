@@ -14,8 +14,7 @@ global_admins:
 # name.
 global_passwordless_sudo_user: package_builder
 
-# If working behind a proxy, uncomment variable definitions
-global_proxy_env: {
-#  http_proxy: "http://your.proxy",
-#  https_proxy: "http://your.proxy"
-}
+global_proxy_env:
+  http_proxy: "{{ http_proxy | default(omit, true) }}"
+  https_proxy: "{{ https_proxy | default(omit, true) }}"
+  no_proxy: "{{ no_proxy | default(omit, true) }}"
