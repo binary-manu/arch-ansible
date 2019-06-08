@@ -2,7 +2,7 @@ base_packages_list:
   # Arch's base packages
   - base
   - base-devel
-  # Additional tools needed to run Ansible and het network connectivity
+  # Additional tools needed to run Ansible and get network connectivity
   # after we reboot
   - sudo
   - networkmanager

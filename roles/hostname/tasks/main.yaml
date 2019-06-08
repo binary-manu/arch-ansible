@@ -5,6 +5,6 @@
 
 - name: Set hostname in /etc/hosts
   lineinfile:
-    line: "127.0.1.1 {{ hostname_hostname }}"
+    line: "127.0.1.1 {{ hostname_hostname }}.localdomain {{ hostname_hostname }}"
     state: present
     path: "{{ root }}/etc/hosts"
