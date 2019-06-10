@@ -1,7 +1,9 @@
 - name: Check state variable
+  vars:
+    _state: "{{ state | default('present', True) }}"
   assert:
-    that: state == '' or state == 'present' or state == 'absent'
-    fail: The state variable should be set to either present or absent
+    that: _state == 'present' or _state == 'absent'
+    fail_msg: The state variable should be set to either present or absent
 
 - name: Dispatch to proper custom_repos implementation
   import_tasks: "{{ state | default('present', True) }}.yaml"
