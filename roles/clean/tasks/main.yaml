@@ -1,0 +1,17 @@
+- name: Clear package cache
+  shell: printf "yny" | LANG=C yay -Scc
+  changed_when: false
+
+- name: Remove proxy settings
+  import_role:
+    name: proxy
+  vars:
+    state: absent
+  when: global_portable_image | default(False) | bool
+
+- name: Remove custom repos
+  import_role:
+    name: custom_repos
+  vars:
+    state: absent
+  when: global_portable_image | default(False) | bool

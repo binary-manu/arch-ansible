@@ -1,0 +1,13 @@
+- name: Remove custom repositories definitions
+  file:
+    path: /etc/pacman.d/{{ item.name }}.repo
+    state: absent
+  loop: "{{ custom_repos_list }}"
+
+- name: Delete repository definitions in pacman.conf
+  lineinfile:
+    path: /etc/pacman.conf
+    regexp: "^Include = /etc/pacman.d/{{ item.name }}\\.repo$"
+    create: no
+    state: absent
+  loop: "{{ custom_repos_list }}"

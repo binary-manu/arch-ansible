@@ -56,8 +56,8 @@
   tags: mainconfig
   environment: "{{ global_proxy_env }}"
   roles:
-    - role: pkgclean
-      tags: pkgclean
+    - role: clean
+      tags: clean
   post_tasks:
     - reboot:
       tags: reboot

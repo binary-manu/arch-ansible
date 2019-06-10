@@ -1,0 +1,20 @@
+- name: Unexport proxy variables from shell profile
+  file:
+    path: /etc/profile.d/proxy.sh
+    state: absent
+
+- name: Undo pass http{,s}_proxy through sudo
+  lineinfile:
+    path: /etc/sudoers
+    state: absent
+    regexp: '^Defaults env_keep \\+= "http_proxy https_proxy no_proxy"$'
+    validate: '/usr/sbin/visudo -cf %s'
+
+- name: Reset pacman's XferCommand to the default
+  ini_file:
+    create: no
+    path: /etc/pacman.conf
+    section: options
+    option: XferCommand
+    state: absent
+

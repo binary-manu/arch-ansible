@@ -1,25 +1,8 @@
-- name: Export proxy variables from shell profile
-  template:
-    src: proxy.sh.j2
-    dest: /etc/profile.d/proxy.sh
-  vars:
-    http_proxy: "{{ global_proxy_env.http_proxy }}"
-    https_proxy: "{{ global_proxy_env.https_proxy }}"
-  when: global_proxy_env | length != 0
+- name: Check state variable
+  assert:
+    that: state == '' or state == 'present' or state == 'absent'
+    fail: The state variable should be set to either present or absent
 
-- name: Pass http{,s}_proxy through sudo
-  lineinfile:
-    path: /etc/sudoers
-    state: present
-    line: 'Defaults env_keep += "http_proxy https_proxy no_proxy"'
-    validate: '/usr/sbin/visudo -cf %s'
-  when: global_proxy_env | length != 0
-
-- name: Set pacman's XferCommand to curl
-  ini_file:
-    create: no
-    path: /etc/pacman.conf
-    section: options
-    option: XferCommand
-    value: /usr/bin/curl -L -C - -f -o %o %u
+- name: Dispatch to proper proxy implementation
+  import_tasks: "{{ state | default('present', True) }}.yaml"
   when: global_proxy_env | length != 0

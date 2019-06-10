@@ -3,7 +3,7 @@
   lineinfile:
     path: /etc/sudoers
     state: absent
-    regexp: "{{ global_passwordless_sudo_user }} ALL=\\(ALL\\) NOPASSWD: ALL"
+    regexp: "^{{ global_passwordless_sudo_user }} ALL=\\(ALL\\) NOPASSWD: ALL$"
     validate: '/usr/sbin/visudo -cf %s'
 
 - listen: Delete passwordless sudo user

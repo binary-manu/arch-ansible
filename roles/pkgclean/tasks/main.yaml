@@ -1,3 +1,0 @@
-- name: Clear package cache
-  shell: printf "yny" | LANG=C yay -Scc
-  changed_when: false
