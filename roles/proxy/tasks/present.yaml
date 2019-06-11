@@ -2,15 +2,12 @@
   template:
     src: proxy.sh.j2
     dest: /etc/profile.d/proxy.sh
-  vars:
-    http_proxy: "{{ global_proxy_env.http_proxy }}"
-    https_proxy: "{{ global_proxy_env.https_proxy }}"
 
 - name: Pass http{,s}_proxy through sudo
   lineinfile:
     path: /etc/sudoers
     state: present
-    line: 'Defaults env_keep += "http_proxy https_proxy no_proxy"'
+    line: Defaults env_keep += "{{ global_proxy_env | list | join(' ') }}"
     validate: '/usr/sbin/visudo -cf %s'
 
 - name: Set pacman's XferCommand to curl

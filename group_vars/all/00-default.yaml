@@ -14,10 +14,16 @@ global_admins:
 # name.
 global_passwordless_sudo_user: package_builder
 
-global_proxy_env:
+# Define the environment, then filter omitted fields. This is important so that
+# undefined variables do not pop up in process environments. To override this
+# settings, add a definition for specific fields (i.e. http_proxy), do not
+# override either object.
+global_proxy_env_:
   http_proxy: "{{ http_proxy | default(omit, true) }}"
   https_proxy: "{{ https_proxy | default(omit, true) }}"
   no_proxy: "{{ no_proxy | default(omit, true) }}"
+global_proxy_env : "{{ global_proxy_env_ | dict2items |
+  selectattr('value', 'ne', omit) | list | items2dict }}"
 
 # After everything is done, remove settings which would cause the image to be
 # non-portable to other systems. Currently this means removing cusom repos and

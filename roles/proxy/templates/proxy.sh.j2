@@ -1,2 +1,17 @@
-export http_proxy='{{ http_proxy }}'
-export https_proxy='{{ https_proxy }}'
+{% if global_proxy_env.http_proxy is string -%}
+export http_proxy='{{ global_proxy_env.http_proxy }}'
+{% else -%}
+# 'http_proxy' was not defined
+{% endif -%}
+
+{% if global_proxy_env.https_proxy is string -%}
+export https_proxy='{{ global_proxy_env.https_proxy }}'
+{% else -%}
+# 'https_proxy' was not defined
+{% endif -%}
+
+{% if global_proxy_env.no_proxy is string -%}
+export no_proxy='{{ global_proxy_env.no_proxy }}'
+{% else -%}
+# 'no_proxy' was not defined
+{% endif -%}

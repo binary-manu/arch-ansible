@@ -7,7 +7,7 @@
   lineinfile:
     path: /etc/sudoers
     state: absent
-    regexp: '^Defaults env_keep \\+= "http_proxy https_proxy no_proxy"$'
+    regexp: ^Defaults env_keep \\+= "{{ global_proxy_env | list | join(' ') }}"$
     validate: '/usr/sbin/visudo -cf %s'
 
 - name: Reset pacman's XferCommand to the default
