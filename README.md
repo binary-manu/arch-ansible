@@ -99,8 +99,6 @@ can be skipped or selected one by one using tags:
   `roles/utils/defaults/main.yaml`
 * `xutils` installs some X utilities (listed in
   `roles/xutils/defaults/main.yaml`
-* `audio` installs audio-related packages. It is disabled by default.
-  Add the tag to the call to enable it.
 
 Roles which install X apps will automatically pull X.org as a
 dependency.
@@ -310,14 +308,6 @@ Packages installed by the `xorg` role. These are pulled as dependencies by
       - ...
 
 Packages installed by the `xutils` role.
-
-`roles/audio/defaults/main.yaml`
-
-    audio_packages:
-      - pulseaudio-alsa
-      - pavucontrol
-
-Packages installed by the `audio` role.
 
 ## Simple customization
 

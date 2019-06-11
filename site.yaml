@@ -42,8 +42,6 @@
       tags: [utils]
     - role: xutils
       tags: [xutils]
-    - role: audio
-      tags: [audio]
 
 - name: Clean and reboot
   hosts: all

@@ -11,3 +11,4 @@ xutils_packages:
   - firefox
   - filezilla
   - x11-ssh-askpass
+  - pavucontrol
