@@ -166,25 +166,33 @@ must be able to use sudo without a password. Think of a typical `makepkg
 -s` call, which won't work as `root` but will then need to become root
 to install dependencies.
 
+    global_portable_image: False
+
+This variable controls whether the resulting installation should be
+site-independent or not. If set to false, the playbook assume that settings
+such as custom repos and proxy configuration must persist in the installed
+system. If set to true, such settings will be reverted in the final setup.
+This is useful, for example, if the installation process requires using an
+HTTP proxy, but the system is then going to be moved to a different network
+where a proxy is not needed. A typical case is provisioning a VM image with
+Packer from behind a proxy: the final image should not carry such
+site-specific proxy settings if it is going to be shared with a wider
+audience.
+
 This username is used to create a disposable nonprivileged user for
 those tasks. All its data are automatically purged before the playbook
 ends, so that there are no users with passwordless sudo capabilities on
 the system, unless you create one.
 
-    global_proxy_env: {
-      # Uncomment the following definitions if behind a proxy
-      # http_proxy: "http://your.proxy",
-      # https_proxy: "http://your.proxy"
-    }
+If working behind a (HTTP(S)) proxy, add apprpriate definitions for
 
-If working behind a (HTTP(S)) proxy, uncomment the variable definitions.
+* `http_proxy`
+* `https_proxy`
+* `no_proxy`
+
 This will automatically trigger proxy-related tasks and configure the
 installed system to work behind a proxy (by setting appropriate
 environment variables).
-
-If using a direct connection, leave the `global_proxy_env` empty object
-in place, as well as proxy-related tasks. They will be skipped
-automatically.
 
 ### Role configuration
 
@@ -269,8 +277,8 @@ Set `virtguest_force` to one of the members of
 `virtguest_supported_hypervisors` to force the installation of the
 corresponding additional packages. This may be useful in two cases:
 
-- Ansible's setup module misdetects the hypervisor for whatever reason;
-- the user wants to install guest packages that do not correspond to the
+* Ansible's setup module misdetects the hypervisor for whatever reason;
+* the user wants to install guest packages that do not correspond to the
   detected hypervisor.
 
 `roles/xfce/defaults/main.yaml`
