@@ -5,3 +5,7 @@ custom_repos_list: [
 #    siglevel: Optional TrustAll
 #  }
 ]
+
+custom_repos_servers: [
+#  "http://localhost:8080/%repo/os/$arch"
+]

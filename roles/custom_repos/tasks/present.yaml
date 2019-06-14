@@ -16,3 +16,13 @@
     state: present
     insertbefore: ^[[]core[]]$
   loop: "{{ custom_repos_list }}"
+
+- name: Add custom servers
+  lineinfile:
+    path: /etc/pacman.d/mirrorlist
+    regexp: "^Server = {{ item | regex_escape }}$"
+    line: "Server = {{ item }}"
+    create: no
+    state: present
+    insertbefore: BOF
+  loop: "{{ custom_repos_servers | reverse | list }}"

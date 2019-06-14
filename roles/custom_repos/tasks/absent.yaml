@@ -11,3 +11,11 @@
     create: no
     state: absent
   loop: "{{ custom_repos_list }}"
+
+- name: Delete custom servers
+  lineinfile:
+    path: /etc/pacman.d/mirrorlist
+    regexp: "^Server = {{ item | regex_escape }}$"
+    create: no
+    state: absent
+  loop: "{{ custom_repos_servers }}"
