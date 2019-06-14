@@ -10,7 +10,7 @@
 - name: Include repository definitions in pacman.conf
   lineinfile:
     path: /etc/pacman.conf
-    regexp: "^Include = /etc/pacman.d/{{ item.name }}\\.repo$"
+    regexp: "^Include = /etc/pacman.d/{{ item.name | regex_escape }}\\.repo$"
     line: Include = /etc/pacman.d/{{ item.name }}.repo
     create: no
     state: present

@@ -11,7 +11,7 @@
   lineinfile:
     path: /etc/sudoers
     state: present
-    regexp: "^{{ global_passwordless_sudo_user }} "
+    regexp: "^{{ global_passwordless_sudo_user | regex_escape }} "
     line: "{{ global_passwordless_sudo_user }} ALL=(ALL) NOPASSWD: ALL"
     validate: '/usr/sbin/visudo -cf %s'
 
