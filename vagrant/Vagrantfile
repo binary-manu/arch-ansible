@@ -1,0 +1,55 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby et sw=2 sts=-1:
+
+# Set audio backend for VirtualBox, host-dependant
+enable_audio = nil
+http_proxy = nil
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "archlinux/archlinux"
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = true
+    vb.default_nic_type = "virtio"
+    vb.customize [
+      "modifyvm", :id,
+      "--memory", "1024",
+      "--vram", "16",
+    ]
+    if enable_audio
+      vb.customize [
+        "modifyvm", :id,
+        "--audio", enable_audio,
+        "--audioout", "on",
+        "--audiocontroller", "ac97"
+      ]
+    end
+  end
+
+  if Vagrant.has_plugin?("vagrant-proxyconf") and http_proxy
+    config.proxy.http  = http_proxy
+    config.proxy.https = http_proxy
+  end
+  
+  config.vm.provision "shell" do |sh|
+    sh.privileged = true
+    sh.path = "prepare-box-for-arch-ansible.sh"
+  end
+
+  config.vm.synced_folder "../", "/vagrant"
+
+  config.vm.provision "ansible_local" do |ansible|
+    ansible.install = true
+    ansible.playbook = "site.yaml"
+    ansible.provisioning_path = "/vagrant/ansible"
+    ansible.tags = ["mainconfig"]
+    ansible.skip_tags = ["reboot"]
+    ansible.become = true
+    if http_proxy
+      ansible.extra_vars = {
+        "http_proxy" => http_proxy,
+        "https_proxy" => http_proxy
+      }
+    end
+  end
+
+end
