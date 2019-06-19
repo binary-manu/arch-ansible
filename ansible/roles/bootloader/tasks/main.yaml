@@ -5,6 +5,7 @@
 
 - name: Copy syslinux files to /boot
   shell: cp {{ global_mount_point }}/usr/lib/syslinux/bios/*.c32
+    {{ global_mount_point }}/usr/lib/syslinux/bios/memdisk
     {{ global_mount_point }}/boot/syslinux/
 
 - name: Install syslinux
