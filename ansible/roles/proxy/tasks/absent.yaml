@@ -11,10 +11,10 @@
     validate: '/usr/sbin/visudo -cf %s'
 
 - name: Reset pacman's XferCommand to the default
-  ini_file:
+  lineinfile:
     create: no
     path: /etc/pacman.conf
-    section: options
-    option: XferCommand
-    state: absent
+    backrefs: yes
+    regexp: '^(XferCommand = /usr/bin/curl.*)$'
+    line: '#\1'
 

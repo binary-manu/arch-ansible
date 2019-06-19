@@ -11,9 +11,9 @@
     validate: '/usr/sbin/visudo -cf %s'
 
 - name: Set pacman's XferCommand to curl
-  ini_file:
+  lineinfile:
     create: no
     path: /etc/pacman.conf
-    section: options
-    option: XferCommand
-    value: /usr/bin/curl -L -C - -f -o %o %u
+    backrefs: yes
+    regexp: '^#(XferCommand = /usr/bin/curl.*)$'
+    line: '\1'
