@@ -1,10 +1,10 @@
 # Arch-Vagrant
 
 This project build on [Arch-Ansible](../README.md) to integrate it with
-Vagrant, taking the official box `archlinux/archlinux` and provisioniing
+Vagrant, taking the official box `archlinux/archlinux` and provisioning
 it.  Due to some choices made by the base box maintainers, some aspects
 are different with respect to an installation performed using
-Arch-Anisble alone. For example, the base box uses GRUB instead of
+Arch-Ansible alone. For example, the base box uses GRUB instead of
 Syslinux. However, if you need to rapidly spin up an Arch Linux box for
 testing, these differences are likely to be of no concern.
 
@@ -14,7 +14,7 @@ The resulting installed system will be non-portable, meaning that proxy
 settings and custom repositories will persist.
 
 If working behind an HTTP(S) proxy, the `vagrant-proxyconf` plugin is
-required. Conversely, `vagrant-vbguest` is disabled, becuase Arch ships
+required. Conversely, `vagrant-vbguest` is disabled, because Arch ships
 with its own guest additions packages.
 
 Two variables can be tweaked in the `Vagrantfile`:

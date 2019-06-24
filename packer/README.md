@@ -15,7 +15,7 @@ The installation is portable, meaning that proxy settings and custom
 repositories will not persist, but will be used just during the
 installation.
 
-To preapre the VM image:
+To prepare the VM image:
 
     packer build packer-template.json
 

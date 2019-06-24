@@ -24,7 +24,7 @@ scenarios, people should customize it and then encrypt it with
 ansible-vault before committing to a VCS.
 
 Currently only single-partition MBR installations are supported, using
-syslinux as the bootloader. Swap space is not configured.
+Syslinux as the bootloader. Swap space is not configured.
 
 There is support for installing hypervisor guest additions as part of
 the process.  This can be disabled by skipping the `virtguest` tag.  As
@@ -70,7 +70,7 @@ The `bootstrap` phase can be tweaked by skipping tags:
   them;
 * `bootloader` can be used to disable bootloader installation. Again,
   this may be useful if the user wants to customize the bootloader setup
-  or use something different than syslinux.
+  or use something different than Syslinux.
 
 Installation of base packages cannot be skipped, but it can be
 customized by editing `roles/base_packages/defaults/main.yaml`. It
@@ -123,7 +123,7 @@ It works differently than `--force-handlers`. As per Ansible documentation:
 > When handlers are forced, they will run when notified even if a task fails
 > on that host.
 
-while, in our scenario, handlers would _not_ be notified by tasks when they
+While, in our scenario, handlers would _not_ be notified by tasks when they
 return `ok`.
 
 ## Configuration
@@ -147,8 +147,8 @@ options that affect how the playbook work.
 
 These options define the disk that will be used for partitioning during
 the bootstrap phase, the index of the root partition, and the place
-where the partitio is going to be mounted. If partitioning is skipped,
-`global_mount_point` is still releevant because the user must manually
+where the partition is going to be mounted. If partitioning is skipped,
+`global_mount_point` is still relevant because the user must manually
 mount volumes there.
 
     global_admins:
@@ -179,12 +179,12 @@ is provisioning a VM image with Packer from behind a proxy: the final
 image should not carry such site-specific proxy settings if it is going
 to be shared with a wider audience.
 
-This username is used to create a disposable nonprivileged user for
+This username is used to create a disposable unprivileged user for
 those tasks. All its data are automatically purged before the playbook
 ends, so that there are no users with passwordless sudo capabilities on
 the system, unless you create one.
 
-If working behind a (HTTP(S)) proxy, add apprpriate definitions for
+If working behind a (HTTP(S)) proxy, add appropriate definitions for
 
 * `http_proxy`
 * `https_proxy`
@@ -277,7 +277,8 @@ Set `virtguest_force` to one of the members of
 `virtguest_supported_hypervisors` to force the installation of the
 corresponding additional packages. This may be useful in two cases:
 
-* Ansible's setup module misdetects the hypervisor for whatever reason;
+* Ansible's setup module fails to detect the hypervisor for whatever
+  reason;
 * the user wants to install guest packages that do not correspond to the
   detected hypervisor.
 
@@ -328,7 +329,7 @@ Packages installed by the `xutils` role.
     ]
 
     custom_repos_servers: [
-    #  "http://localhost:8080/%repo/os/$arch"
+    #  "http://localhost:8080/$repo/os/$arch"
     ]
 
 It is possible to add extra repositories or mirrors during the
