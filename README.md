@@ -154,8 +154,8 @@ mount volumes there.
     global_admins:
       - manu
 
-Initial users to create. They will all be added to the wheel group and
-allowed to call sudo (with password). Password for individual users
+Initial users to create. They will all be added to the `wheel` group and
+allowed to call sudo (with password). Passwords for individual users
 (including root) can be set in `roles/users/defaults/main.yaml`.
 
     global_passwordless_sudo_user: package_builder
@@ -163,8 +163,13 @@ allowed to call sudo (with password). Password for individual users
 During certain tasks (such as when building packages from the AUR) the
 playbook will need to drop privileges and use a non-root user, which
 must be able to use sudo without a password. Think of a typical `makepkg
--s` call, which won't work as `root` but will then need to become root
+-s` call, which won't work as `root` but will then need to become `root`
 to install dependencies.
+
+This username is used to create a disposable unprivileged user for those
+tasks. All its data are automatically purged before the playbook ends,
+so that there are no users with passwordless sudo capabilities on the
+system, unless you create one.
 
     global_portable_image: False
 
@@ -178,11 +183,6 @@ moved to a different network where a proxy is not needed. A typical case
 is provisioning a VM image with Packer from behind a proxy: the final
 image should not carry such site-specific proxy settings if it is going
 to be shared with a wider audience.
-
-This username is used to create a disposable unprivileged user for
-those tasks. All its data are automatically purged before the playbook
-ends, so that there are no users with passwordless sudo capabilities on
-the system, unless you create one.
 
 If working behind a (HTTP(S)) proxy, add appropriate definitions for
 
@@ -294,7 +294,7 @@ Packages installed by the `xfce` role.
 
     xfce_user_customizations_packages:
       - gtk-engine-murrine
-      - numix-gtk-theme
+      - numix-gtk-theme-git
       - ...
 
 Packages installed by the `xfce_user_customizations` role.
