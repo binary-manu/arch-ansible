@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   now unavailable `numix-gtk-theme`.
 * Fix typos in the READMEs.
 
+### Changed
+
+* Arch-Packer now uses Arch Linux ISO 2019-08-01.
+
 ## [0.1.1] - 2019-06-24
 
 ### Fixed

@@ -10,8 +10,8 @@
     {
       "type" : "virtualbox-iso",
       "guest_os_type" : "ArchLinux_64",
-      "iso_url" : "http://mirror.rackspace.com/archlinux/iso/2019.06.01/archlinux-2019.06.01-x86_64.iso",
-      "iso_checksum" : "2ad784bba7b5d3906ea61d76aec11778",
+      "iso_url" : "http://mirror.rackspace.com/archlinux/iso/2019.08.01/archlinux-2019.08.01-x86_64.iso",
+      "iso_checksum" : "e61fa65a87fe92f6fe506ce210036898",
       "iso_checksum_type" : "md5",
       "boot_command" : "<enter><wait30>systemctl start sshd && mkdir -m 0700 /root/.ssh && echo '{{.SSHPublicKey}}' >> /root/.ssh/authorized_keys<enter>",
       "guest_additions_mode" : "disable",
