@@ -154,9 +154,9 @@ mount volumes there.
     global_admins:
       - manu
 
-Initial users to create. They will all be added to the `wheel` group and
-allowed to call sudo (with password). Passwords for individual users
-(including root) can be set in `roles/users/defaults/main.yaml`.
+Initial users to create. Passwords for individual users (including root) and
+other user settings (i.e. groups) can be set in
+`roles/users/defaults/main.yaml`.
 
     global_passwordless_sudo_user: package_builder
 
@@ -242,9 +242,17 @@ Packages installed by the `ttf_fonts` role.
         password: "..."
       manu:
         password: "..."
+        is_admin: true   # Optional item, true if missing
+        groups:   []     # Optional item, empty list if missing
 
-Passwords for new users created on the target system. This should contain
-passwords for all users defined in `global_admins`.
+Settings for new users created on the target system. This should contain
+passwords for all users defined in `global_admins`. Users that have
+`is_admin` set to a truthy value will be added to the `wheel` group.
+Additional groups can be specified as the `groups` list. To retain backward
+compatibility, all fields but `password` are optional. Don't try to add sudo
+capabilities by manually adding `wheel` to `groups`, use `is_admin` instead.
+This allows for a degree of flexibility in how sudo access is implemented.
+For `root`, only `password` is considered.
 
 `roles/utils/defaults/main.yaml`
 

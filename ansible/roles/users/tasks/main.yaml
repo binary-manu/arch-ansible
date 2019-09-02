@@ -2,7 +2,12 @@
   user:
     shell: /bin/bash
     name: "{{ item }}"
-    groups: wheel
+    groups:
+        "{%- if users_info[item].is_admin | default(True) | bool -%}
+            {{- (['wheel'] + (users_info[item].groups | default([]))) | unique -}}
+        {%- else -%}
+            {{- users_info[item].groups | default([]) | unique -}}
+        {%- endif -%}"
     password: "{{ users_info[item].password |
         password_hash('sha512', 1000000 | random )}}"
   loop: "{{ global_admins }}"

@@ -6,3 +6,5 @@ users_info:
     password: "abcd$1234_root"
   manu:
     password: "abcd$1234_manu"
+    is_admin: true # Optional item, true if missing
+    groups: []     # Optional item, empty list if missing
