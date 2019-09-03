@@ -1,0 +1,5 @@
+- name: Copy xscreensaver configuration to home dirs
+  copy:
+    src: xscreensaver
+    dest: "/home/{{ item }}/.xscreensaver"
+  loop: "{{ global_admins }}"

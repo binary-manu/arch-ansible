@@ -1,0 +1,5 @@
+dependencies:
+  - role: packages
+    vars:
+      packages:
+        - xscreensaver

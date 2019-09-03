@@ -1,3 +1,9 @@
 - name: Install xfce
   pacman:
     name: "{{ xfce_packages }}"
+
+# For the time being, I'll stick to xscreensaver
+- name: Uninstall xfce4-screensaver
+  pacman:
+    name: xfce4-screensaver
+    state: absent
