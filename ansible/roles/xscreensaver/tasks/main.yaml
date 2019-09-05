@@ -1,5 +1,9 @@
 - name: Copy xscreensaver configuration to home dirs
   copy:
-    src: xscreensaver
+    src: xscreensaver.{%- if ansible_virtualization_role | lower != 'guest' -%}
+        active
+      {%- else -%}
+        inactive
+      {%- endif -%}
     dest: "/home/{{ item }}/.xscreensaver"
   loop: "{{ global_admins }}"

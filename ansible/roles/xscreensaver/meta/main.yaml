@@ -3,3 +3,4 @@ dependencies:
     vars:
       packages:
         - xscreensaver
+  - role: virtguest_force

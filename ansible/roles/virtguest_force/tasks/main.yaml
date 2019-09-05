@@ -1,0 +1,5 @@
+- name: Apply virtguest settings override
+  set_fact:
+    ansible_virtualization_role: guest
+    ansible_virtualization_type: "{{ virtguest_force }}"
+  when: virtguest_force != ""
