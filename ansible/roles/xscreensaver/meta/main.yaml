@@ -4,3 +4,4 @@ dependencies:
       packages:
         - xscreensaver
   - role: virtguest_force
+  - role: users

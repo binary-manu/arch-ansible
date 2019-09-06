@@ -1,0 +1,5 @@
+# Set to:
+# - "active" to force the screensaver to be active after installation
+# - "inactive" to force the screensaver to be inactive after installation
+# - Empty to preserve the default behaviour (fact-based choice)
+xscreensaver_override: ""

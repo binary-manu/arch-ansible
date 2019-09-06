@@ -1,0 +1,19 @@
+- name: Get home dir for user
+  become: yes
+  become_user: "{{ item }}"
+  shell: 'echo "$HOME"'
+  register: home
+
+- name: Copy xscreensaver configuration to home dirs
+  become: yes
+  become_user: "{{ item }}"
+  copy:
+    src: xscreensaver.
+      {%- if xscreensaver_override != "" -%}
+        {{ xscreensaver_override }}
+      {%- elif ansible_virtualization_role | lower != 'guest' -%}
+        active
+      {%- else -%}
+        inactive
+      {%- endif -%}
+    dest: "{{ home.stdout }}/.xscreensaver"

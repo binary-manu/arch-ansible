@@ -1,9 +1,9 @@
+- name: Check xscreensaver_override
+  assert:
+    that: xscreensaver_override | lower in ["active", "inactive", ""]
+    fail_msg: Value '{{ xscreensaver_override }}' is not
+      supported for xscreensaver_override
+
 - name: Copy xscreensaver configuration to home dirs
-  copy:
-    src: xscreensaver.{%- if ansible_virtualization_role | lower != 'guest' -%}
-        active
-      {%- else -%}
-        inactive
-      {%- endif -%}
-    dest: "/home/{{ item }}/.xscreensaver"
+  include_tasks: copy.yaml
   loop: "{{ global_admins }}"
