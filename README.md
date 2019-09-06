@@ -1,5 +1,7 @@
 # Arch-Ansible: an Ansible playbook to install Arch Linux
 
+![Screenshot of a system installed with arch-ansible][screenshot]
+
 Arch-Ansible is a playbook designed to install Arch Linux on a target
 machine. It was conceived to ease the preparation of virtual machines,
 but it could be used to install on bare metal, with some tweaks.
@@ -419,5 +421,7 @@ provisioning of VM's with Arch-Ansible. They rely on HashiCorp
 the corresponding names. For simplicity, I'll refer to them as
 [Arch-Vagrant](vagrant/README.md) and [Arch-Packer](packer/README.md).
 Click the links to read their own docs.
+
+[screenshot]: docs/screenshot.png
 
 <!-- vi: set tw=72 et sw=2 fo=tcroqan autoindent: -->
