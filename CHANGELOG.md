@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Add xscreensaver in place of xfce4-screensaver. It is configured with a
   timeout of 5 minutes for bare metal installations, while VM installations
   have no screensaver/screen lock by default, assuming that the host will do
-  that.
+  that. This can be overridden.
 
 ## [0.1.2] - 2019-08-04
 

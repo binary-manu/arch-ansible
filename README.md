@@ -14,6 +14,13 @@ Unless some steps are skipped or customized, the installed system will
 run XFCE with the Numix theme. No greeter is installed by default: each
 user's `.xinitrc` is configured to launch XFCE when calling `startx`.
 
+The `xfce4-screensaver` package is ditched in favor of `xscreensaver`. By
+default, systems installed in VM's will have it disabled, since I would
+assume that the host already has a screensaver/lock. Bare metal
+installations, conversely, have it enabled by default to power off the screen
+after a few minutes. It is possible to override this behaviour: see the
+`xscreensaver` role section.
+
 A bunch of default utilities like a PDF reader or gvim a preinstalled.
 These are handled by the `utils` and `xutils` roles.
 
@@ -265,7 +272,6 @@ Packages installed by the `utils` role.
 
 `roles/virtguest/defaults/main.yaml`
 
-    virtguest_force: ""
 
     virtguest_supported_hypervisors:
       - virtualbox
@@ -274,12 +280,16 @@ Packages installed by the `utils` role.
       - linux-headers
       - virtualbox-guest-utils
 
-By default, the role uses facts to detect if the target system is
-running under an hypervisor. For bare metal installations, no additional
-steps are taken.  Under a supported hypervisor, guest additions are
-installed and enabled automatically. If the hypervisor is unsupported,
-the playbook bails out. To proceed under an unsupported hypervisor
-without its additions, skip the `virtguest` tag.
+`roles/virtguest_force/defaults/main.yaml`
+
+    virtguest_force: ""
+
+By default, the playbook uses facts to detect if the target system is running
+under an hypervisor. If so, some behaviour will be adjusted accordingly:
+guest additions are installed and enabled automatically and the screensaver
+is disabled by default. If the hypervisor is unsupported, the playbook bails
+out. To proceed under an unsupported hypervisor without its additions, skip
+the `virtguest` tag.
 
 Set `virtguest_force` to one of the members of
 `virtguest_supported_hypervisors` to force the installation of the
@@ -289,6 +299,16 @@ corresponding additional packages. This may be useful in two cases:
   reason;
 * the user wants to install guest packages that do not correspond to the
   detected hypervisor.
+
+`roles/xscreensaver/defaults/main.yaml`
+
+    # Set to:
+    # - "active" to force the screensaver to be active after installation
+    # - "inactive" to force the screensaver to be inactive after installation
+    # - Empty to preserve the default behaviour (fact-based choice)
+    xscreensaver_override: ""
+
+Can be used to override the default screensaver behaviour.
 
 `roles/xfce/defaults/main.yaml`
 
