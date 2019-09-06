@@ -205,7 +205,7 @@ environment variables).
 
 ### Role configuration
 
-`roles/base_packages/defaults/main.yaml`
+#### roles/base_packages/defaults/main.yaml
 
     base_packages_list:
       - base
@@ -215,13 +215,13 @@ environment variables).
 List of base packages to be installed on the target system during the
 `bootstrap` phase.
 
-`roles/hostname/defaults/main.yaml`
+#### roles/hostname/defaults/main.yaml
 
     hostname_hostname: archlinux
 
 Hostname information.
 
-`roles/locale/defaults/main.yaml`
+#### roles/locale/defaults/main.yaml
 
     locale_timezone: Europe/Rome
     locale_locale: it_IT.UTF-8
@@ -229,13 +229,13 @@ Hostname information.
 
 Locale information.
 
-roles/makepkg/defaults/main.yaml
+#### roles/makepkg/defaults/main.yaml
 
     makepkg_aur_url: https://aur.archlinux.org/cgit/aur.git/snapshot/
 
 URL from which AUR packages are downloaded.
 
-`roles/ttf_fonts/defaults/main.yaml`
+#### roles/ttf_fonts/defaults/main.yaml
 
     ttf_fonts_packages:
       - ttf-bitstream-vera
@@ -244,7 +244,7 @@ URL from which AUR packages are downloaded.
 
 Packages installed by the `ttf_fonts` role.
 
-`roles/users/defaults/main.yaml`
+#### roles/users/defaults/main.yaml
 
     users_info:
       root:
@@ -263,7 +263,7 @@ capabilities by manually adding `wheel` to `groups`, use `is_admin` instead.
 This allows for a degree of flexibility in how sudo access is implemented.
 For `root`, only `password` is considered.
 
-`roles/utils/defaults/main.yaml`
+#### roles/utils/defaults/main.yaml
 
     utils_packages:
       - ntfs-3g
@@ -272,8 +272,7 @@ For `root`, only `password` is considered.
 
 Packages installed by the `utils` role.
 
-`roles/virtguest/defaults/main.yaml`
-
+#### roles/virtguest/defaults/main.yaml
 
     virtguest_supported_hypervisors:
       - virtualbox
@@ -282,7 +281,7 @@ Packages installed by the `utils` role.
       - linux-headers
       - virtualbox-guest-utils
 
-`roles/virtguest_force/defaults/main.yaml`
+#### roles/virtguest_force/defaults/main.yaml
 
     virtguest_force: ""
 
@@ -302,7 +301,7 @@ corresponding additional packages. This may be useful in two cases:
 * the user wants to install guest packages that do not correspond to the
   detected hypervisor.
 
-`roles/xscreensaver/defaults/main.yaml`
+#### roles/xscreensaver/defaults/main.yaml
 
     # Set to:
     # - "active" to force the screensaver to be active after installation
@@ -312,7 +311,7 @@ corresponding additional packages. This may be useful in two cases:
 
 Can be used to override the default screensaver behaviour.
 
-`roles/xfce/defaults/main.yaml`
+#### roles/xfce/defaults/main.yaml
 
     xfce_packages:
       - xfce4
@@ -320,7 +319,7 @@ Can be used to override the default screensaver behaviour.
 
 Packages installed by the `xfce` role.
 
-`roles/xfce_user_customizations/defaults/main.yaml`
+#### roles/xfce_user_customizations/defaults/main.yaml
 
     xfce_user_customizations_packages:
       - gtk-engine-murrine
@@ -329,7 +328,7 @@ Packages installed by the `xfce` role.
 
 Packages installed by the `xfce_user_customizations` role.
 
-`roles/xorg/defaults/main.yaml`
+#### roles/xorg/defaults/main.yaml
 
     xorg_packages:
       - xorg
@@ -339,7 +338,7 @@ Packages installed by the `xfce_user_customizations` role.
 Packages installed by the `xorg` role. These are pulled as dependencies by
 `xutils` and other roles that depend on a working X11 environment.
 
-`roles/xutils/defaults/main.yaml`
+#### roles/xutils/defaults/main.yaml
 
     xutils_packages:
       - gvfs
@@ -348,7 +347,7 @@ Packages installed by the `xorg` role. These are pulled as dependencies by
 
 Packages installed by the `xutils` role.
 
-`roles/custom_repos/defaults/main.yaml`
+#### roles/custom_repos/defaults/main.yaml
 
     custom_repos_list: [
     #  {
