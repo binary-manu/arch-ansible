@@ -25,6 +25,7 @@
       "vboxmanage": [
         ["modifyvm", "{{.Name}}", "--nictype1", "virtio"],
         ["modifyvm", "{{.Name}}", "--vram", "16"],
+        ["modifyvm", "{{.Name}}", "--rtcuseutc", "on"],
         ["storagectl", "{{.Name}}", "--name", "IDE Controller", "--remove"]
       ]
     }
