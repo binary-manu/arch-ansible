@@ -421,6 +421,88 @@ the corresponding names. For simplicity, I'll refer to them as
 [Arch-Vagrant](vagrant/README.md) and [Arch-Packer](packer/README.md).
 Click the links to read their own docs.
 
+## Integration with pkgproxy
+
+If you are going to do multiple installations using arch-ansible in a short
+interval, it may be best to save and reuse downloaded packages across runs.
+To do that, the simplest way is to use the
+[pkgproxy](https://github.com/buckket/pkgproxy) tool, which acts as a cache
+between an Arch Linux mirror and your system.
+
+It is very simple to use: you run it, configure it as a mirror for your
+system, and every downloaded package will get stuffed into its cache.
+arch-ansible has support for additional mirrors, so it is easy to tell it to
+use your local pkgproxy instance by adding an extra file as described in
+[Configuration](#Configuration). For example, you may add the following
+contents to `group_vars/all/50-pkgproxy.yaml`:
+
+    custom_repos_servers:
+      - http://10.0.2.2:8080/$repo/os/$arch
+
+The exact hostname and port will vary depending on where you run pkgproxy. The example
+above assumes that Arch is running inside a VM, while pkgproxy is running on
+the host, on port 8080.
+
+## Bare metal installation
+
+_NOTE: unless noted, all commands are intented to be run on the target
+machine._
+
+arch-ansible can provision physical machines, not just VM's. But some care
+must be taken in preparing the host/group variables files, plus some
+network-related actions. Also, you will need a separate PC to be used as the
+Ansible controller, which must be able to connect to the target machine.
+
+The target will be rebooted multiple times during the installation and if you
+are using DHCP the IP may change across reboots. You may want to configure
+your local DHCP server to give the target a fixed IP by using a MAC address
+reservation.
+
+When rebooting from the install media into the installed system, it would be
+useful if the system firmware were configured to automatically boot into the
+new system, otherwise the installation media would boot again and the
+installation could not proceed.
+
+The target will need to be accessible over SSH. Ensure that
+`/etc/ssh/sshd_config` allows root login: it should contain the following
+line:
+
+    PermitRootLogin yes
+
+Then give the root user a password:
+
+    # passwd
+
+And start SSH:
+
+    # systemctl start sshd
+
+At this point incoming connections are allowed, but it is better to let SSH
+use a private key for authentication rather than a password. Let's generate a
+new keypair (which can be reused across all installations; note the `-N ''`,
+which means the private key is unencrypted so no password is asked when
+connecting) and copy the public part to the target:
+
+    # On the controller
+    $ ssh-keygen -N '' -f ~/.ssh/arch-install
+    $ ssh-copy-id -i ~/.ssh/arch-install root@your.machine.local
+
+Edit your `$HOME/.ssh/config` file to associate your target system with this key:
+
+    Host your.machine.local
+    IdentityFile ~/.ssh/arch-install
+    IdentitiesOnly yes
+
+Edit the Ansible inventory file to point to the target machine.
+
+Apply any other customization via host/group variables. And finally run:
+
+    # On the controller
+    $ ansible-playbook -i hosts.yaml --tags bootstrap,mainconfig site.yaml
+
+After installation is complete, you can delete the key pair generated above,
+from both the controller and the target.
+
 [screenshot]: docs/screenshot.png
 
 <!-- vi: set tw=72 et sw=2 fo=tcroqan autoindent: -->
