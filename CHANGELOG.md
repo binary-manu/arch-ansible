@@ -7,12 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2019-09-07
+
+### Fixed
+
+* VM's created via Packer will set the RTC to UTC time.
+
+### Added
+
 * Users can be created with additional groups.
 * Users may be restricted from calling sudo.
 * Add xscreensaver in place of xfce4-screensaver. It is configured with a
   timeout of 5 minutes for bare metal installations, while VM installations
   have no screensaver/screen lock by default, assuming that the host will do
   that. This can be overridden.
+* Add pkgproxy integration giude
+* Add bare metal install guide
+
+### Changed
+
+* Arch-Packer now uses Arch Linux ISO 2019-09-01.
 
 ## [0.1.2] - 2019-08-04
 
