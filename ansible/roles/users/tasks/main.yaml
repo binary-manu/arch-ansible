@@ -11,6 +11,7 @@
     password: "{{ users_info[item].password |
         password_hash('sha512', 1000000 | random )}}"
   loop: "{{ global_admins }}"
+  register: users_created
 
 - name: Set root password
   user:

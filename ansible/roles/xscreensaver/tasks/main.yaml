@@ -5,5 +5,16 @@
       supported for xscreensaver_override
 
 - name: Copy xscreensaver configuration to home dirs
-  include_tasks: copy.yaml
+  become: yes
+  become_user: "{{ item }}"
+  copy:
+    src: xscreensaver.
+      {%- if xscreensaver_override != "" -%}
+        {{ xscreensaver_override }}
+      {%- elif ansible_virtualization_role | lower != 'guest' -%}
+        active
+      {%- else -%}
+        inactive
+      {%- endif -%}
+    dest: "{{ users_created | user_home(item) }}/.xscreensaver"
   loop: "{{ global_admins }}"

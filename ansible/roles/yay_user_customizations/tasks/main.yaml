@@ -3,5 +3,5 @@
   become_user: "{{ item }}"
   copy:
     src: config.json
-    dest: /home/{{ item }}/.config/yay/
+    dest: "{{ users_created | user_home(item) }}/.config/yay/"
   loop: "{{ global_admins }}"

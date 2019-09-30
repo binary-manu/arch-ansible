@@ -9,7 +9,7 @@
   become_user: "{{ item }}"
   copy:
     src: xinitrc
-    dest: /home/{{ item }}/.xinitrc
+    dest: "{{ users_created | user_home(item) }}/.xinitrc"
   loop: "{{ global_admins }}"
 
 - name: Copy xfce's configuration for themes
@@ -17,5 +17,5 @@
   become_user: "{{ item }}"
   copy:
     src: xfconf/
-    dest: /home/{{ item }}/.config/xfce4/xfconf/
+    dest: "{{ users_created | user_home(item) }}/.config/xfce4/xfconf/"
   loop: "{{ global_admins }}"
