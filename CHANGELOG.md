@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   template.
 * References to home directories use the output of the `user` Ansible module
   rather than hardcoding the path to `/home/$USER`.
+* Ansible is now installed explicitly in VM's provisioned with Arch-Vagrant,
+  rather than via the auto-install feature of the `ansible_local` provisioner,
+  which is broken in Vagrant 2.2.5.
 
 ### Fixed
 
