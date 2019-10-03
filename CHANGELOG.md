@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * Add missing `xorg` dependency to role `xscreensaver`.
+* Add missing dependency from `bootloader` to `base_packages`.
+* Install the bootloader using the executable from the target chroot,
+  not the one from the installation media.
 
 ## [0.1.3] - 2019-09-07
 
