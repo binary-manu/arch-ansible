@@ -9,7 +9,7 @@
     {{ global_mount_point }}/boot/syslinux/
 
 - name: Install syslinux
-  command: extlinux --install {{ global_mount_point }}/boot/syslinux
+  command: arch-chroot {{ global_mount_point }} /usr/bin/extlinux --install /boot/syslinux
 
 - name: Get root's UUID
   command: lsblk -n -o UUID {{ global_device_node }}{{ global_partition_number }}
