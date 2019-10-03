@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.4] - 2019-10-03
+
 ### Changed
 
 * Packer template now uses generic URL's to reference the Arch Linux ISO and
