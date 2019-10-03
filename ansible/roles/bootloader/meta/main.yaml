@@ -1,5 +1,5 @@
 dependencies:
-  - role: partitioning
+  - role: base_packages
   - role: pacstrap
     vars:
       packages:
