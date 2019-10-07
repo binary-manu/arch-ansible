@@ -2,6 +2,31 @@ base_packages_list:
   # Arch's base packages
   - base
   - base-devel
+  # These packages used to be included in the "base" group. Now they must be
+  # installed explicitly. Note that I just diffed what the base group included
+  # against the direct dependencies of the base package, so it is likely that
+  # some of these packages are already pulled in by base.
+  - cryptsetup
+  - device-mapper
+  - dhcpcd
+  - e2fsprogs
+  - inetutils
+  - jfsutils
+  - linux
+  - linux-firmware
+  - logrotate
+  - lvm2
+  - man-db
+  - man-pages
+  - mdadm
+  - nano
+  - netctl
+  - perl
+  - sysfsutils
+  - texinfo
+  - usbutils
+  - vi
+  - xfsprogs
   # Additional tools needed to run Ansible and get network connectivity
   # after we reboot
   - sudo
