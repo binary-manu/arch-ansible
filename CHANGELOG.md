@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.5] - 2019-10-07
+
+### Changed
+
+* Explicitly install packages that were included in the `base` group but have
+  been left out from the dependencies of the `base` package.
+
 ## [0.1.4] - 2019-10-03
 
 ### Changed
