@@ -29,4 +29,9 @@ After optional tweaking, just spin your VM up with:
 
     vagrant up
 
+After provisioning is complete, restart the VM to load a new kernel, if
+one was installed:
+
+    vagrant reload
+
 <!-- vi: set tw=72 et sw=2 fo=tcroqan autoindent: -->
