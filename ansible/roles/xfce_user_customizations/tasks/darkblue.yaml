@@ -1,0 +1,24 @@
+- name: Install packages for DarkBlue theme
+  import_role:
+    name: packages
+  vars:
+    packages:  "{{ xfce_user_customizations_packages_darkblue }}"
+
+- name: Create local backgrounds folder
+  file:
+    state: directory
+    path: /usr/local/share/backgrounds
+
+- name: Copy wallpaper
+  copy:
+    src: darkblue/wallpaper.jpg
+    dest: /usr/local/share/backgrounds/darkblue_wallpaper.jpg
+
+- name: Copy xfce's configuration for DarkBlue
+  become: yes
+  become_user: "{{ item }}"
+  copy:
+    src: darkblue/xfce4/
+    dest: "{{ users_created | user_home(item) }}/.config/xfce4"
+  loop: "{{ global_admins }}"
+  when: item_theme.default | default(False, True) == True

@@ -1,9 +1,3 @@
-- name: Install themes for XFCE
-  import_role:
-    name: packages
-  vars:
-    packages:  "{{ xfce_user_customizations_packages }}"
-
 - name: Copy xfce's xinitrc to user home
   become: yes
   become_user: "{{ item }}"
@@ -12,10 +6,9 @@
     dest: "{{ users_created | user_home(item) }}/.xinitrc"
   loop: "{{ global_admins }}"
 
-- name: Copy xfce's configuration for themes
-  become: yes
-  become_user: "{{ item }}"
-  copy:
-    src: xfconf/
-    dest: "{{ users_created | user_home(item) }}/.config/xfce4/xfconf/"
-  loop: "{{ global_admins }}"
+- name: Install the themes
+  include_tasks: "{{ item_theme.theme }}.yaml"
+  loop: "{{ xfce_user_customizations_themes }}"
+  loop_control:
+    loop_var: item_theme
+  when: item_theme.installed | default(False, True) == True

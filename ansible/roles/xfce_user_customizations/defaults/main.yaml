@@ -1,6 +1,19 @@
-xfce_user_customizations_packages:
+xfce_user_customizations_packages_numix:
   - gtk-engine-murrine
   - numix-gtk-theme-git
   - numix-cursor-theme-git
   - numix-icon-theme-git
   - numix-square-icon-theme-git 
+
+xfce_user_customizations_packages_darkblue:
+  - gtk-engine-murrine
+  - numix-themes-darkblue
+  - numix-cursor-theme-git
+  - korla-icon-theme
+
+xfce_user_customizations_themes:
+  - theme: numix
+    installed: true
+    default: true
+  - theme: darkblue
+    installed: true
