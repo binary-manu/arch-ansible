@@ -453,6 +453,17 @@ must be taken in preparing the host/group variables files, plus some
 network-related actions. Also, you will need a separate PC to be used as the
 Ansible controller, which must be able to connect to the target machine.
 
+_Note: before running the following steps, keep in mind that the
+`bootstrap` tag enables tasks which will partition, format, and install
+a new bootloader to your machine. This may cause data loss or require
+you to reinstall your bootloader to get a preinstalled OS to boot
+again._ Triple check the chosen disk and partition in the global
+configuration. Rememeber that the IPL for that disk will be overwritten,
+so if it already contains the loader for a different system, that system
+will no longer boot after the installation. If possible, you can then
+configure Syslinux to chainload the other system.
+
+
 The target will be rebooted multiple times during the installation and if you
 are using DHCP the IP may change across reboots. You may want to configure
 your local DHCP server to give the target a fixed IP by using a MAC address
