@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+* Multi-theme support. Different XFCE4 themes can be installed side by side.
+  Other than the original Numix theme, a variant based on Numix-DarkBlue and the
+  Korla icon theme, called `darkblue`, has been added. The
+  `xfce_user_customizations` `defaults` file has been extended to allow
+  specifying which themes are to be installed and which one is to be used as the
+  default for created users.
+* Bluetooth support. It is installed by default on bare metal installations
+  and skipped in VM's. It can be enabled or disabled explicitly.
+* Any modifications to the mirrorlist applied by adding or removing custom
+  repos or mirrors will force a database sync.
+* When provisioning Vagrant images, the preparation script will wait for reflector
+  to update the mirrorlist.
+
+### Fixed
+
+* Fixed a bug in the `user_home` filter, which returned an exception rather
+  than throwing it.
+* Minor typos.
+
 ## [0.1.5] - 2019-10-07
 
 ### Changed

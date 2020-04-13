@@ -2,6 +2,8 @@
 
 ![Screenshot of a system installed with arch-ansible][screenshot]
 
+![Screenshot of the DarkBlue theme][darkblue]
+
 Arch-Ansible is a playbook designed to install Arch Linux on a target
 machine. It was conceived to ease the preparation of virtual machines,
 but it could be used to install on bare metal, with some tweaks.
@@ -15,6 +17,8 @@ The playbook has been tested using Ansible 2.7 and higher.
 Unless some steps are skipped or customized, the installed system will
 run XFCE with the Numix theme. No greeter is installed by default: each
 user's `.xinitrc` is configured to launch XFCE when calling `startx`.
+An alternative, darker style based on the Numix-DarkBlue theme is
+available.
 
 The `xfce4-screensaver` package is ditched in favor of `xscreensaver`. By
 default, systems installed in VM's will have it disabled, since I would
@@ -22,6 +26,10 @@ assume that the host already has a screensaver/lock. Bare metal
 installations, conversely, have it enabled by default to power off the screen
 after a few minutes. It is possible to override this behaviour: see the
 `xscreensaver` role section.
+
+Optional Bluetooth support can be installed. By default it is only installed
+on bare-metal installations. This behaviour can be overridden (i.e. to test a
+Bluetooth dongle in a VM via USB passthrough).
 
 A bunch of default utilities like a PDF reader or gvim a preinstalled.
 These are handled by the `utils` and `xutils` roles.
@@ -54,7 +62,7 @@ The playbook is broken into two big parts, identified by tags:
   a bootloader and a set of base packages. Then reboot.
 * `mainconfig` runs against the installed base system, adding additional
   packages, installing a DE, creating users and configuring locales. At
-  the end, the system is read for use.
+  the end, the system is ready for use.
 
 When used together, they build a complete system from an installation
 media. `mainconfig` can also be run independently of `bootstrap`,
@@ -100,6 +108,7 @@ environment and applying default customizations to users. These steps
 can be skipped or selected one by one using tags:
 
 * `virtguest` install hypervisor guest additions;
+* `bluetooth` install Bluetooth support;
 * `xfce` installs the XFCE DE plus some theme customizations for all
   non-root users;
 * `yay` copies `yay` settings to each user home folder;
@@ -311,6 +320,16 @@ corresponding additional packages. This may be useful in two cases:
 
 Can be used to override the default screensaver behaviour.
 
+#### roles/bluetooth/defaults/main.yaml
+
+    # Set to:
+    # - "active" to install bluetooth support
+    # - "inactive" to avoid installing it
+    # - Empty to preserve the default behaviour (install only on bare metal)
+    bluetooth_override: ""
+
+Can be used to override the default Bluetooth installation behaviour.
+
 #### roles/xfce/defaults/main.yaml
 
     xfce_packages:
@@ -321,12 +340,28 @@ Packages installed by the `xfce` role.
 
 #### roles/xfce_user_customizations/defaults/main.yaml
 
-    xfce_user_customizations_packages:
+    xfce_user_customizations_packages_numix:
       - gtk-engine-murrine
-      - numix-gtk-theme-git
+      - numix-square-icon-theme-git
       - ...
 
-Packages installed by the `xfce_user_customizations` role.
+    xfce_user_customizations_packages_darkblue:
+      - gtk-engine-murrine
+      - numix-themes-darkblue
+      - ...
+
+    xfce_user_customizations_themes:
+      - theme: numix
+        installed: true
+        default: true
+      - theme: darkblue
+        installed: true
+
+Each theme requires certain additional packages. The
+`xfce_user_customizations_themes` list can be used to select which
+themes should be installed (`installed: true`) and which one should be
+set as the default theme for created users (`default: true`). It is
+currently not possible to specify different themes on a per-user basis.
 
 #### roles/xorg/defaults/main.yaml
 
@@ -515,5 +550,6 @@ After installation is complete, you can delete the key pair generated above,
 from both the controller and the target.
 
 [screenshot]: docs/screenshot.png
+[darkblue]: docs/darkblue.png
 
 <!-- vi: set tw=72 et sw=2 fo=tcroqan autoindent: -->
