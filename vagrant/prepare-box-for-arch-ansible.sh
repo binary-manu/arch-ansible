@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 # These packages are no longer pulled in by the "base" package. So we install
 # them explicitly. `base` is present because the initial Vagrant image may
 # still be based on the group rather than on the package.
@@ -34,7 +36,7 @@ if [ -n "$http_proxy" ]; then
 fi
 
 # Perform a full system update. This is required by arch-ansible, because the
-# configuration steps assume that pacstrap synced the indices). It also
+# configuration steps assume that pacstrap synced the indices. It also
 # installs some packages because, again, the bootstrap phase of arch-ansible
 # would have done that. Ansible is installed here because Vagrant 2.2.5 fails
 # to install it.
