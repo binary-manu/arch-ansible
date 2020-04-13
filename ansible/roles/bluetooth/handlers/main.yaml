@@ -1,0 +1,5 @@
+- listen: Enable Bluetooth service
+  name: Enable Bluetooth service
+  service:
+    name: bluetooth
+    enabled: true

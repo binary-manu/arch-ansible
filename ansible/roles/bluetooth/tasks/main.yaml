@@ -1,0 +1,19 @@
+- name: Check bluetooth_override
+  assert:
+    that: bluetooth_override | lower in ["active", "inactive", ""]
+    fail_msg: Value '{{ bluetooth_override }}' is not
+      supported for bluetooth_override
+
+- name: Install Bluetooth support
+  when: >
+    bluetooth_override == "active" or
+    bluetooth_override == "" and ansible_virtualization_role | lower != "guest"
+  pacman:
+    name:
+      - bluez
+      - bluez-utils
+      - pulseaudio-bluetooth
+      - blueman
+  notify: Enable Bluetooth service
+  register: btinstalled
+  changed_when: btinstalled.changed or (run_handlers | default(false))

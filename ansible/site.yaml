@@ -42,6 +42,8 @@
       tags: [utils]
     - role: xutils
       tags: [xutils]
+    - role: bluetooth
+      tags: [bluetooth]
 
 - name: Clean and reboot
   hosts: all
