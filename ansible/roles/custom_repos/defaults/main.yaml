@@ -7,5 +7,5 @@ custom_repos_list: [
 ]
 
 custom_repos_servers: [
-#  "http://localhost:8080/%repo/os/$arch"
+#  "http://localhost:8080/$repo/os/$arch"
 ]
