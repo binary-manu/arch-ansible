@@ -4,7 +4,7 @@
   copy:
     src: xinitrc
     dest: "{{ users_created | user_home(item) }}/.xinitrc"
-  loop: "{{ global_admins }}"
+  loop: "{{ users_names }}"
 
 - name: Install the themes
   include_tasks: "{{ item_theme.theme }}.yaml"

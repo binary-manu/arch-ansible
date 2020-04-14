@@ -1,10 +1,13 @@
-# In real deployments, this file shuould be customized with real passwords and
+# In real deployments, this file should be customized with real passwords and
 # encrypted with ansible-vault.
 
-users_info:
-  root:
+users_root_info:
     password: "abcd$1234_root"
+
+users_info:
   manu:
     password: "abcd$1234_manu"
     is_admin: true # Optional item, true if missing
     groups: []     # Optional item, empty list if missing
+
+users_names: "{{ users_info | dict2items | map(attribute='key') | list }}"

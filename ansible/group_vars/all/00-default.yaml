@@ -4,11 +4,6 @@ global_device_node: /dev/sda
 global_partition_number: 1
 global_mount_point: /mnt
 
-# Initial users to create. They will all be added to the whhel group and
-# allowed to call sudo (password required).
-global_admins:
-  - manu
-
 # This user will be created during the setup to build AUR packages, and will be
 # removed before finalizing the installation. There is no need to change the
 # name.

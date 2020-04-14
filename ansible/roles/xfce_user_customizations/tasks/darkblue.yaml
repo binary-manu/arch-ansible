@@ -20,5 +20,5 @@
   copy:
     src: darkblue/xfce4/
     dest: "{{ users_created | user_home(item) }}/.config/xfce4"
-  loop: "{{ global_admins }}"
+  loop: "{{ users_names }}"
   when: item_theme.default | default(False, True) == True

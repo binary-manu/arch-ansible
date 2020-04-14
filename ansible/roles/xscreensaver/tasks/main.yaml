@@ -17,4 +17,4 @@
         inactive
       {%- endif -%}
     dest: "{{ users_created | user_home(item) }}/.xscreensaver"
-  loop: "{{ global_admins }}"
+  loop: "{{ users_names }}"

@@ -4,4 +4,4 @@
   copy:
     src: config.json
     dest: "{{ users_created | user_home(item) }}/.config/yay/"
-  loop: "{{ global_admins }}"
+  loop: "{{ users_names }}"

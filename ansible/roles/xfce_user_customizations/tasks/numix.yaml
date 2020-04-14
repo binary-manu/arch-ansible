@@ -10,5 +10,5 @@
   copy:
     src: numix/xfconf/
     dest: "{{ users_created | user_home(item) }}/.config/xfce4/xfconf/"
-  loop: "{{ global_admins }}"
+  loop: "{{ users_names }}"
   when: item_theme.default | default(False, True) == True
