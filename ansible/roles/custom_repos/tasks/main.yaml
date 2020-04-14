@@ -7,3 +7,8 @@
 
 - name: Dispatch to proper custom_repos implementation
   import_tasks: "{{ state | default('present', True) }}.yaml"
+
+- name: Sync databases
+  pacman:
+    update_cache: yes
+  when: custom_repos_list | length != 0 or custom_repos_servers | length != 0
