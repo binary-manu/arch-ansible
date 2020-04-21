@@ -13,12 +13,12 @@
 
 - name: Get root's UUID
   command: lsblk -n -o UUID {{ global_device_node }}{{ global_partition_number }}
-  register: uuid
+  register: _uuid
   changed_when: false
 
 - name: Copy syslinux configuration
   vars:
-    root_uuid: "{{ uuid.stdout }}"
+    root_uuid: "{{ _uuid.stdout }}"
   template:
     src: syslinux.cfg.j2
     dest: "{{ global_mount_point }}/boot/syslinux/syslinux.cfg"

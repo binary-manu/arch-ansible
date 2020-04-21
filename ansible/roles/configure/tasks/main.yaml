@@ -13,14 +13,14 @@
 - name: Check for root's autorized keys
   stat:
     path: /root/.ssh/authorized_keys
-  register: root_auth_keys
+  register: _root_auth_keys
 
 - name: Copy root's authorized keys
   copy:
     remote_src: yes
     src: /root/.ssh/authorized_keys
     dest: "{{ global_mount_point }}/root/.ssh/"
-  when: root_auth_keys.stat.exists == true
+  when: _root_auth_keys.stat.exists == true
 
 - name: Copy ssh host keys
   copy:
@@ -49,5 +49,5 @@
       genfstab -U {{ global_mount_point }} > {{ fstab }}
       cat {{ fstab }}
     } | sort | uniq -u
-  register: fstab_created
-  changed_when: fstab_created.stdout
+  register: _fstab_created
+  changed_when: _fstab_created.stdout

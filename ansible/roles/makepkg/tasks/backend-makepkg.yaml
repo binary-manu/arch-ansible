@@ -6,30 +6,30 @@
 - name: Check if package {{ package_name }} is already installed
   shell: set -o pipefail || exit 1; pacman -Qsq |
     { grep '^{{ package_name }}$' ; [ $? -lt 2 ]; }
-  register: package_installed
+  register: _package_installed
   changed_when: no
 
 - name: Make and install {{ package_name }}
   become: yes
   become_user: "{{ build_user }}"
-  when: package_installed.stdout == ""
+  when: _package_installed.stdout == ""
   block:
     - name: Create temporary build directory
       tempfile:
         state: directory
-      register: tempdir
+      register: _tempdir
       
     - name: Download package from the AUR
       unarchive:
         remote_src: yes
         src: "{{ makepkg_aur_url }}{{ package_name }}.tar.gz"
-        dest: "{{ tempdir.path }}"
+        dest: "{{ _tempdir.path }}"
         
     - name: Run makepkg
-      shell: cd '{{ tempdir.path }}/{{ package_name }}' && makepkg -rsi --noconfirm
+      shell: cd '{{ _tempdir.path }}/{{ package_name }}' && makepkg -rsi --noconfirm
   always:
     - name: Remove temporary build directory
       file:
         state: absent
-        path: "{{ tempdir.path }}"
+        path: "{{ _tempdir.path }}"
 

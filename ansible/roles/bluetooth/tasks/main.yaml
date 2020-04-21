@@ -15,5 +15,5 @@
       - pulseaudio-bluetooth
       - blueman
   notify: Enable Bluetooth service
-  register: btinstalled
-  changed_when: btinstalled.changed or (run_handlers | default(false))
+  register: _btinstalled
+  changed_when: _btinstalled.changed or (run_handlers | default(false))
