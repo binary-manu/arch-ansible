@@ -46,6 +46,8 @@ wish to migrate:
 All modules that want to iterate over users should replace `global_admins`
 with `users_names`. They should also depend on `users`.
 
+More on this role in [its README](ansible/roles/users/README.md).
+
 ## Installed system
 
 Unless some steps are skipped or customized, the installed system will
