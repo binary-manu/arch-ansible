@@ -1,0 +1,4 @@
+dependencies:
+    - role: genfstab
+      vars:
+        chroot: "{{ partitioning_root_mount_point }}"

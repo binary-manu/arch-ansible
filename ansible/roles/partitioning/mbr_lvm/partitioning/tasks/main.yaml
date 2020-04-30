@@ -1,0 +1,71 @@
+- name: Load variables
+  import_tasks: defaults.yaml
+
+- name: Create a MBR partition table and the boot partition
+  parted:
+    device: "{{ (partitioning_priv_boot_device_node | split_partition_number)[0] }}"
+    state: present
+    label: msdos
+    number: "{{ (partitioning_priv_boot_device_node | split_partition_number)[1] }}"
+    part_start: "{{ 1024 * 1024 }}B"
+    part_end: "{{ partitioning_priv_boot_size | int + 1024 * 1024 - 1}}B"
+    flags:
+      - boot
+
+- name: Format the boot partition
+  filesystem:
+    dev:  "{{ partitioning_priv_boot_device_node }}"
+    fstype: ext4
+    opts: -O ^64bit
+
+- name: Create the root partition
+  parted:
+    device: "{{ (partitioning_priv_root_device_node | split_partition_number)[0] }}"
+    state: present
+    label: msdos
+    number: "{{ (partitioning_priv_root_device_node | split_partition_number)[1] }}"
+    part_start: "{{ partitioning_priv_boot_size | int + 1024 * 1024 }}B"
+    flags:
+      - lvm
+
+- name: Create a PV and VG for root
+  lvg:
+    vg: vg-arch
+    pvs:
+      - "{{ partitioning_priv_root_device_node }}"
+
+- name: Create a root LV
+  lvol:
+    vg: vg-arch
+    lv: lv-root
+    size: "100%FREE"
+
+- name: Store root PV name
+  set_fact:
+    partitioning_priv_root_lv_node: /dev/vg-arch/lv-root
+
+- name: Format the root partition
+  filesystem:
+    dev:  "{{ partitioning_priv_root_lv_node }}"
+    fstype: ext4
+
+- name: Mount the root partition
+  mount:
+    state: mounted
+    src: "{{ partitioning_priv_root_lv_node }}"
+    path: "{{ partitioning_root_mount_point }}"
+    fstype: ext4
+    opts: rw,relatime
+
+- name: Create /boot
+  file:
+    state: directory
+    path: "{{ partitioning_root_mount_point }}/boot"
+
+- name: Mount the boot partition
+  mount:
+    state: mounted
+    src: "{{ partitioning_priv_boot_device_node }}"
+    path: "{{ partitioning_root_mount_point }}/boot"
+    fstype: ext4
+    opts: rw,relatime

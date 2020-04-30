@@ -1,0 +1,14 @@
+- name: Install GRUB2 package
+  import_role:
+    name: pacstrap
+  vars:
+    chroot: "{{ partitioning_root_mount_point }}"
+    packages:
+      - grub
+      - efibootmgr
+
+- name: Install GRUB2
+  command: arch-chroot {{ partitioning_root_mount_point }} /usr/bin/grub-install
+
+- name: Generate GRUB2 configuration file
+  command: arch-chroot {{ partitioning_root_mount_point }} /usr/bin/grub-mkconfig -o /boot/grub/grub.cfg

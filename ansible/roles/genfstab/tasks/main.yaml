@@ -1,0 +1,13 @@
+- name: Generate fstab
+  vars:
+    fstab: "{{ chroot }}/etc/fstab"
+  shell: |
+    set -e
+    set -o pipefail
+    {
+      if [ -f {{ fstab }} ]; then cat {{ fstab }}; fi
+      genfstab -U {{ chroot }} > {{ fstab }}
+      cat {{ fstab }}
+    } | sort | uniq -u
+  register: _fstab_created
+  changed_when: _fstab_created.stdout

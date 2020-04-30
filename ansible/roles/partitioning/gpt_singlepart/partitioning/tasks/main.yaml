@@ -1,0 +1,55 @@
+- name: Create the EFI partition
+  parted:
+    device: "{{ (partitioning_efi_device_node | split_partition_number)[0] }}"
+    state: present
+    label: gpt
+    number: "{{ (partitioning_efi_device_node | split_partition_number)[1] }}"
+    part_start: "{{ 1024 * 1024 }}B"
+    part_end: "{{ partitioning_root_start | int - 1 }}B"
+    name: esp
+    flags:
+      - esp
+
+- name: Format the EFI partition
+  filesystem:
+    dev:  "{{ partitioning_efi_device_node }}"
+    fstype: vfat
+
+- name: Create the root partition
+  parted:
+    device: "{{ (partitioning_root_device_node | split_partition_number)[0] }}"
+    state: present
+    label: gpt
+    name: root
+    part_start: "{{ partitioning_root_start }}B"
+    number: "{{ (partitioning_root_device_node | split_partition_number)[1] }}"
+
+- name: Format the root partition
+  filesystem:
+    dev:  "{{ partitioning_root_device_node }}"
+    fstype: ext4
+
+- name: Mount the root partition
+  mount:
+    state: mounted
+    src: "{{ partitioning_root_device_node }}"
+    path: "{{ partitioning_root_mount_point }}"
+    fstype: ext4
+
+- name: Create /boot/efi mountpoint
+  file:
+    state: directory
+    name: "{{ partitioning_root_mount_point }}/boot/efi"
+    recurse: yes
+
+- name: Mount the efi partition
+  mount:
+    state: mounted
+    src: "{{ partitioning_efi_device_node }}"
+    path: "{{ partitioning_root_mount_point }}/boot/efi"
+    fstype: vfat
+
+- name: Export variables
+  set_fact:
+    partitioning_root_mount_point: "{{ partitioning_root_mount_point }}"
+    partitioning_root_device_node: "{{ partitioning_root_device_node }}"

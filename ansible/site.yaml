@@ -4,12 +4,22 @@
     - bootstrap
     - never
   environment: "{{ global_proxy_env }}"
-  roles:
-    - role: custom_repos
-    # These roles pull partitioning and base_packages
-    - role: bootloader
-      tags: [bootloader]
-    - role: configure
+  tasks:
+    - include_role:
+        name: custom_repos
+    - include_role:
+        name: "{{ global_partitioning_role }}/partitioning"
+      tags: partitioning
+    - include_role:
+        name: base_packages
+    - include_role:
+        name: "{{ global_partitioning_role }}/postpartitioning"
+      tags: partitioning
+    - include_role:
+        name: "{{ global_partitioning_role }}/bootloader"
+      tags: partitioning
+    - include_role:
+        name: configure
   post_tasks:
    - name: Reboot into the system
      tags: reboot
