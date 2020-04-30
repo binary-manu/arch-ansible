@@ -9,4 +9,4 @@ class FilterModule:
         for user in d["results"]:
             if user["item"] == username:
                 return user["home"]
-        return ValueError("Cannot find the home directory for user {}".format(username))
+        raise ValueError("Cannot find the home directory for user {}".format(username))
