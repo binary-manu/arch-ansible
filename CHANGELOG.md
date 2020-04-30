@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+* `root` account information have been split from `users_info` into its own
+  object `users_root_info`.
+* `global_admins` has been deprecated. Now the list of users (for which
+  personalizations are applied, such as setting the DE theme) is computed from
+  the content of `users_info`: any key maps to a user. In order to make
+  iterating over users easier, the `users` role provides a `users_names` list to
+  module who depend on it.
+
+These changes are not backward-compatible, as they break existing host variable
+customizations.
+
 ## [0.1.8] - 2020-06-13
 
 ### Changed

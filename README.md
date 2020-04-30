@@ -12,6 +12,40 @@ but it could be used to install on bare metal, with some tweaks.
 
 The playbook has been tested using Ansible 2.7 and higher.
 
+## Migrating to a non-backward-compatible playbook version
+
+### 0.1.x ➔ 0.2.x
+
+User account information has been harmonized, eliminating some unused
+objects and splitting root info from the rest of the users, since most
+attributes do not make sense for root.
+
+If you have an existing configuration made of host/group variables you
+wish to migrate:
+
+* delete the now deprecated `global_admins`;
+* move the contents of `root` from `users_info` to `users_root_info`:
+
+  ```yaml
+  # Go from this:
+  users_info:
+    root:
+      XXX
+    other_user:
+      YYY
+
+  # to this:
+  users_info:
+    other_user:
+      YYY
+
+  users_root_info:
+    XXX
+  ```
+
+All modules that want to iterate over users should replace `global_admins`
+with `users_names`. They should also depend on `users`.
+
 ## Installed system
 
 Unless some steps are skipped or customized, the installed system will
@@ -169,13 +203,6 @@ where the partition is going to be mounted. If partitioning is skipped,
 `global_mount_point` is still relevant because the user must manually
 mount volumes there.
 
-    global_admins:
-      - manu
-
-Initial users to create. Passwords for individual users (including root) and
-other user settings (i.e. groups) can be set in
-`roles/users/defaults/main.yaml`.
-
     global_passwordless_sudo_user: package_builder
 
 During certain tasks (such as when building packages from the AUR) the
@@ -255,22 +282,21 @@ Packages installed by the `ttf_fonts` role.
 
 #### roles/users/defaults/main.yaml
 
-    users_info:
-      root:
+    users_root_info:
         password: "..."
+
+    users_info:
       manu:
         password: "..."
         is_admin: true   # Optional item, true if missing
         groups:   []     # Optional item, empty list if missing
 
-Settings for new users created on the target system. This should contain
-passwords for all users defined in `global_admins`. Users that have
+Settings for new users created on the target system. Users that have
 `is_admin` set to a truthy value will be added to the `wheel` group.
 Additional groups can be specified as the `groups` list. To retain backward
 compatibility, all fields but `password` are optional. Don't try to add sudo
 capabilities by manually adding `wheel` to `groups`, use `is_admin` instead.
 This allows for a degree of flexibility in how sudo access is implemented.
-For `root`, only `password` is considered.
 
 #### roles/utils/defaults/main.yaml
 
