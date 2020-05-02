@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+* When installing under VirtualBox, it is possible to install and configure
+  `mplugd` to handle screen resizing in place of `VBoxClient`. This is mainly intended
+  to provide automatic screen resizing when using the `VBoxVGA` adapter instead
+  of the recommended `VMSVGA`.
+
+### Changed
+
+* `linux-headers` no longer installed as part of VirtualBox guest support.
+
 ## [0.1.6] - 2020-04-30
 
 ### Added

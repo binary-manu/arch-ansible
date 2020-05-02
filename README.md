@@ -287,8 +287,11 @@ Packages installed by the `utils` role.
       - virtualbox
 
     virtguest_virtualbox_packages:
-      - linux-headers
       - virtualbox-guest-utils
+
+    # If set to yes, mplugd (https://github.com/anyc/mplugd) will be installed and
+    # used to handle guest screen resizing in place of VBoxClient.
+    virtguest_virtualbox_use_mplugd: no
 
 #### roles/virtguest_force/defaults/main.yaml
 
@@ -309,6 +312,12 @@ corresponding additional packages. This may be useful in two cases:
   reason;
 * the user wants to install guest packages that do not correspond to the
   detected hypervisor.
+
+When installing under VirtualBox 6.0 and above, and the VM uses the `VBoxVGA`
+adapter, automatic guest screen resizing will no longer work reliably. It is
+possible to set `virtguest_virtualbox_use_mplugd` to `yes` to install the
+`mplugd` daemon, configured to handle screen resizing. You can read more
+[here][mplugd-blog-post].
 
 #### roles/xscreensaver/defaults/main.yaml
 
@@ -551,5 +560,6 @@ from both the controller and the target.
 
 [screenshot]: docs/screenshot.png
 [darkblue]: docs/darkblue.png
+[mplugd-blog-post]: https://binary-manu.github.io/binary-is-better/virtualbox/resize-vbox-screen-with-mplugd
 
 <!-- vi: set tw=72 et sw=2 fo=tcroqan autoindent: -->
