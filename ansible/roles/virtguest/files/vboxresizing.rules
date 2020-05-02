@@ -1,0 +1,3 @@
+[rule vboxresizing]
+on_type=OutputChangeNotify
+true_exec=xrandr --output %event_name% --auto

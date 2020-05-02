@@ -4,3 +4,7 @@ virtguest_supported_hypervisors:
 virtguest_virtualbox_packages:
   - linux-headers
   - virtualbox-guest-utils
+
+# If set to yes, mplugd (https://github.com/anyc/mplugd) will be installed and
+# used to handle guest screen resizing in place of VBoxClient.
+virtguest_virtualbox_use_mplugd: no

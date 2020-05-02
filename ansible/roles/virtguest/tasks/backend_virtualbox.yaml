@@ -4,3 +4,33 @@
   notify: Start VirtualBox service
   register: _vboxinstalled
   changed_when: _vboxinstalled.changed or (run_handlers | default(false))
+
+- name: Install and configure mplugd
+  when: virtguest_virtualbox_use_mplugd
+  block:
+    # This package needs to be installed before the other two, because it is
+    # considered a make-dependency and Yay removes it if invoked with --removemake
+    - name: Install python2-setuptools
+      import_role:
+        name: packages
+      vars:
+        packages:
+          - python2-setuptools
+
+    - name: Install mplugd
+      import_role:
+        name: packages
+      vars:
+        packages:
+          - mplugd-git
+          - python2-xlib
+
+    - name: Copy mplugd rules
+      copy:
+        src: vboxresizing.rules
+        dest: /etc/mplugd/action.d/
+
+    - name: Copy mplugd desktop entry for autostart
+      copy:
+        src: mplugd.desktop
+        dest: /etc/xdg/autostart/
