@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.7] - 2020-05-02
+
 ### Added
 
 * When installing under VirtualBox, it is possible to install and configure
