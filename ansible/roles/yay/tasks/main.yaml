@@ -4,7 +4,7 @@
     state: present
 
 - name: Install yay
-  include_role:
+  import_role:
     name: makepkg
   vars:
     packages:
