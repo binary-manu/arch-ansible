@@ -23,9 +23,25 @@
   register: _uuid
   changed_when: false
 
+- name: List installed kernels
+  find:
+    paths: "{{ partitioning_root_mount_point }}/boot"
+    patterns: 'vmlinuz-*'
+  register: _kernels
+
+- name: List installed initramfs
+  find:
+    use_regex: yes
+    paths: "{{ partitioning_root_mount_point }}/boot"
+    patterns: 'initramfs-{{ item.path | basename | replace("vmlinuz-", "", 1) }}(?:-fallback)?.img'
+  register: _ramdisks
+  loop: "{{ _kernels.files }}"
+
 - name: Copy syslinux configuration
   vars:
     root_uuid: "{{ _uuid.stdout }}"
+    kernels: "{{ _kernels }}"
+    ramdisks: "{{ _ramdisks }}"
   template:
     src: syslinux.cfg.j2
     dest: "{{ partitioning_root_mount_point }}/boot/syslinux/syslinux.cfg"
