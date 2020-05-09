@@ -9,4 +9,4 @@
   vars:
     packages:
       - yay-bin
-    build_user: "{{ global_passwordless_sudo_user }}"
+    build_user: "{{ passwordless_sudo_user_name }}"
