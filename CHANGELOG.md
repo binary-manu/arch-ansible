@@ -9,16 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* `root` account information have been split from `users_info` into its own
-  object `users_root_info`.
+* `root` account information have been split from `users_info` into its
+  own object `users_root_info`.
 * `global_admins` has been deprecated. Now the list of users (for which
-  personalizations are applied, such as setting the DE theme) is computed from
-  the content of `users_info`: any key maps to a user. In order to make
-  iterating over users easier, the `users` role provides a `users_names` list to
-  module who depend on it.
+  personalizations are applied, such as setting the DE theme) is
+  computed from the content of `users_info`: any key maps to a user. In
+  order to make iterating over users easier, the `users` role provides a
+  `users_names` list to module who depend on it.
+* `global_passwordless_sudo_user` has been deprecated. Roles depending
+  on this information should depend on the `passwordless_sudo_user` role
+  and get it from `passwordless_sudo_user_name`.
+* The `bootstrap` play have been revamped to support pluggable
+  partitioning flows.  Instead of being hardwired to MBR/single
+  root/Syslinux setup, one can select one of a few predefined
+  partitioing flows (MBR, LVM, GPT) or write a new one to fit custom
+  scenarios.
+* Documentation improvements.
 
-These changes are not backward-compatible, as they break existing host variable
-customizations.
+These changes are not backward-compatible, as they break existing host
+variable customizations or tag usage.
 
 ## [0.1.8] - 2020-06-13
 
@@ -139,3 +148,5 @@ customizations.
 * Initial release of the playbook.
 * Initial release of the Arch-Vagrant side project.
 * Initial release of the Arch-Packer side project.
+
+<!-- vi: set tw=72 et sw=2 fo=tcroqan autoindent: -->

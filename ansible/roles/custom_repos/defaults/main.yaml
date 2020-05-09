@@ -1,11 +1,18 @@
+# Add extra repositories (i.e. like `core` and `community`.
+# They will be added to `pacman.conf` _before_ standard repos, so
+# that packages with the same name as standard ones will take
+# precedence.
 custom_repos_list: [
 #  {
-#    name: cache,
+#    name: myrepo,
 #    server: "http://10.0.2.2/x86_64/",
 #    siglevel: Optional TrustAll
 #  }
 ]
 
+# Add extra mirrors to the mirrorlist. They are added _before_ other
+# entries, so they will be tried first. They are inserted in the same
+# order as they are listed here.
 custom_repos_servers: [
 #  "http://localhost:8080/$repo/os/$arch"
 ]

@@ -1,3 +1,4 @@
+# Additional packages to be installed for the Numix theme
 xfce_user_customizations_packages_numix:
   - gtk-engine-murrine
   - numix-gtk-theme-git
@@ -5,12 +6,19 @@ xfce_user_customizations_packages_numix:
   - numix-icon-theme-git
   - numix-square-icon-theme-git 
 
+# Additional packages to be installed for the DarkBlue theme
 xfce_user_customizations_packages_darkblue:
   - gtk-engine-murrine
   - numix-themes-darkblue
   - numix-cursor-theme-git
   - korla-icon-theme
 
+# This controls which themes are installed (`installed: true`) and which one
+# will be configured as the default for all non-root users (`default: true`).
+# The `theme` corresponds to the name of a task file under `tasks/`.
+# Only one theme should have `default` set, otherwise it is undefined behaviour
+# whether an error is thrown or one of them is effectively set as the default.
+# `installed` and `default` can be omitted and default to `false`.
 xfce_user_customizations_themes:
   - theme: numix
     installed: true

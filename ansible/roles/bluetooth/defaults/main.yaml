@@ -1,1 +1,9 @@
+# Controls if Bluetooth support is installed or not:
+#
+# * leave it empty to use the default behaviour, ehich installs
+#   BT on bare metal systems only;
+# * set to `active` to force installation even under hypervisors;
+# * set to `inactive` to disable BT support.
+#
+# Other values are errors, and supported values are case-sensitive.
 bluetooth_override: ""

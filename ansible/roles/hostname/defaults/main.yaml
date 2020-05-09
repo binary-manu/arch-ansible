@@ -1,1 +1,3 @@
+# The installed system's hostname, as configured in `/etc/hostname` and
+# `/etc/hosts` for the loopback address. _Do not_ add the domain part.
 hostname_hostname: archlinux

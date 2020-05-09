@@ -1,12 +1,12 @@
 # Arch-Ansible: an Ansible playbook to install Arch Linux
 
-![Screenshot of a system installed with arch-ansible][screenshot]
+![Screenshot of the Numix theme][numix]
 
 ![Screenshot of the DarkBlue theme][darkblue]
 
 Arch-Ansible is a playbook designed to install Arch Linux on a target
 machine. It was conceived to ease the preparation of virtual machines,
-but it could be used to install on bare metal, with some tweaks.
+but it can also be used to install on bare metal.
 
 ## Ansible version
 
@@ -15,6 +15,14 @@ The playbook has been tested using Ansible 2.7 and higher.
 ## Migrating to a non-backward-compatible playbook version
 
 ### 0.1.x ➔ 0.2.x
+
+#### Passwordless-`sudo`-enabled user
+
+`global_passwordless_sudo_user` has been deprecated. Roles that need it
+should depend on the `passwordless_sudo_user` role and get it from
+`passwordless_sudo_user_name`.
+
+#### Changes to user management
 
 User account information has been harmonized, eliminating some unused
 objects and splitting root info from the rest of the users, since most
@@ -43,10 +51,23 @@ wish to migrate:
     XXX
   ```
 
-All modules that want to iterate over users should replace `global_admins`
-with `users_names`. They should also depend on `users`.
+All modules that want to iterate over users should replace
+`global_admins` with `users_names`. They should also depend on `users`.
+The contents of `users_names` are generated from `users_info`, which
+removes the need to keep the user name list and the user information
+strcture in sync, as in the previous branch.
 
-More on this role in [its README](ansible/roles/users/README.md).
+More on this role in [users](#users).
+
+#### Changes to Partitioning
+
+The partitioning phase has been reworked to allow for more flexible
+partitioning and bootloader installation, including the case of users
+dropping their own partitioning roles to automate specific deployments
+without the need to fork and customize.
+
+More info can be found in the [bootstrap](#bootstrap) section and the
+[partitioning](#partitioning) section.
 
 ## Installed system
 
@@ -59,29 +80,38 @@ available.
 The `xfce4-screensaver` package is ditched in favor of `xscreensaver`. By
 default, systems installed in VM's will have it disabled, since I would
 assume that the host already has a screensaver/lock. Bare metal
-installations, conversely, have it enabled by default to power off the screen
-after a few minutes. It is possible to override this behaviour: see the
-`xscreensaver` role section.
+installations, conversely, have it enabled by default to power off the
+screen after a few minutes. It is possible to override this behaviour.
 
-Optional Bluetooth support can be installed. By default it is only installed
-on bare-metal installations. This behaviour can be overridden (i.e. to test a
-Bluetooth dongle in a VM via USB passthrough).
+Optional Bluetooth support can be installed. By default it is only
+installed on bare-metal installations. This behaviour can be overridden
+(i.e. to test a Bluetooth dongle in a VM via USB passthrough).
 
 A bunch of default utilities like a PDF reader or gvim a preinstalled.
 These are handled by the `utils` and `xutils` roles.
 
 Users (including `root`) get their passwords from
-`roles/users/defaults/main.yaml`. The file is stored in cleartext within
-this repository to show its structure and allow modification. In real
-scenarios, people should customize it and then encrypt it with
-ansible-vault before committing to a VCS.
+`roles/users/defaults/main.yaml`.
 
-Currently only single-partition MBR installations are supported, using
-Syslinux as the bootloader. Swap space is not configured.
+The predefined partitioning flow defines a single-partition MBR layout, using
+Syslinux as the bootloader installed on root. Swap space is not configured.
+Alternative flows are defined, including:
+
+* support for root on LVM, under a MBR table;
+* support for EFI installation.
+
+Flows are designed to operate on whole disks: they take an empty disk,
+partition it, and create filesystems. This is good for VM provisioning,
+which start with pristine disks) or bare metal installations performed
+on empty disks. For more complex scenarios (such as bare metal
+installations where partitioning needs to be reconfigured to accomodate
+Arch Linux in dual boot) one can either disable automatic partitioning
+and do it manually or define a custom flow. The latter requires writing
+a bunch of Ansible roles.
 
 There is support for installing hypervisor guest additions as part of
-the process.  This can be disabled by skipping the `virtguest` tag.  As
-of today, only VirtualBox is supported.
+the process, altought it can be disabled. As of today, only VirtualBox
+is supported.
 
 The playbook relies on the [Yay](https://github.com/Jguer/yay) AUR
 helper to install packages. Using `yay` instead of the stock `pacman`
@@ -112,47 +142,67 @@ required in this case (i.e. Vagrant boxes likely come with pre-installed
 VirtualBox guest utilities without X support, which will cause
 `virtualbox-guest-utils` not to install).
 
+
 ### bootstrap
 
-The `bootstrap` phase can be tweaked by skipping tags:
+The `bootstrap` phase encompasses the following stages:
 
-* `partitioning` can be used to disable partitioning. It can be useful
-  if a user wants to prepare a more complex layout by hand before
-  launching the playbook. Once partitions have been mounted under a
-  certain folder (typically `/mnt`) it makes no difference who mounted
-  them;
-* `bootloader` can be used to disable bootloader installation. Again,
-  this may be useful if the user wants to customize the bootloader setup
-  or use something different than Syslinux.
+* partitioning: disks are partitioned and partitions are formatted and then
+  mounted for later use;
+* base package are installed to the target system;
+* post-partitioning: tasks which are related to partitioning but can
+  only be performed after the basic filesystem hierarchy is in place;
+  this is where one would add entries to `/etc/fstab` or add hooks to
+  `/etc/mkinitcpio.conf`;
+* the bootloader is installed to the target system.
+
+By design, bootloader installation is considered a part of partitioning.
+This is because one cannot choose a bootloader independently of the
+partitioning scheme: for example, Extlinux cannot be installed on 64-bit
+ext4, which must be taken into account when creating the `/boot`
+filesystem. Therefore, if partitioning is skipped, bootloader
+installation is also skipped.
 
 Installation of base packages cannot be skipped, but it can be
 customized by editing `roles/base_packages/defaults/main.yaml`. It
 already contains a very minimal set of packages and there is no
 advantage is adding additional tools here.
 
+Partitioning, post-partitioning and bootloader installation can be
+customized in 3 major ways:
+
+* they can be disabled. This is useful when total control over
+  partitioning is desired: the user first performs partitioning
+  manually, then runs the `bootstrap` phase with partitioning disabled,
+  so that base packages are installed. Then it manually installs its
+  bootloader of choice. At this point, it can run the `mainconfig`
+  phase;
+* they can be switched by choosing a different built-in flow. A global
+  setting controls which partitioning flow is used, and arch-ansible
+  comes with a few of them that cover the most basic scenarios;
+* they can be implemented by the user. The same setting that selects a
+  built-in flow can be used to select user-provided flows. Flows are
+  simply a collection of related Ansible roles which take care of
+  partitioning and expose a well-defined interface to the other roles,
+  for example, to let them now where partitions are mounted. This way,
+  users can add their own specific partitioning logic to the playbook
+  without the need to fork and edit the core roles and plays. _Note
+  that, while approach should give enough flexibility for many
+  scenarios, extreme configurability may still require modifications to
+  the core components and thus a fork_.
+
 By default, this phase is disabled. To run it, add the `bootstrap` tag
 to the call.
 
 ### mainconfig
 
-This tag marks the tasks that does the heavy lifting. It configures
-locales, creates users and sets their initial passwords, and prepare the
-system to work behind a proxy. These steps are compulsory.
+The `mainconfig` tag  marks the tasks that does the heavy lifting. It
+configures locales, creates users, sets their initial passwords, and
+prepare the system to work behind a proxy. These steps are compulsory.
 
 Additional steps include installing utilities and GUI apps, a desktop
 environment and applying default customizations to users. These steps
-can be skipped or selected one by one using tags:
-
-* `virtguest` install hypervisor guest additions;
-* `bluetooth` install Bluetooth support;
-* `xfce` installs the XFCE DE plus some theme customizations for all
-  non-root users;
-* `yay` copies `yay` settings to each user home folder;
-* `ttf_fonts` installs additional fonts;
-* `utils` installs some non-X utilities, listed in
-  `roles/utils/defaults/main.yaml`;
-* `xutils` installs some X utilities, listed in
-  `roles/xutils/defaults/main.yaml`.
+can be skipped or selected one by one using tags.
 
 Roles which install X apps will automatically pull X.org as a
 dependency.
@@ -184,39 +234,36 @@ return `ok`.
 
 By design, global configuration items are those which are used by multiple
 roles and are stored in `group_vars/all/00-defaults.yaml`. Other variables,
-which are local to a specific role, are stored under
-`roles/$ROLE/defaults/main.yaml`. Both groups can be overridden by placing a
-new file under `group_vars`, `host_vars` or using the command line. This way,
-one can keep the default configuration and just change the target system
-hostname or locale.
+which are local to a specific role, are stored under either:
+
+* `roles/$ROLE/defaults/main.yaml`, or
+* `roles/$ROLE/tasks/defaults.yaml`.
+
+The second form is used for partitioning roles, which need to make
+variables available as facts to other roles invoked as part of the
+same partitioning flow. The main difference between the two forms is
+the use of `set_fact` in the latter.
+
+Both groups can be overridden by placing a new file under `group_vars`,
+`host_vars` or using the command line. This way, one can keep the
+default configuration and just change the target system hostname or
+locale.
+
+Global and role-local configuration variables are documented in detail
+inline in the YAML files themselves. The following sections give an
+overview of the high-level concepts behind them.
 
 ### Global configuration
 
-The file `group_vars/all/00-default.yaml` contains global configuration
-options that affect how the playbook work.
+#### Partitioning flow
 
-    global_device_node: /dev/sda
-    global_partition_number: 1
-    global_mount_point: /mnt
+    global_partitioning_role: partitioning/mbr_singlepart
 
-These options define the disk that will be used for partitioning during
-the bootstrap phase, the index of the root partition, and the place
-where the partition is going to be mounted. If partitioning is skipped,
-`global_mount_point` is still relevant because the user must manually
-mount volumes there.
+If the `bootstrap` phase is executed, it will need to enact a
+partitioning flow. Which flow is run is determined by the value of the
+variable above.
 
-    global_passwordless_sudo_user: package_builder
-
-During certain tasks (such as when building packages from the AUR) the
-playbook will need to drop privileges and use a non-root user, which
-must be able to use sudo without a password. Think of a typical `makepkg
--s` call, which won't work as `root` but will then need to become `root`
-to install dependencies.
-
-This username is used to create a disposable unprivileged user for those
-tasks. All its data are automatically purged before the playbook ends,
-so that there are no users with passwordless sudo capabilities on the
-system, unless you create one.
+#### Portable image
 
     global_portable_image: False
 
@@ -224,12 +271,25 @@ This variable controls whether the resulting installation should be
 site-independent or not. If set to false, the playbook assumes that
 settings such as custom repos and proxy configuration must persist in
 the installed system. If set to true, such settings will be reverted in
-the final setup.  This is useful, for example, if the installation
-process requires using an HTTP proxy, but the system is then going to be
-moved to a different network where a proxy is not needed. A typical case
-is provisioning a VM image with Packer from behind a proxy: the final
-image should not carry such site-specific proxy settings if it is going
-to be shared with a wider audience.
+the final setup.
+
+This is useful, for example, if the installation process requires using
+an HTTP proxy, but the system is then going to be moved to a different
+network where a proxy is not needed. A typical case is provisioning a VM
+image with Packer from behind a proxy: the final image should not carry
+such site-specific proxy settings if it is going to be shared with a
+wider audience.
+
+These are the installation elements affected by this flag:
+
+* HTTP proxy settings: they will be evicted from the final system and
+  all customization needed to use them effectively (such as `sudoers`
+  tweaks preserving them across calls to `sudo`, shell profiles adding
+  them to the environment, …) will be undone;
+* custom repositories and mirrors: they are removed from
+  `/etc/pacman.conf`.
+
+#### Proxy setup
 
 If working behind a (HTTP(S)) proxy, add appropriate definitions for
 
@@ -241,227 +301,373 @@ This will automatically trigger proxy-related tasks and configure the
 installed system to work behind a proxy (by setting appropriate
 environment variables).
 
-### Role configuration
+### Roles
 
-#### roles/base_packages/defaults/main.yaml
+The following sections give a brief description of available role. For
+detailed explanation of each role configuration options, look at its own
+defaults file.
 
-    base_packages_list:
-      - base
-      - base-devel
-      - ...
+For each role, a flag list is given according to the following
+structure:
 
-List of base packages to be installed on the target system during the
-`bootstrap` phase.
+    [--]
+     ││
+     │├ s Can be called multiple times with different input variables
+     │└ m Should be called just once. If called multiple times, it will
+     │     either be idempotent or undo later modifications (i.e. if you
+     │     create users with the `users` role, manually change passwords
+     │     and call it again, the passwords will be reset.
+     │
+     ├─ - Can be used in both the bootstrap and mainconfig phases
+     ├─ b Can only be used in the bootstrap phase
+     └─ m Can only be used in the mainconfig phase
 
-#### roles/hostname/defaults/main.yaml
+It is used to distingiush roles which only work in specific playbook
+phases from those that can be used freely. Also, some roles are meant
+to offer service to other roles (such as `packages`) while others
+do more extensive setup and it makes no sense to call them multiple
+times as they are idempotent (like `virtguest`).
 
-    hostname_hostname: archlinux
 
-Hostname information.
+#### base\_packages
 
-#### roles/locale/defaults/main.yaml
+Flags: `[bm]`
 
-    locale_timezone: Europe/Rome
-    locale_locale: it_IT.UTF-8
-    locale_keymap: it
+Installs the base packages to the system being provisioned via pacstrap.
 
-Locale information.
+#### bluetooth
 
-#### roles/makepkg/defaults/main.yaml
+Flags: `[ms]`
 
-    makepkg_aur_url: https://aur.archlinux.org/cgit/aur.git/snapshot/
+Installs packages required for Bluetooth functionalities.
 
-URL from which AUR packages are downloaded.
+#### clean
 
-#### roles/ttf_fonts/defaults/main.yaml
+Flags: `[ms]`
 
-    ttf_fonts_packages:
-      - ttf-bitstream-vera
-      - ttf-dejavu
-      - ...
+Clean installation leftovers (such as package caches) and undos some
+configuration for portable images.
 
-Packages installed by the `ttf_fonts` role.
+#### configure
 
-#### roles/users/defaults/main.yaml
+Flags: `[bs]`
 
-    users_root_info:
-        password: "..."
+Post-`bootstrap` minimal configuration of the installed system. Mainly,
+it ensures that things like networking and ssh will start automatically
+at boot time, so that Ansible can connect to the installed system after
+reboot.
 
-    users_info:
-      manu:
-        password: "..."
-        is_admin: true   # Optional item, true if missing
-        groups:   []     # Optional item, empty list if missing
+#### custom\_repos
 
-Settings for new users created on the target system. Users that have
-`is_admin` set to a truthy value will be added to the `wheel` group.
-Additional groups can be specified as the `groups` list. To retain backward
-compatibility, all fields but `password` are optional. Don't try to add sudo
-capabilities by manually adding `wheel` to `groups`, use `is_admin` instead.
-This allows for a degree of flexibility in how sudo access is implemented.
-
-#### roles/utils/defaults/main.yaml
-
-    utils_packages:
-      - ntfs-3g
-      - p7zip
-      - ...
-
-Packages installed by the `utils` role.
-
-#### roles/virtguest/defaults/main.yaml
-
-    virtguest_supported_hypervisors:
-      - virtualbox
-
-    virtguest_virtualbox_packages:
-      - virtualbox-guest-utils
-
-    # If set to yes, mplugd (https://github.com/anyc/mplugd) will be installed and
-    # used to handle guest screen resizing in place of VBoxClient.
-    virtguest_virtualbox_use_mplugd: no
-
-#### roles/virtguest_force/defaults/main.yaml
-
-    virtguest_force: ""
-
-By default, the playbook uses facts to detect if the target system is running
-under an hypervisor. If so, some behaviour will be adjusted accordingly:
-guest additions are installed and enabled automatically and the screensaver
-is disabled by default. If the hypervisor is unsupported, the playbook bails
-out. To proceed under an unsupported hypervisor without its additions, skip
-the `virtguest` tag.
-
-Set `virtguest_force` to one of the members of
-`virtguest_supported_hypervisors` to force the installation of the
-corresponding additional packages. This may be useful in two cases:
-
-* Ansible's setup module fails to detect the hypervisor for whatever
-  reason;
-* the user wants to install guest packages that do not correspond to the
-  detected hypervisor.
-
-When installing under VirtualBox 6.0 and above, and the VM uses the `VBoxVGA`
-adapter, automatic guest screen resizing will no longer work reliably. It is
-possible to set `virtguest_virtualbox_use_mplugd` to `yes` to install the
-`mplugd` daemon, configured to handle screen resizing. You can read more
-[here][mplugd-blog-post].
-
-#### roles/xscreensaver/defaults/main.yaml
-
-    # Set to:
-    # - "active" to force the screensaver to be active after installation
-    # - "inactive" to force the screensaver to be inactive after installation
-    # - Empty to preserve the default behaviour (fact-based choice)
-    xscreensaver_override: ""
-
-Can be used to override the default screensaver behaviour.
-
-#### roles/bluetooth/defaults/main.yaml
-
-    # Set to:
-    # - "active" to install bluetooth support
-    # - "inactive" to avoid installing it
-    # - Empty to preserve the default behaviour (install only on bare metal)
-    bluetooth_override: ""
-
-Can be used to override the default Bluetooth installation behaviour.
-
-#### roles/xfce/defaults/main.yaml
-
-    xfce_packages:
-      - xfce4
-      - xfce4-goodies
-
-Packages installed by the `xfce` role.
-
-#### roles/xfce_user_customizations/defaults/main.yaml
-
-    xfce_user_customizations_packages_numix:
-      - gtk-engine-murrine
-      - numix-square-icon-theme-git
-      - ...
-
-    xfce_user_customizations_packages_darkblue:
-      - gtk-engine-murrine
-      - numix-themes-darkblue
-      - ...
-
-    xfce_user_customizations_themes:
-      - theme: numix
-        installed: true
-        default: true
-      - theme: darkblue
-        installed: true
-
-Each theme requires certain additional packages. The
-`xfce_user_customizations_themes` list can be used to select which
-themes should be installed (`installed: true`) and which one should be
-set as the default theme for created users (`default: true`). It is
-currently not possible to specify different themes on a per-user basis.
-
-#### roles/xorg/defaults/main.yaml
-
-    xorg_packages:
-      - xorg
-      - xorg-apps
-      - ...
-
-Packages installed by the `xorg` role. These are pulled as dependencies by
-`xutils` and other roles that depend on a working X11 environment.
-
-#### roles/xutils/defaults/main.yaml
-
-    xutils_packages:
-      - gvfs
-      - udisks2
-      - ...
-
-Packages installed by the `xutils` role.
-
-#### roles/custom_repos/defaults/main.yaml
-
-    custom_repos_list: [
-    #  {
-    #    name: cache,
-    #    server: "http://10.0.2.2/x86_64/",
-    #    siglevel: Optional TrustAll
-    #  }
-    ]
-
-    custom_repos_servers: [
-    #  "http://localhost:8080/$repo/os/$arch"
-    ]
+Flags: `[-m]`
 
 It is possible to add extra repositories or mirrors during the
-installation process. `custom_repos_list` lists additional repositories,
-while `custom_repos_servers` lists additional mirrors for predefined
-repositories. They will persists in the final system if it is not
-configured as a portable installation.
+installation process. They will persists in the final system if it is
+not configured as a portable installation.
 
 Both repositories and mirrors take precedence over those already
 configured. This means that:
 
 * additional repositories will take precedence over `core`, `extra` and
-  other official repositories, so they can be used to override some
-  official package with a local version;
-* additional mirrors will be used instead of other mirrors present in
-  the mirrorlist, unless they are not reachable and pacman tries the
-  next one.
+  other official ones, so they can be used to override some official
+  package with a local version;
+* additional mirrors will be placed at the beginning of the mirrorlist
+  so that pacman tries them first, and then moves on to other mirrors if
+  the are all unreachable.
+
+It accepts a `state` variable, to be set to either `present` or
+`absent`. `present` will add repository definitions to `pacman` files,
+while `absent` will remove them.
+
+#### genfstab
+
+Flags: `[bs]`
+
+Generates a `fstab` file from the mountpoints found under a directory
+tree. A typical use is to call it from the postpartitioning phase of a
+partitioning flow in order to generated the `fstab` corresponding to the
+partitions used during the installation.
+
+#### hostname
+
+Flags: `[-s]`
+
+Sets up the host information in various files, such as `/etc/hostname`
+and `/etc/hosts`. The host domain is set to `localdomain`.
+
+When invoked, a `chroot` variable can be specified, to indicate where
+files holding host information are to be found. If not passed, the
+current root is used.
+
+#### locale
+
+Flags: `[ms]`
+
+Set system locale information, such as the keymap, the locale and the
+character set, the timezone.
+
+#### makepkg
+
+Flags: `[mm]`
+
+This helper role downloads PKGBUILD tarballs from the AUR, builds them
+and installs the resulting package. It lacks any dependency resolution
+capability or any other feature one would expect from any AUR helper,
+that's why it is normally only used to install `yay`.
+
+It accepts a `packages` variable, which should contain a (YAML) list of
+packages to install. If a package has AUR dependencies, list them all,
+with dependencies coming before dependants.
+
+#### packages
+
+Flags: `[mm]`
+
+Installs packages fomr either the AUR or regular repos. It delegates the
+job to `yay`.
+
+It accepts a `packages` variable, which should contain a (YAML) list of
+packages to install. Since it harnesses the full power of `yay`, you can
+mix AUR and regular packages in the list and don't have to worry about
+dependencies or ordering. This is the role to invoke when you need to
+install additional stuff.
+
+#### pacstrap
+
+Flags: `[bm]`
+
+Uses `pacstrap` to install stuff to a system under installation.
+
+It accepts a `packages` variable, which should contain a (YAML) list of
+packages to install. No AUR packages can be used here since `pacstrap`
+only handled regular repositories.
+
+#### partitioning
+
+#### passwordless\_sudo\_user
+
+Flags: `[ms]`
+
+Creates a dedicated user which can call `sudo` without being asked for a
+password. This user is used to build packages, since it can become root
+to install missing dependencies and the built package.
+
+A handler ensures that, at the end of the play, this user is eviced from
+the system.
+
+#### proxy
+
+Flags: `[-s]`
+
+Configures the system to use an HTTP(S) proxy. In particular:
+
+* it stores proxy variables into a global shell profile, imported by all
+  users when a login shell is run;
+* configures `sudo` to preserve those variables;
+* tells `pacman` to use `curl` to grab files. This was done in order to
+  have better control over the download timeout: `pacman`'s built-in
+  downloader will, by default, abort a download if no data are received
+  for about 10 seconds. There is an option to disable this, but AFAIK,
+  it can only be passed via the command line and cannot be configured
+  via `pacman.conf`. When setting a custom downloader, conversely, you
+  can specify the full command line, including timeout related options.
+  This point is important because many corporate proxies will implement
+  some store-check for malware-forward logic which can break the default
+  `pacman` timeout.
+
+#### syslinux
+
+Flags: `[bs]`
+
+Installs `syslinux` (more accurately, `extlinux`) as the bootloader for
+the new system. It assumes a legacy BIOS system and MBR partition tables
+for the disk where `/boot` resides.
+
+It automatically tries to detect most things on its own. The
+configureation file with boot entries is dynamically generated from the
+kernels and initramfs files present under the new system's `/boot`, so
+one does not have to list them explicitly.
+
+Also, it detects which device nodes are involved by looking up device
+nodes associated with the new system's root partition and `/boot`. The
+root partition is used to extract the UUID that ends up in boot entries,
+while the device mounted under `/boot` is used to install the IPL (the
+code that goes into the MBR). For example, if `/boot` is mounted from
+`/dev/sda3`, the IPL code will be installed to `/dev/sda`.
+
+The only tunable parameter is given by the `ipl` variable, a boolean
+which controls if the IPL code should be installed or not. By default it
+is set to yes. It makes sense to disable it if you plan to chain-load
+syslinux from a different bootloader.
+
+#### ttf\_fonts
+
+Flags: `[ms]`
+
+Installs a bunch of extra fonts.
+
+#### users
+
+Flags: `[ms]`
+
+This role creates user accounts, sets their passwords and makes them able to
+use sudo, if appropriate. It should be a dependency of all those roles
+which copy files to home dirs or expect users/home folders to exist.
+
+After execution, it will have defined two variables that can be used to
+iterate over user information:
+
+* `users_names` is a list holding all non-root accounts defined in the
+defaults (or overriden somewhere else);
+* `users_created` is the output of the `user` Ansible module and contains
+useful info about created users, such as their home dirs. One can use them
+like this, to avoid assuming where home dirs are placed or their names
+(as we may allow setting home dir names in the future, rather than using the
+username):
+
+```yaml
+name: Copy a file to user home
+copy:
+  src: foobar
+  dest: "{{ users_created | user_home(item) }}/.foobar"
+loop: "{{ users_names }}"
+```
+
+Note that `user_home` is a custom filter that simply extracts the home path
+for a user name.
+
+Modules depending on `users` are allowed to access those two variables
+as role output.
+
+All user info (such as username, password, additional groups) is stored
+into this module's defaults file. As usual, it can be overridden in host
+or group variables.
+
+#### utils
+
+Flags: `[ms]`
+
+Installs a bunch of CLI utils. This is where additional utils should be
+added. If a tool depends on the X Window System somehow, it should go
+under `xutils`.
+
+#### virtguest and virtguest\_force
+
+Flags: `[ms]`
+
+These roles deal with VM-specific tweaks, like installing guest
+additions.
+
+By default, the playbook uses facts to detect if the target system is
+running under an hypervisor. If so, some behaviour will be adjusted
+accordingly: for example, guest additions are installed and enabled
+automatically and the screensaver is disabled by default. If the
+hypervisor is unsupported, the playbook bails out. To proceed under an
+unsupported hypervisor without its additions, skip the `virtguest` tag.
+
+`virtguest_force` can be used to override the detected hypervisor or to
+force a bare-metal installation to be treated like a VM installation.
+This is only useful should Ansible ever fail to correctly detect that we
+are running under a VM, or misdetect the hypervisor.
+
+`virtguest` takes care of doing the real work for the detected
+hypervisor, as reported by Ansible and potentially overridden by
+`virtguest_force`.
+
+When installing under VirtualBox 6.0 and above, and the VM uses the
+`VBoxVGA` adapter, automatic guest screen resizing will no longer work
+reliably. As a workaround, `virtguest` can be instructed to install the
+`mplugd` daemon, configured to handle screen resizing. You can read more
+[here][mplugd-blog-post].
+
+#### xfce
+
+Flags: `[ms]`
+
+Installs the XFCE desktop environment.
+
+#### xfce\_user\_customizations
+
+Flags: `[ms]`
+
+This role does two things:
+
+* it installs packages related to XFCE eyecandy (themes, icons,
+  engines);
+* copies configuration files to each user home folder, in order to set
+  the default look and feel.
+
+Tweak the defaults to select which themes are to be installed and which
+should be used as the default for users. It currently not possible to
+specify themes on a per-user basis.
+
+#### xorg
+
+Flags: `[ms]`
+
+Installs the X Window System, specifically X.org.
+
+This role is usually pulled in as a dependency of other roles which
+install GUI applications, such as `xutils`.
+
+#### xscreensaver
+
+Flags: `[ms]`
+
+Installs `xscreensaver`. This tool has been granted a role on its own,
+rather than simply being another entry under `xutils`, because its
+configuration depends on the installation type.
+
+When doing bare-metal installations, the screensaver is enabled by
+default and will lock the screen after a few minute of inactivity as a
+security measure.
+
+Conversely, VM installations will have it installed but disabled,
+because one would assume that the host itself already has a screensaver
+and there is no reason the get asked for two different password every
+time the screen is locked.
+
+The defaults provide a way to override this behaviour.
+
+#### xutils
+
+Flags: `[ms]`
+
+Installs a bunch of GUI utils. This is where additional grtaphical utils
+should be added. If a tool does not depend on the X Window System
+somehow, it should go under `utils`.
+
+#### yay
+
+Flags: `[ms]`
+
+Installs `yay` from the AUR.
+
+#### yay\_user\_customizations
+
+Flags: `[ms]`
+
+Copies `yay` configuration files to each user's home directory. This
+does not affect the use of the `packages` role, because it passes all
+options explicitly on the command line. It is meant to provide
+reasonable defaults to users which desire to use `yay` as their AUR
+helper after the system has been installed.
 
 ## Simple customization
 
 ### Add a non-X11 package
 
-If you want to add a new non-X11 package to every installation and it does
-not require special configuration, add it to the package list in
-`roles/utils/meta/main.yaml`.
+If you want to add a new non-X11 package to every installation and it
+does not require special configuration, copy the package list in
+`roles/utils/meta/main.yaml` to a `group_vars` file and then customize
+it. Your list will override the default.
 
 ### Add an X11 package
 
-If you want to add a new X11 package to every installation and it does not
-require special configuration, add it to the package list in
-`roles/xutils/meta/main.yaml`.
+If you want to add a new X11 package to every installation and it does
+not require special configuration, copy the package list in
+`roles/xutils/meta/main.yaml` to a `group_vars` file and then customize
+it. Your list will override the default.
 
 ### Add a package that requires configuration
 
@@ -470,14 +676,19 @@ requires special configuration (i.e. configuration files to be copied),
 create a new role for it that includes files and templates.
 
 Delegate the actual installation to the `packages` role. AUR packages
-are fine since yay is used.
+are fine since `yay` is used. Then do the rest of the setup.
 
-    import_role:
-      name: packages
-      vars:
-        packages:
-          - new_package_1
-          - new_package_2
+```yaml
+- import_role:
+    name: packages
+    vars:
+      packages:
+        - my_package
+
+- copy:
+    src: my_package.conf
+    dest: /etc/my_package.conf
+```
 
 This approach allows for the maximum flexibility (i.e. to install and
 configure an additional DE). If the package requires X11, add the `xorg`
@@ -586,7 +797,7 @@ Apply any other customization via host/group variables. And finally run:
 After installation is complete, you can delete the key pair generated above,
 from both the controller and the target.
 
-[screenshot]: docs/screenshot.png
+[numix]: docs/numix.png
 [darkblue]: docs/darkblue.png
 [mplugd-blog-post]: https://binary-manu.github.io/binary-is-better/virtualbox/resize-vbox-screen-with-mplugd
 

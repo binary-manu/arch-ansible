@@ -1,9 +1,17 @@
-# In real deployments, this file should be customized with real passwords and
-# encrypted with ansible-vault.
-
+# All user information pertaining to root. For the moment there's just the
+# password.
 users_root_info:
     password: "abcd$1234_root"
 
+# User info for all non-root users.
+#
+# The dictionary name (i.e. manu) is used as the user name.
+#
+# Users with `is_admin` set to true will be able to call sudo to perform any
+# task as root, with their password asked.
+#
+# Additional groups can be added via the `groups` list. To make a user
+# sudo-enabled, set `is_admin` to true, _do not_ add `wheel` to `groups`.
 users_info:
   manu:
     password: "abcd$1234_manu"

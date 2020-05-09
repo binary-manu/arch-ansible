@@ -1,5 +1,9 @@
 # Set to:
-# - "active" to force the screensaver to be active after installation
-# - "inactive" to force the screensaver to be inactive after installation
-# - Empty to preserve the default behaviour (fact-based choice)
+# * `active` to force the screensaver to be enabled after installation
+# * `inactive` to force the screensaver to be disabled after installation
+# * Empty to preserve the default behaviour (fact-based choice): the
+#   screensaver will be enabled by default on bare metal systems and
+#   disabled in VM's.
+# This only changes xscreensaver configuration, the program itself is
+# always installed.
 xscreensaver_override: ""

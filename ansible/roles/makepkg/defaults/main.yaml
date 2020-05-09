@@ -1,1 +1,3 @@
+# When downloading PKGBUILD tarball snapshots from the AUR, this
+# URL is used.
 makepkg_aur_url: https://aur.archlinux.org/cgit/aur.git/snapshot/

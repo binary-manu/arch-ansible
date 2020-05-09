@@ -1,6 +1,8 @@
+# The list of currently supported hypervisors
 virtguest_supported_hypervisors:
   - virtualbox
 
+# Packages to install to add VirtualBox support to the VM
 virtguest_virtualbox_packages:
   - virtualbox-guest-utils
 

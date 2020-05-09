@@ -1,3 +1,5 @@
+# A list of font packages to install. Both AUR and regular packages can be
+# supplied here.
 ttf_fonts_packages:
   - ttf-bitstream-vera
   - ttf-dejavu

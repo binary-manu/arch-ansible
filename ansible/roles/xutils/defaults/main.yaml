@@ -1,3 +1,5 @@
+# A list of GUI packages to install. Both AUR and regular packages can be
+# supplied here. X.org is already pulled in as a dependency.
 xutils_packages:       
   - gvfs
   - udisks2
