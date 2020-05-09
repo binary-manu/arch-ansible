@@ -23,7 +23,7 @@
       - lvm
 
 - name: Enumerate created partitions
-  shell: lsblk -rn "{{ partitioning_priv_device_node }}" | awk '{ print $1; }' | tail -n +2
+  shell: lsblk -rn -o PATH "{{ partitioning_priv_device_node }}" | tail -n +2
   register: _partitions
   changed_when: no
 
@@ -52,7 +52,7 @@
 
 - name: Store root PV name
   set_fact:
-    partitioning_priv_root_lv_node: >
+    partitioning_priv_root_lv_node: >-
       /dev/{{ partitioning_priv_vg_name }}/{{ partitioning_priv_lv_name }}
 
 - name: Format the root partition
