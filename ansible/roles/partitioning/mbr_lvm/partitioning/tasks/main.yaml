@@ -3,14 +3,33 @@
 
 - name: Create a MBR partition table and the boot partition
   parted:
-    device: "{{ (partitioning_priv_boot_device_node | split_partition_number)[0] }}"
+    device: "{{ partitioning_priv_device_node }}"
     state: present
     label: msdos
-    number: "{{ (partitioning_priv_boot_device_node | split_partition_number)[1] }}"
+    number: 1
     part_start: "{{ 1024 * 1024 }}B"
     part_end: "{{ partitioning_priv_boot_size | int + 1024 * 1024 - 1}}B"
     flags:
       - boot
+
+- name: Create the partition to hold the PV
+  parted:
+    device: "{{ partitioning_priv_device_node }}"
+    state: present
+    label: msdos
+    number: 2
+    part_start: "{{ partitioning_priv_boot_size | int + 1024 * 1024 }}B"
+    flags:
+      - lvm
+
+- name: Enumerate created partitions
+  shell: lsblk -rn "{{ partitioning_priv_device_node }}" | awk '{ print $1; }' | tail -n +2
+  register: _partitions
+
+- name: Assign partitions to variables
+  set_fact:
+    partitioning_priv_boot_device_node: "{{ _partitions.stdout_lines[0] }}"
+    partitioning_priv_root_device_node: "{{ _partitions.stdout_lines[1] }}"
 
 - name: Format the boot partition
   filesystem:
@@ -18,31 +37,22 @@
     fstype: ext4
     opts: -O ^64bit
 
-- name: Create the root partition
-  parted:
-    device: "{{ (partitioning_priv_root_device_node | split_partition_number)[0] }}"
-    state: present
-    label: msdos
-    number: "{{ (partitioning_priv_root_device_node | split_partition_number)[1] }}"
-    part_start: "{{ partitioning_priv_boot_size | int + 1024 * 1024 }}B"
-    flags:
-      - lvm
-
 - name: Create a PV and VG for root
   lvg:
-    vg: vg-arch
+    vg: "{{ partitioning_priv_vg_name }}"
     pvs:
       - "{{ partitioning_priv_root_device_node }}"
 
 - name: Create a root LV
   lvol:
-    vg: vg-arch
-    lv: lv-root
+    vg: "{{ partitioning_priv_vg_name }}"
+    lv: "{{ partitioning_priv_lv_name }}"
     size: "100%FREE"
 
 - name: Store root PV name
   set_fact:
-    partitioning_priv_root_lv_node: /dev/vg-arch/lv-root
+    partitioning_priv_root_lv_node: >
+      /dev/{{ partitioning_priv_vg_name }}/{{ partitioning_priv_lv_name }}
 
 - name: Format the root partition
   filesystem:

@@ -2,7 +2,7 @@
   lineinfile:
     backrefs: yes
     regexp: ^(HOOKS=.*)(filesystems.*)$
-    line: \1 lvm2 \2
+    line: \1lvm2 \2
     path: "{{ partitioning_root_mount_point }}/etc/mkinitcpio.conf"
 
 - name: Regenerate initramfs
