@@ -25,6 +25,7 @@
 - name: Enumerate created partitions
   shell: lsblk -rn "{{ partitioning_priv_device_node }}" | awk '{ print $1; }' | tail -n +2
   register: _partitions
+  changed_when: no
 
 - name: Assign partitions to variables
   set_fact:
