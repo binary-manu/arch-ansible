@@ -1,4 +1,0 @@
-partitioning_root_mount_point: "/mnt"
-partitioning_efi_device_node:  "/dev/sda1"
-partitioning_root_device_node: "/dev/sda2"
-partitioning_root_start: "{{ 512 * 1024 * 1024 }}"
