@@ -34,8 +34,6 @@
     # set it as early as possible, but if bootstrap is skipped (i.e.
     # provisioning with Vagrant) we do it again here.
     - role: hostname
-      vars:
-        root: ""
     - role: custom_repos
     - role: users
     - role: locale

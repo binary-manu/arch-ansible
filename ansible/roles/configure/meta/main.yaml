@@ -1,4 +1,4 @@
 dependencies:
   - role: hostname
     vars:
-      root: "{{ partitioning_root_mount_point }}"
+      chroot: "{{ partitioning_root_mount_point }}"
