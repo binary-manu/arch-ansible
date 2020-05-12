@@ -1,3 +1,7 @@
+- name: Generate the username list from users_info
+  set_fact:
+    users_names: "{{ users_info | dict2items | map(attribute='key') | list }}"
+
 - name: Add initial users
   user:
     shell: /bin/bash

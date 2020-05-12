@@ -9,5 +9,3 @@ users_info:
     password: "abcd$1234_manu"
     is_admin: true # Optional item, true if missing
     groups: []     # Optional item, empty list if missing
-
-users_names: "{{ users_info | dict2items | map(attribute='key') | list }}"
