@@ -77,9 +77,9 @@ user's `.xinitrc` is configured to launch XFCE when calling `startx`.
 An alternative, darker style based on the Numix-DarkBlue theme is
 available.
 
-The `xfce4-screensaver` package is ditched in favor of `xscreensaver`. By
-default, systems installed in VM's will have it disabled, since I would
-assume that the host already has a screensaver/lock. Bare metal
+The `xfce4-screensaver` package is ditched in favor of `xscreensaver`.
+By default, systems installed in VM's will have it disabled, since I
+would assume that the host already has a screensaver/lock. Bare metal
 installations, conversely, have it enabled by default to power off the
 screen after a few minutes. It is possible to override this behaviour.
 
@@ -93,9 +93,9 @@ These are handled by the `utils` and `xutils` roles.
 Users (including `root`) get their passwords from
 `roles/users/defaults/main.yaml`.
 
-The predefined partitioning flow defines a single-partition MBR layout, using
-Syslinux as the bootloader installed on root. Swap space is not configured.
-Alternative flows are defined, including:
+The predefined partitioning flow defines a single-partition MBR layout,
+using Syslinux as the bootloader installed on root. Swap space is not
+configured.  Alternative flows are defined, including:
 
 * support for root on LVM, under a MBR table;
 * support for EFI installation.
@@ -147,7 +147,8 @@ VirtualBox guest utilities without X support, which will cause
 
 The `bootstrap` phase encompasses the following stages:
 
-* partitioning: disks are partitioned and partitions are formatted and then
+* partitioning: disks are partitioned and partitions are formatted and
+  then
   mounted for later use;
 * base package are installed to the target system;
 * post-partitioning: tasks which are related to partitioning but can
@@ -196,13 +197,11 @@ to the call.
 
 ### mainconfig
 
-The `mainconfig` tag  marks the tasks that does the heavy lifting. It
+The `mainconfig` tag marks the tasks that does the heavy lifting. It
 configures locales, creates users, sets their initial passwords, and
-prepare the system to work behind a proxy. These steps are compulsory.
-
-Additional steps include installing utilities and GUI apps, a desktop
-environment and applying default customizations to users. These steps
-can be skipped or selected one by one using tags.
+prepare the system to work behind a proxy. Additional steps include
+installing utilities and GUI apps, a desktop environment and applying
+default customizations to users.
 
 Roles which install X apps will automatically pull X.org as a
 dependency.
@@ -222,19 +221,21 @@ As a workaround, you can force all handlers to run again by setting the
 variable `run_handlers` to `true`. This works by causing all tasks that
 trigger a handler to report a `changed` status.
 
-It works differently than `--force-handlers`. As per Ansible documentation:
+It works differently than `--force-handlers`. As per Ansible
+documentation:
 
-> When handlers are forced, they will run when notified even if a task fails
-> on that host.
+> When handlers are forced, they will run when notified even if a task
+> fails on that host.
 
-While, in our scenario, handlers would _not_ be notified by tasks when they
-return `ok`.
+While, in our scenario, handlers would _not_ be notified by tasks when
+they return `ok`.
 
 ## Configuration
 
-By design, global configuration items are those which are used by multiple
-roles and are stored in `group_vars/all/00-defaults.yaml`. Other variables,
-which are local to a specific role, are stored under either:
+By design, global configuration items are those which are used by
+multiple roles and are stored in `group_vars/all/00-defaults.yaml`.
+Other variables, which are local to a specific role, are stored under
+either:
 
 * `roles/$ROLE/defaults/main.yaml`, or
 * `roles/$ROLE/tasks/defaults.yaml`.
@@ -510,20 +511,21 @@ Installs a bunch of extra fonts.
 
 Flags: `[ms]`
 
-This role creates user accounts, sets their passwords and makes them able to
-use sudo, if appropriate. It should be a dependency of all those roles
-which copy files to home dirs or expect users/home folders to exist.
+This role creates user accounts, sets their passwords and makes them
+able to use sudo, if appropriate. It should be a dependency of all those
+roles which copy files to home dirs or expect users/home folders to
+exist.
 
 After execution, it will have defined two variables that can be used to
 iterate over user information:
 
 * `users_names` is a list holding all non-root accounts defined in the
-defaults (or overriden somewhere else);
-* `users_created` is the output of the `user` Ansible module and contains
-useful info about created users, such as their home dirs. One can use them
-like this, to avoid assuming where home dirs are placed or their names
-(as we may allow setting home dir names in the future, rather than using the
-username):
+  defaults (or overriden somewhere else);
+* `users_created` is the output of the `user` Ansible module and
+  contains useful info about created users, such as their home dirs. One
+  can use them like this, to avoid assuming where home dirs are placed
+  or their names (as we may allow setting home dir names in the future,
+  rather than using the username):
 
 ```yaml
 name: Copy a file to user home
@@ -533,8 +535,8 @@ copy:
 loop: "{{ users_names }}"
 ```
 
-Note that `user_home` is a custom filter that simply extracts the home path
-for a user name.
+Note that `user_home` is a custom filter that simply extracts the home
+path for a user name.
 
 Modules depending on `users` are allowed to access those two variables
 as role output.
@@ -706,35 +708,36 @@ Click the links to read their own docs.
 
 ## Integration with pkgproxy
 
-If you are going to do multiple installations using arch-ansible in a short
-interval, it may be best to save and reuse downloaded packages across runs.
-To do that, the simplest way is to use the
-[pkgproxy](https://github.com/buckket/pkgproxy) tool, which acts as a cache
-between an Arch Linux mirror and your system.
+If you are going to do multiple installations using arch-ansible in a
+short interval, it may be best to save and reuse downloaded packages
+across runs.  To do that, the simplest way is to use the
+[pkgproxy](https://github.com/buckket/pkgproxy) tool, which acts as a
+cache between an Arch Linux mirror and your system.
 
 It is very simple to use: you run it, configure it as a mirror for your
 system, and every downloaded package will get stuffed into its cache.
-arch-ansible has support for additional mirrors, so it is easy to tell it to
-use your local pkgproxy instance by adding an extra file as described in
-[Configuration](#Configuration). For example, you may add the following
-contents to `group_vars/all/50-pkgproxy.yaml`:
+arch-ansible has support for additional mirrors, so it is easy to tell
+it to use your local pkgproxy instance by adding an extra file as
+described in [Configuration](#Configuration). For example, you may add
+the following contents to `group_vars/all/50-pkgproxy.yaml`:
 
     custom_repos_servers:
       - http://10.0.2.2:8080/$repo/os/$arch
 
-The exact hostname and port will vary depending on where you run pkgproxy. The example
-above assumes that Arch is running inside a VM, while pkgproxy is running on
-the host, on port 8080.
+The exact hostname and port will vary depending on where you run
+pkgproxy. The example above assumes that Arch is running inside a VM,
+while pkgproxy is running on the host, on port 8080.
 
 ## Bare metal installation
 
 _NOTE: unless noted, all commands are intented to be run on the target
 machine._
 
-arch-ansible can provision physical machines, not just VM's. But some care
-must be taken in preparing the host/group variables files, plus some
-network-related actions. Also, you will need a separate PC to be used as the
-Ansible controller, which must be able to connect to the target machine.
+arch-ansible can provision physical machines, not just VM's. But some
+care must be taken in preparing the host/group variables files, plus
+some network-related actions. Also, you will need a separate PC to be
+used as the Ansible controller, which must be able to connect to the
+target machine.
 
 _Note: before running the following steps, keep in mind that the
 `bootstrap` tag enables tasks which will partition, format, and install
@@ -747,19 +750,19 @@ will no longer boot after the installation. If possible, you can then
 configure Syslinux to chainload the other system.
 
 
-The target will be rebooted multiple times during the installation and if you
-are using DHCP the IP may change across reboots. You may want to configure
-your local DHCP server to give the target a fixed IP by using a MAC address
-reservation.
+The target will be rebooted multiple times during the installation and
+if you are using DHCP the IP may change across reboots. You may want to
+configure your local DHCP server to give the target a fixed IP by using
+a MAC address reservation.
 
-When rebooting from the install media into the installed system, it would be
-useful if the system firmware were configured to automatically boot into the
-new system, otherwise the installation media would boot again and the
-installation could not proceed.
+When rebooting from the install media into the installed system, it
+would be useful if the system firmware were configured to automatically
+boot into the new system, otherwise the installation media would boot
+again and the installation could not proceed.
 
 The target will need to be accessible over SSH. Ensure that
-`/etc/ssh/sshd_config` allows root login: it should contain the following
-line:
+`/etc/ssh/sshd_config` allows root login: it should contain the
+following line:
 
     PermitRootLogin yes
 
@@ -771,17 +774,19 @@ And start SSH:
 
     # systemctl start sshd
 
-At this point incoming connections are allowed, but it is better to let SSH
-use a private key for authentication rather than a password. Let's generate a
-new keypair (which can be reused across all installations; note the `-N ''`,
-which means the private key is unencrypted so no password is asked when
-connecting) and copy the public part to the target:
+At this point incoming connections are allowed, but it is better to let
+SSH use a private key for authentication rather than a password. Let's
+generate a new keypair (which can be reused across all installations;
+note the `-N ''`, which means the private key is unencrypted so no
+password is asked when connecting) and copy the public part to the
+target:
 
     # On the controller
     $ ssh-keygen -N '' -f ~/.ssh/arch-install
     $ ssh-copy-id -i ~/.ssh/arch-install root@your.machine.local
 
-Edit your `$HOME/.ssh/config` file to associate your target system with this key:
+Edit your `$HOME/.ssh/config` file to associate your target system with
+this key:
 
     Host your.machine.local
     IdentityFile ~/.ssh/arch-install
@@ -794,8 +799,8 @@ Apply any other customization via host/group variables. And finally run:
     # On the controller
     $ ansible-playbook -i hosts.yaml --tags bootstrap,mainconfig site.yaml
 
-After installation is complete, you can delete the key pair generated above,
-from both the controller and the target.
+After installation is complete, you can delete the key pair generated
+above, from both the controller and the target.
 
 [numix]: docs/numix.png
 [darkblue]: docs/darkblue.png
