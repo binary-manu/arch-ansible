@@ -39,19 +39,13 @@
     - role: locale
     - role: proxy
     - role: virtguest
-      tags: [virtguest]
+      tags: virtguest
     - role: xfce_user_customizations
-      tags: [xfce]
     - role: yay_user_customizations
-      tags: [yay]
     - role: ttf_fonts
-      tags: [ttf_fonts]
     - role: utils
-      tags: [utils]
     - role: xutils
-      tags: [xutils]
     - role: bluetooth
-      tags: [bluetooth]
 
 - name: Clean and reboot
   hosts: all
@@ -59,7 +53,6 @@
   environment: "{{ global_proxy_env }}"
   roles:
     - role: clean
-      tags: clean
   post_tasks:
     - reboot:
       tags: reboot
