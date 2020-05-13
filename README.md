@@ -302,6 +302,31 @@ This will automatically trigger proxy-related tasks and configure the
 installed system to work behind a proxy (by setting appropriate
 environment variables).
 
+#### Tags
+
+The following tags can be used to enable or disable specific parts of
+the playbook:
+
+* `bootstrap`: enables or disables the whole bootstrap phase, which runs
+  against the Arch installation media. It is disabled by default,
+  because the bootstrap phase performs potentially dangerous operations
+  like partitioning and formatting. Keep disabled when provisioning
+  ready-made base systems like Vagrant images. Enable when provisioning
+  bare metal systems or Packer VM's;
+* `mainconfig`: disables or enables the entire mainconfig phase. This is
+  run by default, and there is probably no reason to skip it unless you
+  are debugging bootstrap;
+* `reboot`: skip it to disable reboots at certain points of the
+  installation.  Useful if the reboot should be avoided: the Packer
+  template provided with [arch-packer](packer/README.md) is an example
+  of this;
+* `virtguest`: disable tasks that would install hypervisor-specific
+  packages or configure things. They are already skipped automatically
+  when the playbook detects a bare-metal installation. It is mainly
+  useful when installing under an hypervisor which is not currently
+  supported. By default, the playbook would bail ouyt in such a case:
+  skipping this tag force it to continue.
+
 ### Roles
 
 The following sections give a brief description of available role. For
