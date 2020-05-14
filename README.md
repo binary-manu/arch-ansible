@@ -59,15 +59,25 @@ strcture in sync, as in the previous branch.
 
 More on this role in [users](#users).
 
-#### Changes to Partitioning
+#### Changes to partitioning
 
 The partitioning phase has been reworked to allow for more flexible
 partitioning and bootloader installation, including the case of users
 dropping their own partitioning roles to automate specific deployments
 without the need to fork and customize.
 
-More info can be found in the [bootstrap](#bootstrap) section and the
-[partitioning](#partitioning) section.
+More info can be found in the [bootstrap](#bootstrap),
+[partitioning](#partitioning) and [partitioning
+flows](#Partitioning-flows) sections.
+
+The `mbr_singlepart` partitioning flow produces exactly the same results
+as the previous branch.
+
+#### Changes to tags
+
+Most tags have been eliminated because they provided little value. Refer
+to [this section](#Tags) for a list of supported tags and their intended
+usage.
 
 ## Installed system
 
@@ -119,6 +129,157 @@ module allows for uniform installation of binary and AUR packages. You
 are free to uninstall `yay` after the provisioning is complete and to
 install your favorite AUR helper.
 
+## Partitioning flows
+
+One the biggest limitations if branch `v0.1.x` was that the partitioning
+performed by `bootstrap` phase was inflexible. You only got MBR-style
+partition tables, single root layouts with ext4 and Syslinux as the
+bootloader. The IPL code in the MBR was also overwritten at install
+time.
+
+While that setup is fine for some scenarios, specifically VM
+provisioning, when the disk is always fresh, it can be unsuitable when
+provisioning bare metal systems with other partitions an OSes in place.
+
+To circumvent the problem, the fixed roles that implemented partitioning
+have been replaced with the concept of a _partitioning flow_. A
+partitioning flow is a collection of roles, each one taking care of a
+specific step of partitiong, which are called by the `bootstrap` phase
+at appropriate times. These role a bundled together into a _base
+folder_, and that folder is placed somewhere where Ansible can find
+roles. At that point, a variable is used to specify the base folder
+name, and the roles beneath it will be used at install time.
+
+This way, each partitioning flow can be seen as a plugin, providing
+pre-canned partitioning scheme for different scenarios (i.e. RAID, LVM,
+GPT, MBR, different filesystems for root, multipartition layouts and so
+on).
+
+Writing a new partitioning flow requires wrinting some Ansible roles.
+For repetitive tasks this can be a good idea. For one-shot setups, one
+may be found [manual partitioning](#Manual-partitioning) a faster
+approach.
+
+### Built-in flows
+
+Currently, this playbook come with a bunch of ready-made flows that
+cover some basic scanrios and are mostly useful for VM provisioning:
+
+* `partitioning/mbr_singlepart`: a single disk is formatted with a
+  single, large root partition using a MBR partition table. The
+  partition will use 32-bit ext4 (required for Syslinux to work) and
+  Syslinux as the bootloader.  The IPL of that disk will be replaced to
+  load Syslinux at boot;
+* `partitioning/gpt_singlepart`: a single disk is formatted with two GPT
+  partitions, a large root partition plus an ESP. The root partition
+  will use 64-bit ext4 and GRUB2 as the bootloader. The size of the ESP
+  can be adjusted and defaults to 512MiB;
+* `partitioning/mbr_lvm`: a single disk is formatted with two MBR
+  partitions, a large LVM partition plus a small primary boot partition.
+  The LVM partition is used to create a PV and a VG which will then host
+  the root LV, ext4-formatted. The boot partition will hold the kernels
+  for the non-LVM-aware bootloader. Syslinux is used to boot up. The
+  size of the boot partition can be configured and defaults to 512MiB.
+  Don't make it too small if you want to install additional kernels.
+
+### Flow structure and location
+
+Partitioning flows must reside under a path that Ansible uses when
+searching for roles. By default, the playbook restricts those paths to:
+
+* `$ARCH_ANSIBLE_ROOT/ansible/roles` where built-in roles reside. All
+  built-in flows are grouped under `partitioning`, that why you need to
+  refer to them as `partitioning/$FLOW_NAME`, such as
+  `partitioning/mbr_lvm`;
+* `$ARCH_ANSIBLE_ROOT/ansible/extra_roles` is meant to store third-party
+  flows, so that they don't mess up with built-in stuff.
+
+For example, if you place your new flow `foopart` under
+`$ARCH_ANSIBLE_ROOT/ansible/extra_roles`, your roles will reside at
+`$ARCH_ANSIBLE_ROOT/ansible/extra_roles/foopart`, it base folder.
+
+Each base folder contains one subfolder per role, and each flow is
+composed of exactly 3 roles:
+
+* `partitioning`: this is called _before_ the base system is installed.
+  It is meant to prepare and mount the partitions for the target
+  systems, so that base package installation can use them. This role
+  does things like defining partitions, formatting them, and mounting
+  them;
+* `postpartitioning`: is run _after_ the base packages have been
+  installed. This means it can assume a standard filesystem hierarchy
+  being present on the new root, including standard Arch tools and
+  configuration files. This is the place where things like generating
+  the fstab or tweaking the initcpios are done;
+* `bootloader`: is run last to install and configure the bootloader.
+
+Bootloader installation is considered part of partitioning, simply
+because some partitioning choice may rule out certain bootloaders or
+require special installation options.
+
+When implementing a role, feel free to call on other built-in modules to
+save some coding. Roles such as `genfstab` and `syslinux` are there to
+be used . For example, if you `bootloader` role can simply delegate
+everything to `syslinux`, just make it an empty role with a dependency
+on `syslinux`.
+
+A typical flow tree structure is as follows:
+
+    mbr_lvm/
+    ├── bootloader
+    │   └── meta
+    │       └── main.yaml
+    ├── partitioning
+    │   └── tasks
+    │       ├── defaults.yaml
+    │       └── main.yaml
+    └── postpartitioning
+        ├── meta
+        │   └── main.yaml
+        └── tasks
+            └── main.yaml
+
+Have a look at built-in flows for an example.
+
+### Flow interfaces
+
+Each flow roles may need to pass information to other parts of the
+playbook, both to roles in the same flow and to built-in roles. To make
+this easier while avoiding conflicts, a simple naming scheme is defined
+for such information. In general, each role provides information to
+other roles by means of facts, which can be set using the standard
+`set_fact` module.
+
+#### Interface towards other flow roles
+
+If a flow role needs to define a fact to be consumed by a role in the
+same flow that is called later (i.e. pass data from `partitioning` to
+`bootloader`, for example), that fact should follow the convention that
+its name looks like:
+
+    partitioning_priv_*
+
+For example, `partitioning_priv_root_devnode` can store the device node
+used for the root partition, which is established at `partitioning` time
+and later used to install the bootloader. Apart from the prefix,
+flow-local fact names are arbitrary.
+
+#### Interface towards the rest of the playbook
+
+At present time, the only expectation the rest of the playbook places on
+paartitioning flows is that the `partitioning` role should define where
+the root partition (and all other partitions mounted below it) is
+mounted, by defining the `partitioning_root_mount_point` fact.
+
+Often, one will simply use `/mnt` is the root mountpoint, so it will use
+something like this to make this information available:
+
+```yaml
+- name: Define public interface facts
+  set_fact:
+    partitioning_root_mount_point: /mnt
+```
+
 ## Playbook structure
 
 The playbook is broken into two big parts, identified by tags:
@@ -141,7 +302,6 @@ and base packages are installed. Some minor adjustments might be
 required in this case (i.e. Vagrant boxes likely come with pre-installed
 VirtualBox guest utilities without X support, which will cause
 `virtualbox-guest-utils` not to install).
-
 
 ### bootstrap
 
