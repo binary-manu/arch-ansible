@@ -24,7 +24,7 @@ should depend on the `passwordless_sudo_user` role and get it from
 
 #### Changes to user management
 
-User account information has been harmonized, eliminating some unused
+User account information have been harmonized, eliminating some unused
 objects and splitting root info from the rest of the users, since most
 attributes do not make sense for root.
 
@@ -70,14 +70,20 @@ More info can be found in the [bootstrap](#bootstrap),
 [partitioning](#partitioning) and [partitioning
 flows](#Partitioning-flows) sections.
 
-The `mbr_singlepart` partitioning flow produces exactly the same results
-as the previous branch.
+The `partitioning/mbr_singlepart` partitioning flow produces exactly the
+same results as the previous branch.
 
 #### Changes to tags
 
 Most tags have been eliminated because they provided little value. Refer
 to [this section](#Tags) for a list of supported tags and their intended
 usage.
+
+#### Changes to the `hostname` role
+
+It used to accept a `root` variable giving the root where
+`/etc/hostname` and friends are to be found. It has been renamed to
+`chroot` for consistency with other modules.
 
 ## Installed system
 
@@ -95,29 +101,30 @@ screen after a few minutes. It is possible to override this behaviour.
 
 Optional Bluetooth support can be installed. By default it is only
 installed on bare-metal installations. This behaviour can be overridden
-(i.e. to test a Bluetooth dongle in a VM via USB passthrough).
+to force-enable or disable it (i.e. to test a Bluetooth dongle in a VM
+via USB passthrough).
 
-A bunch of default utilities like a PDF reader or gvim a preinstalled.
+A bunch of default utilities like a PDF reader or `gvim` a preinstalled.
 These are handled by the `utils` and `xutils` roles.
 
 Users (including `root`) get their passwords from
 `roles/users/defaults/main.yaml`.
 
-The predefined partitioning flow defines a single-partition MBR layout,
+The default partitioning flow defines a single-partition MBR layout,
 using Syslinux as the bootloader installed on root. Swap space is not
 configured.  Alternative flows are defined, including:
 
 * support for root on LVM, under a MBR table;
 * support for EFI installation.
 
-Flows are designed to operate on whole disks: they take an empty disk,
-partition it, and create filesystems. This is good for VM provisioning,
-which start with pristine disks) or bare metal installations performed
-on empty disks. For more complex scenarios (such as bare metal
-installations where partitioning needs to be reconfigured to accomodate
-Arch Linux in dual boot) one can either disable automatic partitioning
-and do it manually or define a custom flow. The latter requires writing
-a bunch of Ansible roles.
+Built-in flows are designed to operate on whole disks: they take an
+empty disk, partition it, and create filesystems. This is good for VM
+provisioning, which start with pristine disks, or bare metal
+installations performed on empty disks. For more complex scenarios (such
+as bare metal installations where partitioning needs to be reconfigured
+to accomodate Arch Linux in dual boot) one can either disable automatic
+partitioning and do it manually or define a custom flow. The latter
+requires writing a bunch of Ansible roles.
 
 There is support for installing hypervisor guest additions as part of
 the process, altought it can be disabled. As of today, only VirtualBox
@@ -131,11 +138,11 @@ install your favorite AUR helper.
 
 ## Partitioning flows
 
-One the biggest limitations if branch `v0.1.x` was that the partitioning
-performed by `bootstrap` phase was inflexible. You only got MBR-style
-partition tables, single root layouts with ext4 and Syslinux as the
-bootloader. The IPL code in the MBR was also overwritten at install
-time.
+One the biggest limitations of branch `v0.1.x` was that the partitioning
+performed by the `bootstrap` phase was inflexible. You only got
+MBR-style partition tables, single root layouts with ext4 and Syslinux
+as the bootloader. The IPL code in the MBR was also overwritten at
+install time.
 
 While that setup is fine for some scenarios, specifically VM
 provisioning, when the disk is always fresh, it can be unsuitable when
@@ -145,25 +152,29 @@ To circumvent the problem, the fixed roles that implemented partitioning
 have been replaced with the concept of a _partitioning flow_. A
 partitioning flow is a collection of roles, each one taking care of a
 specific step of partitiong, which are called by the `bootstrap` phase
-at appropriate times. These role a bundled together into a _base
+at appropriate times. These roles are bundled together into a _base
 folder_, and that folder is placed somewhere where Ansible can find
 roles. At that point, a variable is used to specify the base folder
 name, and the roles beneath it will be used at install time.
 
-This way, each partitioning flow can be seen as a plugin, providing
+This way, each partitioning flow can be seen as a plugin, providing a
 pre-canned partitioning scheme for different scenarios (i.e. RAID, LVM,
 GPT, MBR, different filesystems for root, multipartition layouts and so
 on).
 
 Writing a new partitioning flow requires wrinting some Ansible roles.
 For repetitive tasks this can be a good idea. For one-shot setups, one
-may be found [manual partitioning](#Manual-partitioning) a faster
-approach.
+may find [manual partitioning](#Manual-partitioning) a faster approach.
+
+Ansible also supports _collections_ as a distribution format to publish
+groups of roles. The playbook can work with them. This way, each
+partitioning flow can be conveniently shared with others as a collection
+and downloaded with `ansible-galaxy`.
 
 ### Built-in flows
 
 Currently, this playbook come with a bunch of ready-made flows that
-cover some basic scanrios and are mostly useful for VM provisioning:
+cover some basic scenarios and are mostly useful for VM provisioning:
 
 * `partitioning/mbr_singlepart`: a single disk is formatted with a
   single, large root partition using a MBR partition table. The
@@ -188,8 +199,8 @@ Partitioning flows must reside under a path that Ansible uses when
 searching for roles. By default, the playbook restricts those paths to:
 
 * `$ARCH_ANSIBLE_ROOT/ansible/roles` where built-in roles reside. All
-  built-in flows are grouped under `partitioning`, that why you need to
-  refer to them as `partitioning/$FLOW_NAME`, such as
+  built-in flows are grouped under `partitioning`, that is why you need
+  to refer to them as `partitioning/$FLOW_NAME`, such as
   `partitioning/mbr_lvm`;
 * `$ARCH_ANSIBLE_ROOT/ansible/extra_roles` is meant to store third-party
   flows, so that they don't mess up with built-in stuff.
@@ -219,7 +230,7 @@ require special installation options.
 
 When implementing a role, feel free to call on other built-in modules to
 save some coding. Roles such as `genfstab` and `syslinux` are there to
-be used . For example, if you `bootloader` role can simply delegate
+be used . For example, if your `bootloader` role can simply delegate
 everything to `syslinux`, just make it an empty role with a dependency
 on `syslinux`.
 
@@ -240,6 +251,12 @@ A typical flow tree structure is as follows:
             └── main.yaml
 
 Have a look at built-in flows for an example.
+
+When storing flows as collections, individual roles will be found under
+the standard `roles` folder under the collection folder. The playbook
+can cope with both structures, since the naming scheme of the variable
+pointing to the flow makes it obvious if we are talking about a
+collection or not, and role lookup rules are changed accordingly.
 
 ### Flow interfaces
 
@@ -267,11 +284,11 @@ flow-local fact names are arbitrary.
 #### Interface towards the rest of the playbook
 
 At present time, the only expectation the rest of the playbook places on
-paartitioning flows is that the `partitioning` role should define where
-the root partition (and all other partitions mounted below it) is
+partitioning flows is that the `partitioning` role should define where
+the root partition (and all other partitions mounted beneath) is
 mounted, by defining the `partitioning_root_mount_point` fact.
 
-Often, one will simply use `/mnt` is the root mountpoint, so it will use
+Often, one will simply use `/mnt` as the root mountpoint, so it will use
 something like this to make this information available:
 
 ```yaml
@@ -319,9 +336,9 @@ The `bootstrap` phase encompasses the following stages:
 
 By design, bootloader installation is considered a part of partitioning.
 This is because one cannot choose a bootloader independently of the
-partitioning scheme: for example, Extlinux cannot be installed on 64-bit
-ext4, which must be taken into account when creating the `/boot`
-filesystem. Therefore, if partitioning is skipped, bootloader
+partitioning scheme: for example, `extlinux` cannot be installed on
+64-bit ext4, which must be taken into account when creating the `/boot`
+filesystem.  Therefore, if partitioning is skipped, bootloader
 installation is also skipped.
 
 Installation of base packages cannot be skipped, but it can be
@@ -348,7 +365,7 @@ customized in 3 major ways:
   for example, to let them now where partitions are mounted. This way,
   users can add their own specific partitioning logic to the playbook
   without the need to fork and edit the core roles and plays. _Note
-  that, while approach should give enough flexibility for many
+  that, while this approach should give enough flexibility for many
   scenarios, extreme configurability may still require modifications to
   the core components and thus a fork_.
 
@@ -359,7 +376,7 @@ to the call.
 
 The `mainconfig` tag marks the tasks that does the heavy lifting. It
 configures locales, creates users, sets their initial passwords, and
-prepare the system to work behind a proxy. Additional steps include
+prepares the system to work behind a proxy. Additional steps include
 installing utilities and GUI apps, a desktop environment and applying
 default customizations to users.
 
@@ -424,6 +441,18 @@ If the `bootstrap` phase is executed, it will need to enact a
 partitioning flow. Which flow is run is determined by the value of the
 variable above.
 
+Note that this is a _prefix_: when combined with the name of the role to
+call (i.e. `partitioning`) it should yield something which fully
+identifies the role. For roles stored under the role paths, this should
+be a relative pathname, such as `partitioning/mbr_lvm/partitioning`. For
+roles stored in collections, this should be their fully qualified role
+name, such as `arch_ansible.mbr_lvm.partitioning`.
+
+Since the role name is provided at call time, the prefix should contain
+everything up to it, _including the trailing `/` or `.`_ This is way the
+default value ends with `/`. For a flow stored as a collection, the
+prefix will end with a `.`.
+
 #### Portable image
 
     global_portable_image: False
@@ -484,25 +513,27 @@ the playbook:
   packages or configure things. They are already skipped automatically
   when the playbook detects a bare-metal installation. It is mainly
   useful when installing under an hypervisor which is not currently
-  supported. By default, the playbook would bail ouyt in such a case:
-  skipping this tag force it to continue.
+  supported. By default, the playbook would bail out in such a case:
+  skipping this tag force it to continue;
+* `partitioning`: disables the use of a partitioning flow, leaving full
+  control over partitioning in the hands of the user.
 
 ### Roles
 
-The following sections give a brief description of available role. For
-detailed explanation of each role configuration options, look at its own
-defaults file.
+The following sections give a brief description of available roles. For
+a detailed explanation of each role configuration options, look at its
+own defaults file.
 
 For each role, a flag list is given according to the following
 structure:
 
     [--]
      ││
-     │├ s Can be called multiple times with different input variables
-     │└ m Should be called just once. If called multiple times, it will
+     │├ m Can be called multiple times with different input variables
+     │└ s Should be called just once. If called multiple times, it will
      │     either be idempotent or undo later modifications (i.e. if you
      │     create users with the `users` role, manually change passwords
-     │     and call it again, the passwords will be reset.
+     │     and call it again, the passwords will be reset).
      │
      ├─ - Can be used in both the bootstrap and mainconfig phases
      ├─ b Can only be used in the bootstrap phase
@@ -511,13 +542,13 @@ structure:
 It is used to distingiush roles which only work in specific playbook
 phases from those that can be used freely. Also, some roles are meant
 to offer service to other roles (such as `packages`) while others
-do more extensive setup and it makes no sense to call them multiple
+do more a extensive setup and it makes no sense to call them multiple
 times as they are idempotent (like `virtguest`).
 
 
 #### base\_packages
 
-Flags: `[bm]`
+Flags: `[bs]`
 
 Installs the base packages to the system being provisioned via pacstrap.
 
@@ -574,6 +605,9 @@ tree. A typical use is to call it from the postpartitioning phase of a
 partitioning flow in order to generated the `fstab` corresponding to the
 partitions used during the installation.
 
+When invoked, a `chroot` variable must be specified, to indicate where
+the root partition (and other partitions under it) is mounted.
+
 #### hostname
 
 Flags: `[-s]`
@@ -628,22 +662,26 @@ It accepts a `packages` variable, which should contain a (YAML) list of
 packages to install. No AUR packages can be used here since `pacstrap`
 only handled regular repositories.
 
-#### partitioning
+#### partitioning/*
+
+Flags: `[bs]`
+
+This directories group built-in partitioning flows.
 
 #### passwordless\_sudo\_user
 
 Flags: `[ms]`
 
 Creates a dedicated user which can call `sudo` without being asked for a
-password. This user is used to build packages, since it can become root
-to install missing dependencies and the built package.
+password. It is used to build packages, since it can become root to
+install missing dependencies and the built package.
 
 A handler ensures that, at the end of the play, this user is eviced from
 the system.
 
 #### proxy
 
-Flags: `[-s]`
+Flags: `[-m]`
 
 Configures the system to use an HTTP(S) proxy. In particular:
 
@@ -660,6 +698,9 @@ Configures the system to use an HTTP(S) proxy. In particular:
   This point is important because many corporate proxies will implement
   some store-check for malware-forward logic which can break the default
   `pacman` timeout.
+
+It accepts a `state` variable, to be set to either `present` or
+`absent`.
 
 #### syslinux
 
@@ -785,7 +826,7 @@ This role does two things:
   the default look and feel.
 
 Tweak the defaults to select which themes are to be installed and which
-should be used as the default for users. It currently not possible to
+should be used as the default for users. It is currently not possible to
 specify themes on a per-user basis.
 
 #### xorg
@@ -811,7 +852,7 @@ security measure.
 
 Conversely, VM installations will have it installed but disabled,
 because one would assume that the host itself already has a screensaver
-and there is no reason the get asked for two different password every
+and there is no reason the get asked for two different passwords every
 time the screen is locked.
 
 The defaults provide a way to override this behaviour.
@@ -868,9 +909,9 @@ are fine since `yay` is used. Then do the rest of the setup.
 ```yaml
 - import_role:
     name: packages
-    vars:
-      packages:
-        - my_package
+  vars:
+    packages:
+      - my_package
 
 - copy:
     src: my_package.conf
