@@ -8,15 +8,15 @@
     - include_role:
         name: custom_repos
     - include_role:
-        name: "{{ global_partitioning_role }}/partitioning"
+        name: "{{ global_partitioning_roles_prefix }}partitioning"
       tags: partitioning
     - include_role:
         name: base_packages
     - include_role:
-        name: "{{ global_partitioning_role }}/postpartitioning"
+        name: "{{ global_partitioning_roles_prefix }}postpartitioning"
       tags: partitioning
     - include_role:
-        name: "{{ global_partitioning_role }}/bootloader"
+        name: "{{ global_partitioning_roles_prefix }}bootloader"
       tags: partitioning
     - include_role:
         name: configure

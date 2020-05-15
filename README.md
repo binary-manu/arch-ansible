@@ -418,7 +418,7 @@ overview of the high-level concepts behind them.
 
 #### Partitioning flow
 
-    global_partitioning_role: partitioning/mbr_singlepart
+    global_partitioning_roles_prefix: partitioning/mbr_singlepart/
 
 If the `bootstrap` phase is executed, it will need to enact a
 partitioning flow. Which flow is run is determined by the value of the

@@ -1,4 +1,4 @@
-global_partitioning_role: partitioning/mbr_singlepart
+global_partitioning_roles_prefix: partitioning/mbr_singlepart/
 
 # Define the environment, then filter omitted fields. This is important so that
 # undefined variables do not pop up in process environments. To override this
