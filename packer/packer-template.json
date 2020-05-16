@@ -58,7 +58,7 @@
     },
     {
       "type" : "shell",
-      "pause_before" : "1m",
+      "pause_before" : "3m",
       "script" : "prepare.sh",
       "environment_vars" : [
         "http_proxy={{user `http_proxy`}}",
