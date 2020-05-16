@@ -75,9 +75,12 @@ same results as the previous branch.
 
 #### Changes to tags
 
-Most tags have been eliminated because they provided little value. Refer
-to [this section](#Tags) for a list of supported tags and their intended
-usage.
+Most tags have been eliminated because they have been replaced with
+variables enabling or disabling specific roles. The advantage of this
+choice is the ability to enable or disable roles on a per-host basis.
+Refer to [this section](#Tags) for a list of supported tags and their
+intended usage. It also mentions how to disable specific roles via
+variables
 
 #### Changes to the `hostname` role
 
@@ -383,6 +386,13 @@ default customizations to users.
 Roles which install X apps will automatically pull X.org as a
 dependency.
 
+Most predefined roles can be disabled via variables to cater to specific
+need (i.e. replaced the default DE) and additional custom roles can be
+called after the built-in one, for example to add an extra package that
+requires specific configuration. See [here](#tags) about controlling
+built-in role execution and [here](custom-roles) about calling custom
+roles.
+
 ### Reboot
 
 After both `bootstrap` and `mainconfig` the system will be rebooted to
@@ -509,14 +519,40 @@ the playbook:
   installation.  Useful if the reboot should be avoided: the Packer
   template provided with [arch-packer](packer/README.md) is an example
   of this;
-* `virtguest`: disable tasks that would install hypervisor-specific
-  packages or configure things. They are already skipped automatically
-  when the playbook detects a bare-metal installation. It is mainly
-  useful when installing under an hypervisor which is not currently
-  supported. By default, the playbook would bail out in such a case:
-  skipping this tag force it to continue;
 * `partitioning`: disables the use of a partitioning flow, leaving full
   control over partitioning in the hands of the user.
+
+More fine-grained control over specific roles can be exerted via the
+following variables, settings them to a boolean value. Their default is
+`true`, enabling roles. Setting them to `false` disables a specific
+role. The role name is given by the variable name.
+
+* `virtguest_enabled`
+* `xfce_user_customizations_enabled`
+* `yay_user_customizations_enabled`
+* `ttf_fonts_enabled`
+* `utils_enabled`
+* `xutils_enabled`
+* `bluetooth_enabled`
+
+#### Custom roles
+
+It is possible to hook custom roles into the `mainconfig` phase, to
+accomodate special setup needs. This works like this:
+
+1. you add any extra role you want to call under `extra_roles/`, either
+   manually or via `ansible-galaxy`;
+2. create an _entry point role_, which simply calls on all the others,
+   in the desired order and passing them any required variable;
+3. specify that you want to run custom roles by setting the
+   `custom_roles_entry_point` variable to the name of the role defined
+   in the previous step;
+4. the playbook calls on your roles after all the built-in ones.
+
+With this scheme, you could, for example, disable the default role
+installing XFCE and the add a custom role installing Cinnamon, without
+touching the playbook code: you just need to pull roles and define some
+extra variables.
 
 ### Roles
 
@@ -791,7 +827,8 @@ running under an hypervisor. If so, some behaviour will be adjusted
 accordingly: for example, guest additions are installed and enabled
 automatically and the screensaver is disabled by default. If the
 hypervisor is unsupported, the playbook bails out. To proceed under an
-unsupported hypervisor without its additions, skip the `virtguest` tag.
+unsupported hypervisor without its additions, set the
+`virtguest_enabled` variable to `false`.
 
 `virtguest_force` can be used to override the detected hypervisor or to
 force a bare-metal installation to be treated like a VM installation.
@@ -901,7 +938,8 @@ it. Your list will override the default.
 
 If you want to add a new package to every installation and it
 requires special configuration (i.e. configuration files to be copied),
-create a new role for it that includes files and templates.
+create a new role for it that includes files and templates, then hook it
+via [custom\_roles](#custom-roles).
 
 Delegate the actual installation to the `packages` role. AUR packages
 are fine since `yay` is used. Then do the rest of the setup.
