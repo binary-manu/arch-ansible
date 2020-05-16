@@ -40,12 +40,14 @@
     - role: proxy
     - role: virtguest
       tags: virtguest
-    - role: xfce_user_customizations
-    - role: yay_user_customizations
-    - role: ttf_fonts
-    - role: utils
-    - role: xutils
-    - role: bluetooth
+    - role: standard_roles
+  tasks:
+    - name: Call custom roles
+      tags:
+        - never
+        - custom_roles
+      include_role:
+        name: "{{ custom_roles_entry_point | default('custom_roles') }}"
 
 - name: Clean and reboot
   hosts: all
