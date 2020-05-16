@@ -5,7 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+For versions that have a major of 0, a convention is followed so that
+the minor number is incremented when backward-incompatible changes are
+made, while the third number is incremented for backward compatible
+changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
+
 ## [Unreleased]
+
+Branch `0.2.x` focuses on configurability:
+
+* make partitioning flexible enough to be useful in bare-metal scenarios
+  where you can't just assume the disk will be empty;
+* allow third-party modules to be added to the playbook without having
+  to edit the code, just by defining variables.
 
 ### Changed
 
@@ -20,14 +32,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   on this information should depend on the `passwordless_sudo_user` role
   and get it from `passwordless_sudo_user_name`.
 * The `bootstrap` play have been revamped to support pluggable
-  partitioning flows.  Instead of being hardwired to MBR/single
-  root/Syslinux setup, one can select one of a few predefined
-  partitioing flows (MBR, LVM, GPT) or write a new one to fit custom
-  scenarios.
+  partitioning flows.
+* Replaced most tags with variables that disable roles.
+* `hostname` role variable `root` renamed to `chroot`.
 * Documentation improvements.
 
 These changes are not backward-compatible, as they break existing host
 variable customizations or tag usage.
+
+### Added
+
+* Partitioning can be customized via _partitioning flows_,
+  * Built-in single-partition MBR, GPT and LVM.
+  * Write your own.
+* Additional, third-party roles can be imported into the main
+  configuration play to extend the installed system in flexible ways. It
+  also works with roles and collections from Galaxy.
+* Heavily improved `syslinux` role which can dinamically detect
+  installed kernels and initramfs images, and generate appropriate
+  bootloader entries. It will also discover device nodes to pass to the
+  kernel as root or where to install things by looking at what is
+  mounted at `/` and `/boot`.
 
 ## [0.1.8] - 2020-06-13
 
