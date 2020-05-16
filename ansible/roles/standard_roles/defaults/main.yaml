@@ -1,7 +1,0 @@
-standard_roles_enabled:
-    - xfce_user_customizations
-    - yay_user_customizations
-    - ttf_fonts
-    - utils
-    - xutils
-    - bluetooth

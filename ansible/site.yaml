@@ -39,15 +39,24 @@
     - role: locale
     - role: proxy
     - role: virtguest
-      tags: virtguest
-    - role: standard_roles
+      when: virtguest_enabled | default(True)
+    - role: xfce_user_customizations
+      when: xfce_user_customizations_enabled | default(True)
+    - role: yay_user_customizations
+      when: yay_user_customizations_enabled | default(True)
+    - role: ttf_fonts
+      when: ttf_fonts_enabled | default(True)
+    - role: utils
+      when: utils_enabled | default(True)
+    - role: xutils
+      when: xutils_enabled | default(True)
+    - role: bluetooth
+      when: bluetooth_enabled | default(True)
   tasks:
     - name: Call custom roles
-      tags:
-        - never
-        - custom_roles
       include_role:
-        name: "{{ custom_roles_entry_point | default('custom_roles') }}"
+        name: "{{ custom_roles_entry_point }}"
+      when: custom_roles_entry_point | default("") != ""
 
 - name: Clean and reboot
   hosts: all
