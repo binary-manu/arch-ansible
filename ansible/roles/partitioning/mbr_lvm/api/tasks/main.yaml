@@ -1,0 +1,3 @@
+- include_vars:
+    dir: .
+    name: "{{ namespace }}"

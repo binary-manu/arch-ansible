@@ -1,0 +1,2 @@
+partitioning_supported_apis:
+    - partitioning.arch-ansible/v1
