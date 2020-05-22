@@ -213,8 +213,13 @@ For example, if you place your new flow `foopart` under
 `$ARCH_ANSIBLE_ROOT/ansible/extra_roles/foopart`, it base folder.
 
 Each base folder contains one subfolder per role, and each flow is
-composed of exactly 3 roles:
+composed of exactly 4 roles:
 
+* `api`: it is called before any other role in the flow to determine
+  which version of partitioning flow API the flow is exposing.
+  Currently, there is only `v1`, which is what is described here. Future
+  versions of the playbook may define additional API version, and this
+  version declaration will allow existing flows to keep working;
 * `partitioning`: this is called _before_ the base system is installed.
   It is meant to prepare and mount the partitions for the target
   systems, so that base package installation can use them. This role
@@ -240,6 +245,11 @@ on `syslinux`.
 A typical flow tree structure is as follows:
 
     mbr_lvm/
+    ├── api
+    │   ├── tasks
+    │   │   └── main.yaml
+    │   └── vars
+    │       └── main.yaml
     ├── bootloader
     │   └── meta
     │       └── main.yaml
@@ -270,7 +280,7 @@ for such information. In general, each role provides information to
 other roles by means of facts, which can be set using the standard
 `set_fact` module.
 
-#### Interface towards other flow roles
+#### Internal API
 
 If a flow role needs to define a fact to be consumed by a role in the
 same flow that is called later (i.e. pass data from `partitioning` to
@@ -279,26 +289,57 @@ its name looks like:
 
     partitioning_priv_*
 
+in order to avoid name clashes with other parts of the playbook.
+
 For example, `partitioning_priv_root_devnode` can store the device node
 used for the root partition, which is established at `partitioning` time
 and later used to install the bootloader. Apart from the prefix,
 flow-local fact names are arbitrary.
 
-#### Interface towards the rest of the playbook
+#### Public API
 
-At present time, the only expectation the rest of the playbook places on
-partitioning flows is that the `partitioning` role should define where
-the root partition (and all other partitions mounted beneath) is
-mounted, by defining the `partitioning_root_mount_point` fact.
+In order to work with the rest of the playbook, a partitioning flow must
+adhere to the following:
 
-Often, one will simply use `/mnt` as the root mountpoint, so it will use
-something like this to make this information available:
+* it MUST contain an `api` role, which MUST accept a variable named
+  `namespace` when invoked.  After execution, a fact named like the
+  value of `namespace` MUST be defined, holding API information for the
+  flow. API information is formatted as an object holding the following
+  fields:
 
-```yaml
-- name: Define public interface facts
-  set_fact:
-    partitioning_root_mount_point: /mnt
-```
+  ```yaml
+  # API version implemented by the flow. Currently only v1 is defined.
+  apiVersion: partitioning.arch-ansible/v1
+  ```
+
+  Future API versions may add more fields, to allow for more
+  flexibility.
+
+  A simple way to implement the `api` role is to store API version
+  information in a file under `vars/`, then use `include_vars` to load
+  them under the `namespace` (which can be passed as the `name` field to
+  `include_vars`).
+
+##### v1
+
+If offering the `v1` API, the flow:
+
+* must provide the following roles:
+  * `partitioning`
+  * `postpartitioning`
+  * `bootloader`
+* when called, the `partitioning` role MUST define where the root
+  partition (and all other partitions mounted beneath) is mounted, by
+  defining the `partitioning_root_mount_point` fact.
+
+  Often, one will simply use `/mnt` as the root mountpoint, so it will
+  use something like this to make this information available:
+
+  ```yaml
+  - name: Define public interface facts
+    set_fact:
+      partitioning_root_mount_point: /mnt
+  ```
 
 ## Playbook structure
 
@@ -443,26 +484,6 @@ overview of the high-level concepts behind them.
 
 ### Global configuration
 
-#### Partitioning flow
-
-    global_partitioning_roles_prefix: partitioning/mbr_singlepart/
-
-If the `bootstrap` phase is executed, it will need to enact a
-partitioning flow. Which flow is run is determined by the value of the
-variable above.
-
-Note that this is a _prefix_: when combined with the name of the role to
-call (i.e. `partitioning`) it should yield something which fully
-identifies the role. For roles stored under the role paths, this should
-be a relative pathname, such as `partitioning/mbr_lvm/partitioning`. For
-roles stored in collections, this should be their fully qualified role
-name, such as `arch_ansible.mbr_lvm.partitioning`.
-
-Since the role name is provided at call time, the prefix should contain
-everything up to it, _including the trailing `/` or `.`_ This is way the
-default value ends with `/`. For a flow stored as a collection, the
-prefix will end with a `.`.
-
 #### Portable image
 
     global_portable_image: False
@@ -538,12 +559,12 @@ role. The role name is given by the variable name.
 #### Custom roles
 
 It is possible to hook custom roles into the `mainconfig` phase, to
-accomodate special setup needs. This works like this:
+accommodate special setup needs. This works like this:
 
-1. you add any extra role you want to call under `extra_roles/`, either
+1. add any extra role you want to call under `extra_roles/`, either
    manually or via `ansible-galaxy`;
 2. create an _entry point role_, which simply calls on all the others,
-   in the desired order and passing them any required variable;
+   in the desired order and passing them any required variables;
 3. specify that you want to run custom roles by setting the
    `custom_roles_entry_point` variable to the name of the role defined
    in the previous step;
@@ -698,11 +719,27 @@ It accepts a `packages` variable, which should contain a (YAML) list of
 packages to install. No AUR packages can be used here since `pacstrap`
 only handled regular repositories.
 
-#### partitioning/*
+#### partitioning
 
 Flags: `[bs]`
 
-This directories group built-in partitioning flows.
+If the `bootstrap` phase is executed and `partitioning` is not skipped,
+this role is called to drive a partitioning flow, determined by the
+value of the variable `partitioning_roles_prefix`:
+
+    partitioning_roles_prefix: partitioning/mbr_singlepart/
+
+Note that this is a _prefix_: when combined with the name of a role to
+call (i.e. `bootloader`) it should yield something which fully
+identifies the role. For roles stored under role paths, this should be a
+relative pathname, such as `partitioning/mbr_lvm/partitioning/`. For
+roles stored in collections, this should be their fully qualified role
+name, such as `arch_ansible.mbr_lvm.partitioning.`.
+
+Since the role name is provided at call time, the prefix should contain
+everything up to it, _including the trailing `/` or `.`_ This is way the
+default value ends with `/`. For a flow stored as a collection, the
+prefix ends with a `.`.
 
 #### passwordless\_sudo\_user
 
@@ -815,12 +852,9 @@ Installs a bunch of CLI utils. This is where additional utils should be
 added. If a tool depends on the X Window System somehow, it should go
 under `xutils`.
 
-#### virtguest and virtguest\_force
+#### virtguest\_force
 
 Flags: `[ms]`
-
-These roles deal with VM-specific tweaks, like installing guest
-additions.
 
 By default, the playbook uses facts to detect if the target system is
 running under an hypervisor. If so, some behaviour will be adjusted
@@ -833,11 +867,19 @@ unsupported hypervisor without its additions, set the
 `virtguest_force` can be used to override the detected hypervisor or to
 force a bare-metal installation to be treated like a VM installation.
 This is only useful should Ansible ever fail to correctly detect that we
-are running under a VM, or misdetect the hypervisor.
+are running under a VM, or fails to detect the hypervisor.
+
+All roles that inspect facts to detect a hypervisor should depend on
+this one, so that related facts can be overridden appropriately.
+
+#### virtguest
+
+Flags: `[ms]`
 
 `virtguest` takes care of doing the real work for the detected
 hypervisor, as reported by Ansible and potentially overridden by
-`virtguest_force`.
+`virtguest_force`. It installs guest additions and any other package
+required for optimal execution under an hypervisor.
 
 When installing under VirtualBox 6.0 and above, and the VM uses the
 `VBoxVGA` adapter, automatic guest screen resizing will no longer work
