@@ -1,5 +1,3 @@
-global_partitioning_roles_prefix: partitioning/mbr_singlepart/
-
 # Define the environment, then filter omitted fields. This is important so that
 # undefined variables do not pop up in process environments. To override this
 # settings, add a definition for specific fields (i.e. http_proxy), do not
