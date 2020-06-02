@@ -1,24 +1,12 @@
-- name: Gather the API for the partitioning flow
-  include_role:
-    name: "{{ partitioning_roles_prefix }}api"
-  vars:
-    namespace: partitioning_api
+- name: Should we use a partitioning flow
+  set_fact:
+    partitioning_use_flow: yes
+  tags: partitioning
 
-- name: Check API version
-  assert:
-    that: partitioning_api.apiVersion in partitioning_supported_apis
-    fail_msg: >-
-        Sorry, but this version of arch-ansible only supports the following
-        API versions: {{ partitioning_supported_apis | join(", ") }}
-
-# Actually we only support v1, so assume it
-
-- include_role:
-    name: "{{ partitioning_roles_prefix }}partitioning"
-- include_role:
-    name: base_packages
-  tags: always
-- include_role:
-    name: "{{ partitioning_roles_prefix }}postpartitioning"
-- include_role:
-    name: "{{ partitioning_roles_prefix }}bootloader"
+- name: Invoke partitioning method
+  include_tasks: >
+    {%- if partitioning_use_flow | default(false) -%}
+        flow.yaml
+    {%- else -%}
+        manual.yaml
+    {%- endif -%}

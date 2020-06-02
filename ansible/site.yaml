@@ -5,12 +5,11 @@
     - never
   environment: "{{ global_proxy_env }}"
   tasks:
-    - include_role:
+    - import_role:
         name: custom_repos
     - import_role:
         name: partitioning
-      tags: partitioning
-    - include_role:
+    - import_role:
         name: configure
   post_tasks:
    - name: Reboot into the system

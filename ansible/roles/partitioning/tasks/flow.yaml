@@ -1,0 +1,23 @@
+- name: Gather the API for the partitioning flow
+  import_role:
+    name: "{{ partitioning_roles_prefix }}api"
+  vars:
+    namespace: partitioning_api
+
+- name: Check API version
+  assert:
+    that: partitioning_api.apiVersion in partitioning_supported_apis
+    fail_msg: >-
+        Sorry, but this version of arch-ansible only supports the following
+        API versions: {{ partitioning_supported_apis | join(", ") }}
+
+# Actually we only support v1, so assume it
+
+- import_role:
+    name: "{{ partitioning_roles_prefix }}partitioning"
+- import_role:
+    name: base_packages
+- import_role:
+    name: "{{ partitioning_roles_prefix }}postpartitioning"
+- import_role:
+    name: "{{ partitioning_roles_prefix }}bootloader"
