@@ -4,7 +4,7 @@
   tags: partitioning
 
 - name: Invoke partitioning method
-  include_tasks: >
+  include_tasks: >-
     {%- if partitioning_use_flow | default(false) -%}
         flow.yaml
     {%- else -%}
