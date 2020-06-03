@@ -249,13 +249,14 @@ A typical flow tree structure is as follows:
     │   ├── tasks
     │   │   └── main.yaml
     │   └── vars
-    │       └── main.yaml
+    │       └── api.yaml
     ├── bootloader
     │   └── meta
     │       └── main.yaml
     ├── partitioning
+    │   └── defaults
+    │       └── main.yaml
     │   └── tasks
-    │       ├── defaults.yaml
     │       └── main.yaml
     └── postpartitioning
         ├── meta
@@ -316,10 +317,11 @@ adhere to the following:
   flexibility.
 
   A simple way to implement the `api` role is to store API version
-  information in a file under `vars/`, then use `include_vars` to load
-  them under the `namespace` (which can be passed as the `name` field to
-  `include_vars`).
-
+  information in a file under `vars/`, then use `include_vars` to load them
+  under the `namespace` (which can be passed as the `name` field to
+  `include_vars`). By not calling the vars file `main.yaml`, it can be
+  ensured that such variables will not pollute the global variable namespace
+  and will be confined under a specific top-level object.
 ##### v1
 
 If offering the `v1` API, the flow:
@@ -332,14 +334,9 @@ If offering the `v1` API, the flow:
   partition (and all other partitions mounted beneath) is mounted, by
   defining the `partitioning_root_mount_point` fact.
 
-  Often, one will simply use `/mnt` as the root mountpoint, so it will
-  use something like this to make this information available:
-
-  ```yaml
-  - name: Define public interface facts
-    set_fact:
-      partitioning_root_mount_point: /mnt
-  ```
+  Often, one will simply use `/mnt` as the root mountpoint, so it will define
+  a default variable with that value, which is made available to other roles
+  when this one is imported.
 
 ## Playbook structure
 
@@ -463,17 +460,9 @@ they return `ok`.
 By design, global configuration items are those which are used by
 multiple roles and are stored in `group_vars/all/00-defaults.yaml`.
 Other variables, which are local to a specific role, are stored under
-either:
+`roles/$ROLE/defaults/main.yaml`,
 
-* `roles/$ROLE/defaults/main.yaml`, or
-* `roles/$ROLE/tasks/defaults.yaml`.
-
-The second form is used for partitioning roles, which need to make
-variables available as facts to other roles invoked as part of the
-same partitioning flow. The main difference between the two forms is
-the use of `set_fact` in the latter.
-
-Both groups can be overridden by placing a new file under `group_vars`,
+Defaults can be overridden by placing a new file under `group_vars`,
 `host_vars` or using the command line. This way, one can keep the
 default configuration and just change the target system hostname or
 locale.
