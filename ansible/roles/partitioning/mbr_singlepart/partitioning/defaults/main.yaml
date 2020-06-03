@@ -1,0 +1,5 @@
+##### Public variables used by the rest of the playbook #####
+partitioning_root_mount_point: "/mnt"
+
+##### Private variables used only by the partitioning roles #####
+partitioning_priv_root_device_node: "/dev/sda1"

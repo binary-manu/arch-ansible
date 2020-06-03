@@ -1,6 +1,3 @@
-- name: Load variables
-  import_tasks: defaults.yaml
-
 - name: Create the EFI partition
   parted:
     device: "{{ partitioning_priv_device_node }}"

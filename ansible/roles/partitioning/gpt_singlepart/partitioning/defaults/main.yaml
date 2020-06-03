@@ -1,0 +1,13 @@
+##### Public variables used by the rest of the playbook #####
+partitioning_root_mount_point: "/mnt"
+
+##### Private variables used only by the partitioning roles #####
+
+# On this device node, two partitions will be created:
+# * /dev/xxx1 will be used as /boot/efi
+# * /dev/xxx2 will be used as /
+partitioning_priv_device_node: "/dev/sda"
+
+# The ESP partition will be this large, in bytes (plus any alignment
+# constraint)
+partitioning_priv_esp_size: "{{ 512 * 1024 * 1024 }}"

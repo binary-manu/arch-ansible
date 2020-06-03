@@ -1,6 +1,3 @@
-- name: Load variables
-  import_tasks: defaults.yaml
-
 - name: Create a MBR partition table and one partition
   parted:
     device: "{{ (partitioning_priv_root_device_node | split_partition_number)[0] }}"
