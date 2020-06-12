@@ -20,7 +20,7 @@
     part_start: "{{ partitioning_priv_esp_size | int  + 1024 * 1024 }}B"
 
 - name: Enumerate created partitions
-  shell: lsblk -rn -o PATH "{{ partitioning_priv_device_node }}" | tail -n +2
+  shell: lsblk -n -o PATH "{{ partitioning_priv_device_node }}" | tail -n +2
   register: _partitions
   changed_when: no
 
