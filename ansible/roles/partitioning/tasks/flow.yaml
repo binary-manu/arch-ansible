@@ -1,5 +1,5 @@
 - name: Gather the API for the partitioning flow
-  import_role:
+  include_role:
     name: "{{ partitioning_roles_prefix }}api"
   vars:
     namespace: partitioning_api
@@ -13,11 +13,14 @@
 
 # Actually we only support v1, so assume it
 
-- import_role:
+- include_role:
+    public: yes
     name: "{{ partitioning_roles_prefix }}partitioning"
 - import_role:
     name: base_packages
-- import_role:
+- include_role:
+    public: yes
     name: "{{ partitioning_roles_prefix }}postpartitioning"
-- import_role:
+- include_role:
+    public: yes
     name: "{{ partitioning_roles_prefix }}bootloader"
