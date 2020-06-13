@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.8] - 2020-06-13
+
+### Changed
+
+* Replace deprecated Packer keyword `iso_checksum_url` with `iso_checksum`.
+
 ## [0.1.7] - 2020-05-02
 
 ### Added
