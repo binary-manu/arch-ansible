@@ -8,7 +8,7 @@
     - import_role:
         name: custom_repos
     - import_role:
-        name: partitioning
+        name: disksetup
     - import_role:
         name: configure
   post_tasks:

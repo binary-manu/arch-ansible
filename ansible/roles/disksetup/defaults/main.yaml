@@ -1,0 +1,4 @@
+disksetup_roles_prefix: disksetup/mbr_singlepart/
+
+disksetup_supported_apis:
+    - partitioning.arch-ansible/v1

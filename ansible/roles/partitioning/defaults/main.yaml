@@ -1,4 +1,0 @@
-partitioning_roles_prefix: partitioning/mbr_singlepart/
-
-partitioning_supported_apis:
-    - partitioning.arch-ansible/v1

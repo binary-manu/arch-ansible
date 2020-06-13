@@ -70,7 +70,7 @@ More info can be found in the [bootstrap](#bootstrap),
 [partitioning](#partitioning) and [partitioning
 flows](#Partitioning-flows) sections.
 
-The `partitioning/mbr_singlepart` partitioning flow produces exactly the
+The `disksetup/mbr_singlepart` partitioning flow produces exactly the
 same results as the previous branch.
 
 #### Changes to tags
@@ -179,16 +179,16 @@ and downloaded with `ansible-galaxy`.
 Currently, this playbook come with a bunch of ready-made flows that
 cover some basic scenarios and are mostly useful for VM provisioning:
 
-* `partitioning/mbr_singlepart`: a single disk is formatted with a
+* `disksetup/mbr_singlepart`: a single disk is formatted with a
   single, large root partition using a MBR partition table. The
   partition will use 32-bit ext4 (required for Syslinux to work) and
   Syslinux as the bootloader.  The IPL of that disk will be replaced to
   load Syslinux at boot;
-* `partitioning/gpt_singlepart`: a single disk is formatted with two GPT
+* `disksetup/gpt_singlepart`: a single disk is formatted with two GPT
   partitions, a large root partition plus an ESP. The root partition
   will use 64-bit ext4 and GRUB2 as the bootloader. The size of the ESP
   can be adjusted and defaults to 512MiB;
-* `partitioning/mbr_lvm`: a single disk is formatted with two MBR
+* `disksetup/mbr_lvm`: a single disk is formatted with two MBR
   partitions, a large LVM partition plus a small primary boot partition.
   The LVM partition is used to create a PV and a VG which will then host
   the root LV, ext4-formatted. The boot partition will hold the kernels
@@ -202,9 +202,9 @@ Partitioning flows must reside under a path that Ansible uses when
 searching for roles. By default, the playbook restricts those paths to:
 
 * `$ARCH_ANSIBLE_ROOT/ansible/roles` where built-in roles reside. All
-  built-in flows are grouped under `partitioning`, that is why you need
-  to refer to them as `partitioning/$FLOW_NAME`, such as
-  `partitioning/mbr_lvm`;
+  built-in flows are grouped under `disksetup`, that is why you need
+  to refer to them as `disksetup/$FLOW_NAME`, such as
+  `disksetup/mbr_lvm`;
 * `$ARCH_ANSIBLE_ROOT/ansible/extra_roles` is meant to store third-party
   flows, so that they don't mess up with built-in stuff.
 
@@ -708,22 +708,22 @@ It accepts a `packages` variable, which should contain a (YAML) list of
 packages to install. No AUR packages can be used here since `pacstrap`
 only handled regular repositories.
 
-#### partitioning
+#### disksetup
 
 Flags: `[bs]`
 
 If the `bootstrap` phase is executed and `partitioning` is not skipped,
 this role is called to drive a partitioning flow, determined by the
-value of the variable `partitioning_roles_prefix`:
+value of the variable `disksetup_roles_prefix`:
 
-    partitioning_roles_prefix: partitioning/mbr_singlepart/
+    disksetup_roles_prefix: disksetup/mbr_singlepart/
 
 Note that this is a _prefix_: when combined with the name of a role to
 call (i.e. `bootloader`) it should yield something which fully
 identifies the role. For roles stored under role paths, this should be a
-relative pathname, such as `partitioning/mbr_lvm/partitioning/`. For
+relative pathname, such as `disksetup/mbr_lvm/partitioning`. For
 roles stored in collections, this should be their fully qualified role
-name, such as `arch_ansible.mbr_lvm.partitioning.`.
+name, such as `arch_ansible.mbr_lvm.partitioning`.
 
 Since the role name is provided at call time, the prefix should contain
 everything up to it, _including the trailing `/` or `.`_ This is way the
