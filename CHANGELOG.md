@@ -53,6 +53,7 @@ variable customizations or tag usage.
   bootloader entries. It will also discover device nodes to pass to the
   kernel as root or where to install things by looking at what is
   mounted at `/` and `/boot`.
+* The wireless regulatory domain will be configured at install time.
 
 ## [0.1.8] - 2020-06-13
 

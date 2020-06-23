@@ -10,7 +10,7 @@ but it can also be used to install on bare metal.
 
 ## Ansible version
 
-The playbook has been tested using Ansible 2.7 and higher.
+The playbook has been tested using Ansible 2.9 and higher.
 
 ## Migrating to a non-backward-compatible playbook version
 
@@ -165,7 +165,7 @@ pre-canned partitioning scheme for different scenarios (i.e. RAID, LVM,
 GPT, MBR, different filesystems for root, multipartition layouts and so
 on).
 
-Writing a new partitioning flow requires wrinting some Ansible roles.
+Writing a new partitioning flow requires writing some Ansible roles.
 For repetitive tasks this can be a good idea. For one-shot setups, one
 may find [manual partitioning](#Manual-partitioning) a faster approach.
 
@@ -322,6 +322,7 @@ adhere to the following:
   `include_vars`). By not calling the vars file `main.yaml`, it can be
   ensured that such variables will not pollute the global variable namespace
   and will be confined under a specific top-level object.
+
 ##### v1
 
 If offering the `v1` API, the flow:
@@ -366,8 +367,7 @@ VirtualBox guest utilities without X support, which will cause
 The `bootstrap` phase encompasses the following stages:
 
 * partitioning: disks are partitioned and partitions are formatted and
-  then
-  mounted for later use;
+  then mounted for later use;
 * base package are installed to the target system;
 * post-partitioning: tasks which are related to partitioning but can
   only be performed after the basic filesystem hierarchy is in place;
@@ -585,12 +585,11 @@ structure:
      ├─ b Can only be used in the bootstrap phase
      └─ m Can only be used in the mainconfig phase
 
-It is used to distingiush roles which only work in specific playbook
-phases from those that can be used freely. Also, some roles are meant
-to offer service to other roles (such as `packages`) while others
-do more a extensive setup and it makes no sense to call them multiple
-times as they are idempotent (like `virtguest`).
-
+It is used to distinguish roles which only work in specific playbook
+phases from those that can be used freely. Also, some roles are meant to
+offer service to other roles (such as `packages`) while others do more a
+extensive setup and it makes no sense to call them multiple times as
+they are idempotent (like `virtguest`).
 
 #### base\_packages
 
@@ -875,6 +874,24 @@ When installing under VirtualBox 6.0 and above, and the VM uses the
 reliably. As a workaround, `virtguest` can be instructed to install the
 `mplugd` daemon, configured to handle screen resizing. You can read more
 [here][mplugd-blog-post].
+
+#### wireless
+
+Flags: `[ms]`
+
+Ensures that the wireless regulatory domain is configured properly.
+
+By default, it will set the regulatory domain to the same country used
+in the `locale` configuration: if you set your locale to `it_IT`, the
+country will be `IT`. It is possible to override this behaviour by
+specifying the desired country code in a variable. Have a look at the
+defaults file for the details.
+
+Note that this role is always executed by default, even in VM
+installations. The rationale is that if one attaches a WiFi dongle to
+the machine via USB passthrough or migrates the system to a physical
+machine, there is no risk of forgetting to configure it and generating
+interferences.
 
 #### xfce
 
