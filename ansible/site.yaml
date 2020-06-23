@@ -29,6 +29,7 @@
     - role: users
     - role: locale
     - role: proxy
+    - role: wireless
     - role: virtguest
       when: virtguest_enabled | default(True) | bool
     - role: xfce_user_customizations

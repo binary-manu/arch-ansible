@@ -1,0 +1,5 @@
+# Leave empty to use the same country specified for the locale.  Otherwise,
+# specify an ISO 3166-1 alpha-2 country code; for example:
+#
+# wireless_regdom_country: "IT"
+wireless_regdom_country: ""
