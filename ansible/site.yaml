@@ -30,19 +30,19 @@
     - role: locale
     - role: proxy
     - role: virtguest
-      when: virtguest_enabled | default(True)
+      when: virtguest_enabled | default(True) | bool
     - role: xfce_user_customizations
-      when: xfce_user_customizations_enabled | default(True)
+      when: xfce_user_customizations_enabled | default(True) | bool
     - role: yay_user_customizations
-      when: yay_user_customizations_enabled | default(True)
+      when: yay_user_customizations_enabled | default(True) | bool
     - role: ttf_fonts
-      when: ttf_fonts_enabled | default(True)
+      when: ttf_fonts_enabled | default(True) | bool
     - role: utils
-      when: utils_enabled | default(True)
+      when: utils_enabled | default(True) | bool
     - role: xutils
-      when: xutils_enabled | default(True)
+      when: xutils_enabled | default(True) | bool
     - role: bluetooth
-      when: bluetooth_enabled | default(True)
+      when: bluetooth_enabled | default(True) | bool
   tasks:
     - name: Call custom roles
       include_role:
