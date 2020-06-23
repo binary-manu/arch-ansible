@@ -1023,6 +1023,40 @@ The exact hostname and port will vary depending on where you run
 pkgproxy. The example above assumes that Arch is running inside a VM,
 while pkgproxy is running on the host, on port 8080.
 
+## Manual partitioning
+
+By disabling the `partitioning` tag, one can take control of the
+partitioning steps performed by the `bootstrap` phase. This is useful
+when:
+* machine-specific configuration of disks is required, for example to
+  preserve installed systems;
+* these operations are going to be performed one-shot, so the time spent
+  writing a new partitioning flow cannot be justified.
+
+The user will be responsible for:
+* partitioning the drive and formatting partitions;
+* installing a bootloader;
+* installing any extra tool and editing any file required for the system
+  to boot.
+
+These are the steps that need to be performed:
+
+1. partition the drives and format the volumes. Any tool can be used
+   here, including the Arch installation media or any other live media;
+2. launch the Arch installation media, then mount all the partitions you
+   intend to make part of the system under some mountpoint (typically
+   `/mnt`, altough this is not mandatory);
+3. now you can launch the playbook with the `bootstrap` tag enabled and
+   the `partitioning` and `reboot` tags disabled. You _must_ set the
+   Ansible variable `partitioning_root_mount_point` to the value you
+   chose as the root partition mountpoint; the playbook will proceed and
+   install the base packages and perform basic system configuration;
+4. at this point, the system would not boot since not bootloader is
+   installed; from the Arch media, install you bootloader of choice;
+5. reboot into the newly installed system;
+6. proceed with the rest of the installation by running the playbook
+   without specifying or skipping tags.
+
 ## Bare metal installation
 
 _NOTE: unless noted, all commands are intented to be run on the target
