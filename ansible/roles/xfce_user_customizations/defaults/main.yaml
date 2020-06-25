@@ -4,7 +4,7 @@ xfce_user_customizations_packages_numix:
   - numix-gtk-theme-git
   - numix-cursor-theme-git
   - numix-icon-theme-git
-  - numix-square-icon-theme-git 
+  - numix-square-icon-theme-git
 
 # Additional packages to be installed for the DarkBlue theme
 xfce_user_customizations_packages_darkblue:
