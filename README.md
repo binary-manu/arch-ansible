@@ -8,87 +8,41 @@ Arch-Ansible is a playbook designed to install Arch Linux on a target
 machine. It was conceived to ease the preparation of virtual machines,
 but it can also be used to install on bare metal.
 
-## Ansible version
+_IMPORTANT NOTE: the new default branch is v0.2.x, which is not backward
+compatible with v0.1.x. Have a look at the differences in the
+[changelog](CHANGELOG.md) and in the [migration
+instructions](#Migrating-to-a-non-backward-compatible-playbook-version)._
+
+## Overview
+
+### Playbook
+
+_arch-ansible_ is a playbook that performs a full Arch Linux
+installation to a system or, potentially, many systems in parallel. It
+is designed with 3 major goals in mind:
+
+* allow rapid provisioning of Arch Linux systems, be them virtual or
+  physical;
+* be customizable, avoiding the need to fork it only to add a package or
+  to change the DE;
+* allow a well-defined system installation to be defined in code and
+  reused over and over again.
+
+It was conceived as a way to perform reliable, repeatable Arch Linux
+installations when time is scarce. It is not a full fledged installer
+and should not be seen as such. In particular, I do not endorse using
+this playbook as a way to avoid learning how to install and use Arch
+Linux [the Arch Way][arch-way].
+
+It is also not meant as a post-installation configuration tool: don't
+use it against an installed Arch Linux system as a way to add utilities
+or tweak things.
+
+### Ansible version
 
 The playbook has been tested using Ansible 2.9 and higher.
 
-## Migrating to a non-backward-compatible playbook version
-
-### 0.1.x ➔ 0.2.x
-
-#### Passwordless-`sudo`-enabled user
-
-`global_passwordless_sudo_user` has been deprecated. Roles that need it
-should depend on the `passwordless_sudo_user` role and get it from
-`passwordless_sudo_user_name`.
-
-#### Changes to user management
-
-User account information have been harmonized, eliminating some unused
-objects and splitting root info from the rest of the users, since most
-attributes do not make sense for root.
-
-If you have an existing configuration made of host/group variables you
-wish to migrate:
-
-* delete the now deprecated `global_admins`;
-* move the contents of `root` from `users_info` to `users_root_info`:
-
-  ```yaml
-  # Go from this:
-  users_info:
-    root:
-      XXX
-    other_user:
-      YYY
-
-  # to this:
-  users_info:
-    other_user:
-      YYY
-
-  users_root_info:
-    XXX
-  ```
-
-All modules that want to iterate over users should replace
-`global_admins` with `users_names`. They should also depend on `users`.
-The contents of `users_names` are generated from `users_info`, which
-removes the need to keep the user name list and the user information
-strcture in sync, as in the previous branch.
-
-More on this role in [users](#users).
-
-#### Changes to partitioning
-
-The partitioning phase has been reworked to allow for more flexible
-partitioning and bootloader installation, including the case of users
-dropping their own partitioning roles to automate specific deployments
-without the need to fork and customize.
-
-More info can be found in the [bootstrap](#bootstrap),
-[partitioning](#partitioning) and [partitioning
-flows](#Partitioning-flows) sections.
-
-The `disksetup/mbr_singlepart` partitioning flow produces exactly the
-same results as the previous branch.
-
-#### Changes to tags
-
-Most tags have been eliminated because they have been replaced with
-variables enabling or disabling specific roles. The advantage of this
-choice is the ability to enable or disable roles on a per-host basis.
-Refer to [this section](#Tags) for a list of supported tags and their
-intended usage. It also mentions how to disable specific roles via
-variables
-
-#### Changes to the `hostname` role
-
-It used to accept a `root` variable giving the root where
-`/etc/hostname` and friends are to be found. It has been renamed to
-`chroot` for consistency with other modules.
-
-## Installed system
+### Installed system
 
 Unless some steps are skipped or customized, the installed system will
 run XFCE with the Numix theme. No greeter is installed by default: each
@@ -113,24 +67,12 @@ These are handled by the `utils` and `xutils` roles.
 Users (including `root`) get their passwords from
 `roles/users/defaults/main.yaml`.
 
-The default partitioning flow defines a single-partition MBR layout,
-using Syslinux as the bootloader installed on root. Swap space is not
-configured.  Alternative flows are defined, including:
-
-* support for root on LVM, under a MBR table;
-* support for EFI installation.
-
-Built-in flows are designed to operate on whole disks: they take an
-empty disk, partition it, and create filesystems. This is good for VM
-provisioning, which start with pristine disks, or bare metal
-installations performed on empty disks. For more complex scenarios (such
-as bare metal installations where partitioning needs to be reconfigured
-to accomodate Arch Linux in dual boot) one can either disable automatic
-partitioning and do it manually or define a custom flow. The latter
-requires writing a bunch of Ansible roles.
+The system uses an entire disk, creates an MBR partition table on it,
+and prepares one large partition used as root. There is no swap space or
+separate boot partition by default. Syslinux is used as the bootloader.
 
 There is support for installing hypervisor guest additions as part of
-the process, altought it can be disabled. As of today, only VirtualBox
+the process, although it can be disabled. As of today, only VirtualBox
 is supported.
 
 The playbook relies on the [Yay](https://github.com/Jguer/yay) AUR
@@ -138,6 +80,139 @@ helper to install packages. Using `yay` instead of the stock `pacman`
 module allows for uniform installation of binary and AUR packages. You
 are free to uninstall `yay` after the provisioning is complete and to
 install your favorite AUR helper.
+
+## Playbook structure
+
+The playbook is broken into two big parts, identified by tags:
+
+* `bootstrap` is meant to run against a system running an Arch Linux
+  installation media. It takes care of partitioning the disk, installing
+  a bootloader and a set of base packages. Then reboot.
+* `mainconfig` runs against the installed base system, adding additional
+  packages, installing a DE, creating users and configuring locales. At
+  the end, the system is ready for use.
+
+When used together, they build a complete system from an installation
+media. `mainconfig` can also be run independently of `bootstrap`,
+provided that the initial system state allows for Ansible incoming
+connections.
+
+This scenario could be used to provision an existing Vagrant box, for
+which `bootstrap` would be of no use, since it is already partitioned
+and base packages are installed. Some minor adjustments might be
+required in this case (i.e. Vagrant boxes likely come with pre-installed
+VirtualBox guest utilities without X support, which will cause
+`virtualbox-guest-utils` not to install).
+
+A recurring concept in this documentation is the _partitioning flow_.
+Initial versions of this playbook used a fixed set of steps when
+partitioning the drive(s), which was mostly OK when provisioning VM's as
+they come with pristine disks, but too limiting when trying to provision
+physical machines (which may have other OSes installed that must be
+preserved) or even for advanced VM scenarios (i.e. there was no way to
+create an LVM system but to do it manually).
+
+So work was spent in trying to decouple the core operations of the
+playbook from partitioning. The result was the definition of partitioning
+flow: a standardized set of Ansible roles to which partitioning is
+delegated. The core playbook does not care any more about how
+partitioning is done, it simply invokes a user-selectable flow and
+expects it to set things up. A flow may create traditional single
+partition layouts, while another can employ linear LVM, and another can
+setup RAID0.
+
+What is better is that, since the structure of a partitioning flow is
+well-defined, anyone can write its own flow and plug it into the
+playbook. So if your system needs a peculiar setup in order to preserve
+its Windows dual-boot, you can write it once and reuse it many times.
+
+More details [here](#partitioning-flows)
+
+### bootstrap
+
+The `bootstrap` phase encompasses the following stages:
+
+* partitioning: disks are partitioned and partitions are formatted and
+  then mounted for later use;
+* base package are installed to the target system;
+* post-partitioning: tasks which are related to partitioning but can
+  only be performed after the basic filesystem hierarchy is in place;
+  this is where one would add entries to `/etc/fstab` or add hooks to
+  `/etc/mkinitcpio.conf`;
+* the bootloader is installed to the target system.
+
+By design, bootloader installation is considered a part of partitioning.
+This is because one cannot choose a bootloader independently of the
+partitioning scheme: for example, `extlinux` cannot be installed on
+64-bit ext4, which must be taken into account when creating the `/boot`
+filesystem.  Therefore, if partitioning is skipped, bootloader
+installation is also skipped.
+
+Installation of base packages cannot be skipped, but it can be
+customized by editing `roles/base_packages/defaults/main.yaml`. It
+already contains a very minimal set of packages and there is no
+advantage is adding additional tools here.
+
+Partitioning, post-partitioning and bootloader installation can be
+customized in 3 major ways:
+
+* they can be disabled. This is useful when total control over
+  partitioning is desired: the user first performs partitioning
+  manually, then runs the `bootstrap` phase with partitioning disabled,
+  so that base packages are installed. Then it manually installs its
+  bootloader of choice. At this point, it can run the `mainconfig`
+  phase;
+* they can be switched by choosing a different [built-in partitioning
+  flow](#built-in-flows). A global setting controls which partitioning
+  flow is used, and arch-ansible comes with a few of them that cover the
+  most basic scenarios;
+* they can be implemented by the user. The same setting that selects a
+  built-in flow can be used to select user-provided flows.
+
+By default, this phase is disabled. To run it, add the `bootstrap` tag
+to the call.
+
+### mainconfig
+
+The `mainconfig` tag marks the tasks that does the heavy lifting. It
+configures locales, creates users, sets their initial passwords, and
+prepares the system to work behind a proxy. Additional steps include
+installing utilities and GUI apps, a desktop environment and applying
+default customizations to users.
+
+Roles which install X apps will automatically pull X.org as a
+dependency.
+
+Most predefined roles can be disabled via variables to cater to specific
+need (i.e. replaced the default DE) and additional custom roles can be
+called after the built-in one, for example to add an extra package that
+requires specific configuration. See [here](#tags) about controlling
+built-in role execution and [here](#custom-roles) about calling custom
+roles.
+
+### reboot
+
+After both `bootstrap` and `mainconfig` the system will be rebooted to
+ensure a clean start. This can be disabled by skipping the `reboot` tag.
+
+### Force handlers to run again
+
+If during execution, the playbook fails while executing a handler, the
+next time it runs the handler will not run again, because the notifying
+task will report an `ok` status.
+
+As a workaround, you can force all handlers to run again by setting the
+variable `run_handlers` to `true`. This works by causing all tasks that
+trigger a handler to report a `changed` status.
+
+It works differently than `--force-handlers`. As per Ansible
+documentation:
+
+> When handlers are forced, they will run when notified even if a task
+> fails on that host.
+
+While, in our scenario, handlers would _not_ be notified by tasks when
+they return `ok`.
 
 ## Partitioning flows
 
@@ -154,7 +229,7 @@ provisioning bare metal systems with other partitions an OSes in place.
 To circumvent the problem, the fixed roles that implemented partitioning
 have been replaced with the concept of a _partitioning flow_. A
 partitioning flow is a collection of roles, each one taking care of a
-specific step of partitiong, which are called by the `bootstrap` phase
+specific step of partitioning, which are called by the `bootstrap` phase
 at appropriate times. These roles are bundled together into a _base
 folder_, and that folder is placed somewhere where Ansible can find
 roles. At that point, a variable is used to specify the base folder
@@ -206,7 +281,7 @@ searching for roles. By default, the playbook restricts those paths to:
   to refer to them as `disksetup/$FLOW_NAME`, such as
   `disksetup/mbr_lvm`;
 * `$ARCH_ANSIBLE_ROOT/ansible/extra_roles` is meant to store third-party
-  flows, so that they don't mess up with built-in stuff.
+  flows, so that they don't mix up with built-in stuff.
 
 For example, if you place your new flow `foopart` under
 `$ARCH_ANSIBLE_ROOT/ansible/extra_roles`, your roles will reside at
@@ -335,125 +410,9 @@ If offering the `v1` API, the flow:
   partition (and all other partitions mounted beneath) is mounted, by
   defining the `partitioning_root_mount_point` fact.
 
-  Often, one will simply use `/mnt` as the root mountpoint, so it will define
-  a default variable with that value, which is made available to other roles
-  when this one is imported.
-
-## Playbook structure
-
-The playbook is broken into two big parts, identified by tags:
-
-* `bootstrap` is meant to run against a system running an Arch Linux
-  installation media. It takes care of partitioning the disk, installing
-  a bootloader and a set of base packages. Then reboot.
-* `mainconfig` runs against the installed base system, adding additional
-  packages, installing a DE, creating users and configuring locales. At
-  the end, the system is ready for use.
-
-When used together, they build a complete system from an installation
-media. `mainconfig` can also be run independently of `bootstrap`,
-provided that the initial system state allows for Ansible incoming
-connections.
-
-This scenario could be used to provision an existing Vagrant box, for
-which `bootstrap` would be of no use, since it is already partitioned
-and base packages are installed. Some minor adjustments might be
-required in this case (i.e. Vagrant boxes likely come with pre-installed
-VirtualBox guest utilities without X support, which will cause
-`virtualbox-guest-utils` not to install).
-
-### bootstrap
-
-The `bootstrap` phase encompasses the following stages:
-
-* partitioning: disks are partitioned and partitions are formatted and
-  then mounted for later use;
-* base package are installed to the target system;
-* post-partitioning: tasks which are related to partitioning but can
-  only be performed after the basic filesystem hierarchy is in place;
-  this is where one would add entries to `/etc/fstab` or add hooks to
-  `/etc/mkinitcpio.conf`;
-* the bootloader is installed to the target system.
-
-By design, bootloader installation is considered a part of partitioning.
-This is because one cannot choose a bootloader independently of the
-partitioning scheme: for example, `extlinux` cannot be installed on
-64-bit ext4, which must be taken into account when creating the `/boot`
-filesystem.  Therefore, if partitioning is skipped, bootloader
-installation is also skipped.
-
-Installation of base packages cannot be skipped, but it can be
-customized by editing `roles/base_packages/defaults/main.yaml`. It
-already contains a very minimal set of packages and there is no
-advantage is adding additional tools here.
-
-Partitioning, post-partitioning and bootloader installation can be
-customized in 3 major ways:
-
-* they can be disabled. This is useful when total control over
-  partitioning is desired: the user first performs partitioning
-  manually, then runs the `bootstrap` phase with partitioning disabled,
-  so that base packages are installed. Then it manually installs its
-  bootloader of choice. At this point, it can run the `mainconfig`
-  phase;
-* they can be switched by choosing a different built-in flow. A global
-  setting controls which partitioning flow is used, and arch-ansible
-  comes with a few of them that cover the most basic scenarios;
-* they can be implemented by the user. The same setting that selects a
-  built-in flow can be used to select user-provided flows. Flows are
-  simply a collection of related Ansible roles which take care of
-  partitioning and expose a well-defined interface to the other roles,
-  for example, to let them now where partitions are mounted. This way,
-  users can add their own specific partitioning logic to the playbook
-  without the need to fork and edit the core roles and plays. _Note
-  that, while this approach should give enough flexibility for many
-  scenarios, extreme configurability may still require modifications to
-  the core components and thus a fork_.
-
-By default, this phase is disabled. To run it, add the `bootstrap` tag
-to the call.
-
-### mainconfig
-
-The `mainconfig` tag marks the tasks that does the heavy lifting. It
-configures locales, creates users, sets their initial passwords, and
-prepares the system to work behind a proxy. Additional steps include
-installing utilities and GUI apps, a desktop environment and applying
-default customizations to users.
-
-Roles which install X apps will automatically pull X.org as a
-dependency.
-
-Most predefined roles can be disabled via variables to cater to specific
-need (i.e. replaced the default DE) and additional custom roles can be
-called after the built-in one, for example to add an extra package that
-requires specific configuration. See [here](#tags) about controlling
-built-in role execution and [here](custom-roles) about calling custom
-roles.
-
-### Reboot
-
-After both `bootstrap` and `mainconfig` the system will be rebooted to
-ensure a clean start. This can be disabled by skipping the `reboot` tag.
-
-### Force handlers to run again
-
-If during execution, the playbook fails while executing a handler, the
-next time it runs the handler will not run again, because the notifying
-task will report an `ok` status.
-
-As a workaround, you can force all handlers to run again by setting the
-variable `run_handlers` to `true`. This works by causing all tasks that
-trigger a handler to report a `changed` status.
-
-It works differently than `--force-handlers`. As per Ansible
-documentation:
-
-> When handlers are forced, they will run when notified even if a task
-> fails on that host.
-
-While, in our scenario, handlers would _not_ be notified by tasks when
-they return `ok`.
+Often, one will simply use `/mnt` as the root mountpoint, so it will
+define a default variable with that value, which is made available to
+other roles when this one is imported.
 
 ## Configuration
 
@@ -467,7 +426,7 @@ Defaults can be overridden by placing a new file under `group_vars`,
 default configuration and just change the target system hostname or
 locale.
 
-Global and role-local configuration variables are documented in detail
+Global and role-local configuration variables are documented in details
 inline in the YAML files themselves. The following sections give an
 overview of the high-level concepts behind them.
 
@@ -523,8 +482,7 @@ the playbook:
   ready-made base systems like Vagrant images. Enable when provisioning
   bare metal systems or Packer VM's;
 * `mainconfig`: disables or enables the entire mainconfig phase. This is
-  run by default, and there is probably no reason to skip it unless you
-  are debugging bootstrap;
+  run by default;
 * `reboot`: skip it to disable reboots at certain points of the
   installation.  Useful if the reboot should be avoided: the Packer
   template provided with [arch-packer](packer/README.md) is an example
@@ -607,7 +565,7 @@ Installs packages required for Bluetooth functionalities.
 
 Flags: `[ms]`
 
-Clean installation leftovers (such as package caches) and undos some
+Cleans installation leftovers (such as package caches) and reverts some
 configuration for portable images.
 
 #### configure
@@ -688,7 +646,7 @@ with dependencies coming before dependants.
 
 Flags: `[mm]`
 
-Installs packages fomr either the AUR or regular repos. It delegates the
+Installs packages from either the AUR or regular repos. It delegates the
 job to `yay`.
 
 It accepts a `packages` variable, which should contain a (YAML) list of
@@ -720,9 +678,9 @@ value of the variable `disksetup_roles_prefix`:
 Note that this is a _prefix_: when combined with the name of a role to
 call (i.e. `bootloader`) it should yield something which fully
 identifies the role. For roles stored under role paths, this should be a
-relative pathname, such as `disksetup/mbr_lvm/partitioning`. For
-roles stored in collections, this should be their fully qualified role
-name, such as `arch_ansible.mbr_lvm.partitioning`.
+relative pathname, such as `disksetup/mbr_lvm/partitioning/`. For roles
+stored in collections, this should be their fully qualified role name,
+such as `arch_ansible.mbr_lvm.partitioning.`.
 
 Since the role name is provided at call time, the prefix should contain
 everything up to it, _including the trailing `/` or `.`_ This is way the
@@ -737,7 +695,7 @@ Creates a dedicated user which can call `sudo` without being asked for a
 password. It is used to build packages, since it can become root to
 install missing dependencies and the built package.
 
-A handler ensures that, at the end of the play, this user is eviced from
+A handler ensures that, at the end of the play, this user is evicted from
 the system.
 
 #### proxy
@@ -772,7 +730,7 @@ the new system. It assumes a legacy BIOS system and MBR partition tables
 for the disk where `/boot` resides.
 
 It automatically tries to detect most things on its own. The
-configureation file with boot entries is dynamically generated from the
+configuration file with boot entries is dynamically generated from the
 kernels and initramfs files present under the new system's `/boot`, so
 one does not have to list them explicitly.
 
@@ -807,7 +765,7 @@ After execution, it will have defined two variables that can be used to
 iterate over user information:
 
 * `users_names` is a list holding all non-root accounts defined in the
-  defaults (or overriden somewhere else);
+  defaults (or overridden somewhere else);
 * `users_created` is the output of the `user` Ansible module and
   contains useful info about created users, such as their home dirs. One
   can use them like this, to avoid assuming where home dirs are placed
@@ -987,7 +945,7 @@ it. Your list will override the default.
 If you want to add a new package to every installation and it
 requires special configuration (i.e. configuration files to be copied),
 create a new role for it that includes files and templates, then hook it
-via [custom\_roles](#custom-roles).
+via [custom roles](#custom-roles).
 
 Delegate the actual installation to the `packages` role. AUR packages
 are fine since `yay` is used. Then do the rest of the setup.
@@ -1062,7 +1020,7 @@ These are the steps that need to be performed:
    here, including the Arch installation media or any other live media;
 2. launch the Arch installation media, then mount all the partitions you
    intend to make part of the system under some mountpoint (typically
-   `/mnt`, altough this is not mandatory);
+   `/mnt`, although this is not mandatory);
 3. now you can launch the playbook with the `bootstrap` tag enabled and
    the `partitioning` and `reboot` tags disabled. You _must_ set the
    Ansible variable `partitioning_root_mount_point` to the value you
@@ -1076,7 +1034,7 @@ These are the steps that need to be performed:
 
 ## Bare metal installation
 
-_NOTE: unless noted, all commands are intented to be run on the target
+_NOTE: unless noted, all commands are intended to be run on the target
 machine._
 
 arch-ansible can provision physical machines, not just VM's. But some
@@ -1090,7 +1048,7 @@ _Note: before running the following steps, keep in mind that the
 a new bootloader to your machine. This may cause data loss or require
 you to reinstall your bootloader to get a preinstalled OS to boot
 again._ Triple check the chosen disk and partition in the global
-configuration. Rememeber that the IPL for that disk will be overwritten,
+configuration. Remember that the IPL for that disk will be overwritten,
 so if it already contains the loader for a different system, that system
 will no longer boot after the installation. If possible, you can then
 configure Syslinux to chainload the other system.
@@ -1148,8 +1106,96 @@ Apply any other customization via host/group variables. And finally run:
 After installation is complete, you can delete the key pair generated
 above, from both the controller and the target.
 
+## Migrating to a non-backward-compatible playbook version
+
+### 0.1.x ➔ 0.2.x
+
+#### Passwordless-`sudo`-enabled user
+
+`global_passwordless_sudo_user` has been deprecated. Roles that need it
+should depend on the `passwordless_sudo_user` role and get it from
+`passwordless_sudo_user_name`.
+
+#### Changes to user management
+
+User account information have been harmonized, eliminating some unused
+objects and splitting root info from the rest of the users, since most
+attributes do not make sense for root.
+
+If you have an existing configuration made of host/group variables you
+wish to migrate:
+
+* delete the now deprecated `global_admins`;
+* move the contents of `root` from `users_info` to `users_root_info`:
+
+  ```yaml
+  # Go from this:
+  users_info:
+    root:
+      XXX
+    other_user:
+      YYY
+
+  # to this:
+  users_info:
+    other_user:
+      YYY
+
+  users_root_info:
+    XXX
+  ```
+
+All modules that want to iterate over users should replace
+`global_admins` with `users_names`. They should also depend on `users`.
+The contents of `users_names` are generated from `users_info`, which
+removes the need to keep the user name list and the user information
+strcture in sync, as in the previous branch.
+
+More on this role in [users](#users).
+
+#### Changes to partitioning
+
+The partitioning phase has been reworked to allow for more flexible
+partitioning and bootloader installation, including the case of users
+dropping their own partitioning roles to automate specific deployments
+without the need to fork and customize.
+
+More info can be found in the [bootstrap](#bootstrap),
+[disksetup](#disksetup) and [partitioning
+flows](#Partitioning-flows) sections.
+
+The `disksetup/mbr_singlepart` partitioning flow produces exactly the
+same results as the previous branch.
+
+#### Changes to tags
+
+Most tags have been eliminated because they have been replaced with
+variables enabling or disabling specific roles. The advantage of this
+choice is the ability to enable or disable roles on a per-host basis.
+Refer to [this section](#Tags) for a list of supported tags and their
+intended usage. It also mentions how to disable specific roles via
+variables
+
+#### Changes to the `hostname` role
+
+It used to accept a `root` variable giving the root where
+`/etc/hostname` and friends are to be found. It has been renamed to
+`chroot` for consistency with other modules.
+
+#### Changes to `ansible.cfg`
+
+The local configuration file restricts collection and role lookup paths
+to locations defined within the playbook itself, to reduce the risk of
+unexpectedly importing roles from the system.
+
+These paths are:
+* `$PROJECT_ROOT/ansible/collections`
+* `$PROJECT_ROOT/ansible/extra_toles`
+
+
 [numix]: docs/numix.png
 [darkblue]: docs/darkblue.png
 [mplugd-blog-post]: https://binary-manu.github.io/binary-is-better/virtualbox/resize-vbox-screen-with-mplugd
+[arch-way]: https://wiki.archlinux.org/index.php/Arch_Linux#Principles
 
 <!-- vi: set tw=72 et sw=2 fo=tcroqan autoindent: -->
