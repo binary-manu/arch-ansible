@@ -12,13 +12,6 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
-Branch `0.2.x` focuses on configurability:
-
-* make partitioning flexible enough to be useful in bare-metal scenarios
-  where you can't just assume the disk will be empty;
-* allow third-party modules to be added to the playbook without having
-  to edit the code, just by defining variables.
-
 ### Changed
 
 * `root` account information have been split from `users_info` into its
@@ -36,6 +29,8 @@ Branch `0.2.x` focuses on configurability:
 * Replaced most tags with variables that disable roles.
 * `hostname` role variable `root` renamed to `chroot`.
 * Documentation improvements.
+* Default roles and collections path have been restricted to paths
+  within the playbook itself.
 
 These changes are not backward-compatible, as they break existing host
 variable customizations or tag usage.
