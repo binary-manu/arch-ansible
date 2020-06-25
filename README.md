@@ -126,7 +126,7 @@ well-defined, anyone can write its own flow and plug it into the
 playbook. So if your system needs a peculiar setup in order to preserve
 its Windows dual-boot, you can write it once and reuse it many times.
 
-More details [here](#partitioning-flows)
+More details [here](#partitioning-flows).
 
 ### bootstrap
 
@@ -429,6 +429,9 @@ locale.
 Global and role-local configuration variables are documented in details
 inline in the YAML files themselves. The following sections give an
 overview of the high-level concepts behind them.
+
+For ease of reference, an automatically generated list of all
+playbook variables is available [here](docs/defaults.md).
 
 ### Global configuration
 
