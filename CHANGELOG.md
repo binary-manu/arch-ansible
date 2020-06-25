@@ -12,6 +12,8 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.2.0] - 2020-06-25
+
 ### Changed
 
 * `root` account information have been split from `users_info` into its
