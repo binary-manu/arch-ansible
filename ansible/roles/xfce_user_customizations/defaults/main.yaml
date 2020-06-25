@@ -22,6 +22,6 @@ xfce_user_customizations_packages_darkblue:
 xfce_user_customizations_themes:
   - theme: numix
     installed: true
-    default: true
   - theme: darkblue
     installed: true
+    default: true
