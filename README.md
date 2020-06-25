@@ -45,10 +45,10 @@ The playbook has been tested using Ansible 2.9 and higher.
 ### Installed system
 
 Unless some steps are skipped or customized, the installed system will
-run XFCE with the Numix theme. No greeter is installed by default: each
-user's `.xinitrc` is configured to launch XFCE when calling `startx`.
-An alternative, darker style based on the Numix-DarkBlue theme is
-available.
+run XFCE with the Numix-Darkblue theme. No greeter is installed by
+default: each user's `.xinitrc` is configured to launch XFCE when
+calling `startx`.  An alternative, lighter style based on the Numix
+theme is available.
 
 The `xfce4-screensaver` package is ditched in favor of `xscreensaver`.
 By default, systems installed in VM's will have it disabled, since I

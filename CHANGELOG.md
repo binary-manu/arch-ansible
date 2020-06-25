@@ -31,6 +31,7 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 * Documentation improvements.
 * Default roles and collections path have been restricted to paths
   within the playbook itself.
+* Default theme changed to darkblue.
 
 These changes are not backward-compatible, as they break existing host
 variable customizations or tag usage.
