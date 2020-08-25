@@ -13,6 +13,7 @@
   copy:
     src: darkblue/wallpaper.jpg
     dest: /usr/local/share/backgrounds/darkblue_wallpaper.jpg
+    mode: "0644"
 
 - name: Copy xfce's configuration for DarkBlue
   become: yes
@@ -20,5 +21,6 @@
   copy:
     src: darkblue/xfce4/
     dest: "{{ users_created | user_home(item) }}/.config/xfce4"
+    mode: "0644"
   loop: "{{ users_names }}"
   when: item_theme.default | default(False, True) == True

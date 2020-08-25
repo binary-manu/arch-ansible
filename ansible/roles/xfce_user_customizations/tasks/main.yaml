@@ -4,6 +4,7 @@
   copy:
     src: xinitrc
     dest: "{{ users_created | user_home(item) }}/.xinitrc"
+    mode: "0644"
   loop: "{{ users_names }}"
 
 - name: Install the themes

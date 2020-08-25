@@ -29,8 +29,10 @@
       copy:
         src: vboxresizing.rules
         dest: /etc/mplugd/action.d/
+        mode: "0644"
 
     - name: Copy mplugd desktop entry for autostart
       copy:
         src: mplugd.desktop
         dest: /etc/xdg/autostart/
+        mode: "0644"

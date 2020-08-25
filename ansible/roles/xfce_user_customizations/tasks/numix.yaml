@@ -10,5 +10,7 @@
   copy:
     src: numix/xfconf/
     dest: "{{ users_created | user_home(item) }}/.config/xfce4/xfconf/"
+    mode: "0644"
+    directory_mode: "0755"
   loop: "{{ users_names }}"
   when: item_theme.default | default(False, True) == True

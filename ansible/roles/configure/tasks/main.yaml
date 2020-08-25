@@ -20,6 +20,7 @@
     remote_src: yes
     src: /root/.ssh/authorized_keys
     dest: "{{ partitioning_root_mount_point }}/root/.ssh/"
+    mode: "preserve"
   when: _root_auth_keys.stat.exists == true
 
 - name: Copy ssh host keys
@@ -27,7 +28,7 @@
     remote_src: yes
     src: /etc/ssh/{{ item }}
     dest: "{{ partitioning_root_mount_point }}/etc/ssh/{{ item }}"
-    mode: "0600"
+    mode: "preserve"
   loop:
     - ssh_host_rsa_key
     - ssh_host_ecdsa_key

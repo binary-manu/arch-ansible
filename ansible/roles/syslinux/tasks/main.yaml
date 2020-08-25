@@ -48,6 +48,7 @@
   template:
     src: syslinux.cfg.j2
     dest: "{{ partitioning_root_mount_point }}/boot/syslinux/syslinux.cfg"
+    mode: "0644"
 
 - name: Install IPL
   command: dd

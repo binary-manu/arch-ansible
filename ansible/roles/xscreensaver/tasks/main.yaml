@@ -17,4 +17,5 @@
         inactive
       {%- endif -%}
     dest: "{{ users_created | user_home(item) }}/.xscreensaver"
+    mode: "0644"
   loop: "{{ users_names }}"

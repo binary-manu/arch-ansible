@@ -5,6 +5,7 @@
       [{{ item.name }}]
       Server = {{ item.server }}
       SigLevel = {{ item.siglevel }}
+    mode: "0644"
   loop: "{{ custom_repos_list }}"
 
 - name: Include repository definitions in pacman.conf
