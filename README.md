@@ -13,6 +13,14 @@ compatible with v0.1.x. Have a look at the differences in the
 [changelog](CHANGELOG.md) and in the [migration
 instructions](#Migrating-to-a-non-backward-compatible-playbook-version)._
 
+If you find this project helpful, why not showing some ♥ by giving it a star
+on GitHub? If you don't have an account, you can use the button below to say
+thanks via [https://saythanks.io](https://saythanks.io).
+
+[![Stars](https://img.shields.io/github/stars/binary-manu/arch-ansible.svg?style=social&label=Star&maxAge=2592000)](https://github.com/binary-manu/arch-ansible/stargazers)
+[![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/vpooldyn-subscription@yahoo.it)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/binary-manu/arch-ansible/blob/master/LICENSE.txt)
+
 ## Overview
 
 ### Playbook
