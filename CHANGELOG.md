@@ -12,6 +12,17 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.2.1] - 2020-11-17
+
+### Fixed
+
+* Add `mode` to all `copy` and `template` tasks.
+
+### Added
+
+* Add some badges to the README, including a link to
+  [saythanks.io](https://saythanks.io).
+
 ## [0.2.0] - 2020-06-25
 
 ### Changed
