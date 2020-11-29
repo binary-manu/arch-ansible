@@ -7,3 +7,4 @@ ttf_fonts_packages:
   - ttf-inconsolata
   - ttf-liberation
   - ttf-ubuntu-font-family
+  - noto-fonts-emoji
