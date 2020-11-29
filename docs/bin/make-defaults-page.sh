@@ -6,7 +6,7 @@
 
 _parent="$(realpath -e -s "$0")"
 _parent="$(dirname "$_parent")"
-cd "$_parent/../ansible"
+cd "$_parent/../../ansible"
 
 list_defaults_files() {
     echo group_vars/all/00-default.yaml
@@ -14,11 +14,14 @@ list_defaults_files() {
 }
 
 {
+    echo "---"
+    echo "layout: default"
+    echo "---"
     echo "# Defaults files index"
     echo
 
     list_defaults_files | while read _deffile; do
-        echo "* [$_deffile](#$_deffile)"
+        echo "* [$_deffile](#$(echo "$_deffile" | tr -d ./))"
     done
 
     echo
@@ -31,4 +34,4 @@ list_defaults_files() {
         echo '```'
         echo
     done
-} | tr -s '\n' > "$_parent/defaults.md"
+} | head -n -1 | sed "s/{{/{{ '{{' }}/g" > "$_parent/../defaults.md"
