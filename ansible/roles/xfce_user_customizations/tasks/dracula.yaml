@@ -1,0 +1,63 @@
+- name: Install packages for Dracula theme
+  import_role:
+    name: packages
+  vars:
+    packages:  "{{ xfce_user_customizations_packages_dracula }}"
+
+- name: Create local backgrounds/themes/icons folders
+  file:
+    state: directory
+    path: /usr/local/share/{{ item }}
+  loop:
+    - backgrounds
+    - icons
+    - themes
+
+- name: Remove any existing Dracula theme
+  file:
+    state: absent
+    path: /usr/local/share/{{ item }}/Dracula
+  loop:
+    - icons
+    - themes
+
+- name: Remove any potential extraction leftover
+  file:
+    state: absent
+    path: /usr/local/share/themes/gtk-master
+
+- name: Download GTK theme
+  unarchive:
+    remote_src: yes
+    src: "{{ xfce_user_customizations_dracula_gtk }}"
+    dest: "/usr/local/share/themes"
+
+- name: Give the theme a meaningful folder name
+  shell: mv /usr/local/share/themes/{gtk-master,Dracula}
+
+- name: Download icon theme
+  unarchive:
+    remote_src: yes
+    src: "{{ xfce_user_customizations_dracula_icons }}"
+    dest: "/usr/local/share/icons"
+
+- name: Create the icon cache
+  command: gtk-update-icon-cache -f /usr/local/share/icons/Dracula
+
+# Credits for this wallpaper:
+# http://getwallpapers.com/wallpaper/full/d/0/f/718768-free-download-dark-purple-backgrounds-1920x1080.jpg
+- name: Copy wallpaper
+  copy:
+    src: dracula/wallpaper.jpg
+    dest: /usr/local/share/backgrounds/dracula_wallpaper.jpg
+    mode: "0644"
+
+- name: Copy xfce's configuration for Dracula
+  become: yes
+  become_user: "{{ item }}"
+  copy:
+    src: dracula/xfce4/
+    dest: "{{ users_created | user_home(item) }}/.config/xfce4"
+    mode: "0644"
+  loop: "{{ users_names }}"
+  when: item_theme.default | default(False, True) == True

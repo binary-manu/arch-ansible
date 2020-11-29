@@ -17,6 +17,12 @@ xfce_user_customizations_packages_equilux:
   - equilux-theme
   - korla-icon-theme
 
+xfce_user_customizations_packages_dracula:
+  - unzip
+
+xfce_user_customizations_dracula_gtk: https://github.com/dracula/gtk/archive/master.zip
+xfce_user_customizations_dracula_icons: https://github.com/dracula/gtk/files/5214870/Dracula.zip
+
 # This controls which themes are installed (`installed: true`) and which one
 # will be configured as the default for all non-root users (`default: true`).
 # The `theme` corresponds to the name of a task file under `tasks/`.
@@ -30,4 +36,6 @@ xfce_user_customizations_themes:
     installed: true
     default: true
   - theme: equilux
+    installed: true
+  - theme: dracula
     installed: true
