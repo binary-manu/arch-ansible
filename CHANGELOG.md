@@ -12,6 +12,24 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+### Added
+
+* The Equilux theme has been integrated. It uses the Korla icon theme.
+* The Dracula themes for GTK and icons have been integrated.
+* The font `noto-fonts-emoji` is now installed by default, providing
+  support for Unicode emojis.
+
+### Changed
+
+* The docs have been ported to GitHub pages using Jekyll. The README
+  is now a much shorter "Getting started" introduction.
+
+### Fixed
+
+* Packer was unable to provision VM's because there was not enough space
+  on archiso's rootfs to install Ansible. The Packer VM now uses 2GiB of
+  memory and 1GiB of COW space to accomodate the tools.
+
 ## [0.2.1] - 2020-11-17
 
 ### Fixed
