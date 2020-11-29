@@ -13,6 +13,10 @@ xfce_user_customizations_packages_darkblue:
   - numix-cursor-theme-git
   - korla-icon-theme
 
+xfce_user_customizations_packages_equilux:
+  - equilux-theme
+  - korla-icon-theme
+
 # This controls which themes are installed (`installed: true`) and which one
 # will be configured as the default for all non-root users (`default: true`).
 # The `theme` corresponds to the name of a task file under `tasks/`.
@@ -25,3 +29,5 @@ xfce_user_customizations_themes:
   - theme: darkblue
     installed: true
     default: true
+  - theme: equilux
+    installed: true

@@ -1,0 +1,28 @@
+- name: Install packages for Equilux theme
+  import_role:
+    name: packages
+  vars:
+    packages:  "{{ xfce_user_customizations_packages_equilux }}"
+
+- name: Create local backgrounds folder
+  file:
+    state: directory
+    path: /usr/local/share/backgrounds
+
+# Credits for this wallpaper:
+# https://hdqwalls.com/grey-material-design-4k-wallpaper
+- name: Copy wallpaper
+  copy:
+    src: equilux/wallpaper.jpg
+    dest: /usr/local/share/backgrounds/equilux_wallpaper.jpg
+    mode: "0644"
+
+- name: Copy xfce's configuration for Equilux
+  become: yes
+  become_user: "{{ item }}"
+  copy:
+    src: equilux/xfce4/
+    dest: "{{ users_created | user_home(item) }}/.config/xfce4"
+    mode: "0644"
+  loop: "{{ users_names }}"
+  when: item_theme.default | default(False, True) == True
