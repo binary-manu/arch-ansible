@@ -12,6 +12,8 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.2.2] - 2020-12-01
+
 ### Added
 
 * The Equilux theme has been integrated. It uses the Korla icon theme.
