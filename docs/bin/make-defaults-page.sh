@@ -6,12 +6,31 @@
 
 _parent="$(realpath -e -s "$0")"
 _parent="$(dirname "$_parent")"
+_defaults="$_parent/../defaults.md"
 cd "$_parent/../../ansible"
 
 list_defaults_files() {
     echo group_vars/all/00-default.yaml
     find roles/ -path '*/defaults/main.yaml' | sort
 }
+
+check_defaults_file_is_up_to_date() {
+    test "group_vars/all/00-default.yaml" -ot "$_defaults" &&
+      test -z "$(find roles/ -path '*/defaults/main.yaml' -newer "$_defaults" \( -print -quit \))"
+}
+
+case "$1" in
+check)
+    check_defaults_file_is_up_to_date
+    exit
+    ;;
+"")
+    ;;
+*)
+    echo "Unrecognized command '$1'" >&2
+    exit 1
+    ;;
+esac
 
 {
     echo "---"
@@ -34,4 +53,4 @@ list_defaults_files() {
         echo '```'
         echo
     done
-} | head -n -1 | sed "s/{{/{{ '{{' }}/g" > "$_parent/../defaults.md"
+} | head -n -1 | sed "s/{{/{{ '{{' }}/g" > "$_defaults"
