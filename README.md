@@ -1,8 +1,6 @@
 # Arch-Ansible: an Ansible playbook to install Arch Linux
 
 [![Stars](https://img.shields.io/github/stars/binary-manu/arch-ansible.svg?style=social&label=Star)](https://github.com/binary-manu/arch-ansible/stargazers)
-[![Say
-Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/vpooldyn-subscription@yahoo.it)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/binary-manu/arch-ansible/blob/master/LICENSE.txt)
 [![Link to the docs](https://img.shields.io/badge/Read%20the%20full%20docs!-%F0%9F%8E%93-brightgreen)][docs]
 
@@ -53,9 +51,7 @@ preinstalled utilities, screensaver behaviour and more. Have a look at
 the [documentation][docs] for more information.
 
 If you find this project helpful, why not showing some ♥ by giving it a
-star on GitHub? If you don't have an account, you can use the button at
-the top of the page to say thanks via
-[https://saythanks.io](https://saythanks.io).
+star on GitHub?
 
 [docs]: https://binary-manu.github.io/arch-ansible
 
