@@ -12,6 +12,8 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.2.3] - 2021-01-20
+
 ### Changed
 
 * Remove [saythanks.io](https://saythanks.io) badge.
