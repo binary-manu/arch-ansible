@@ -16,6 +16,10 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 * Remove [saythanks.io](https://saythanks.io) badge.
 
+### Fixed
+
+* Update themes to track the Korla icon theme rename to Kora.
+
 ## [0.2.2] - 2020-12-01
 
 ### Added
