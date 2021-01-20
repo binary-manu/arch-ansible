@@ -11,11 +11,11 @@ xfce_user_customizations_packages_darkblue:
   - gtk-engine-murrine
   - numix-themes-darkblue
   - numix-cursor-theme-git
-  - korla-icon-theme
+  - kora-icon-theme
 
 xfce_user_customizations_packages_equilux:
   - equilux-theme
-  - korla-icon-theme
+  - kora-icon-theme
 
 xfce_user_customizations_packages_dracula:
   - unzip
