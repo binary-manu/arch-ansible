@@ -48,10 +48,10 @@ systemctl start reflector-init
 pacman -Syyu --noconfirm --needed base-devel networkmanager ansible \
     $EXTRA_BASE_PACKAGES
 
-# Enable and start NetworkManager, while removing systemd-netword profiles.
+# Replace systemd-networkd with NetworkManager
+# The actual service swap happens at the next reboot
 systemctl enable NetworkManager.service
-systemctl start  NetworkManager.service
-rm -f /etc/systemd/network/eth0.network
+systemctl disable systemd-networkd.service
 
 # Remove packages that will conflict with arch-ansible. It currently expects to
 # be able to install VirtualBox guest additions with GUI support, but they
