@@ -4,3 +4,8 @@
       state: started
       enabled: yes
 
+  - name: Enable QEMU guest agent
+    systemd:
+      name: qemu-guest-agent
+      state: started
+      enabled: yes
