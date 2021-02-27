@@ -27,6 +27,27 @@
         ["modifyvm", "{{.Name}}", "--rtcuseutc", "on"],
         ["storagectl", "{{.Name}}", "--name", "IDE Controller", "--remove"]
       ]
+    },
+    {
+      "type" : "qemu",
+      "iso_url" : "http://mirror.rackspace.com/archlinux/iso/latest/archlinux-{{isotime \"2006.01\"}}.01-x86_64.iso",
+      "iso_checksum" : "file:http://mirror.rackspace.com/archlinux/iso/latest/md5sums.txt",
+      "vm_name" : "archlinux.qcow2",
+      "shutdown_command" : "poweroff",
+      "ssh_username" : "root",
+      "ssh_clear_authorized_keys" : true,
+      "memory" : "2048",
+      "disk_size" : 65536,
+      "ssh_private_key_file": "./insecure_key",
+      "disk_interface": "virtio-scsi",
+      "qemuargs" : [
+        ["-vga", "virtio"]
+      ],
+      "boot_command" : [
+        "<tab><end> cow_spacesize=1G<enter>",
+        "<wait60>systemctl start sshd && mkdir -m 0700 /root/.ssh<enter>",
+        "echo 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMxWY/8/m23+oBuOdC8YH7SdhaRdTQ0fRqcL8O3EaIUX TempKey' >> /root/.ssh/authorized_keys<enter>"
+      ]
     }
   ],
 
