@@ -1,19 +1,26 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby et sw=2 sts=-1:
 
+require 'etc'
+
 # Set audio backend for VirtualBox, host-dependant
 enable_audio = nil
 http_proxy = nil
+default_memory = 1024
+default_video_ram = 16
+default_cpus = (Etc.nprocessors / 2).ceil()
 
 Vagrant.configure("2") do |config|
   config.vm.box = "archlinux/archlinux"
+
   config.vm.provider "virtualbox" do |vb, override|
     vb.gui = true
     vb.default_nic_type = "virtio"
+    vb.cpus = default_cpus
+    vb.memory = default_memory
     vb.customize [
       "modifyvm", :id,
-      "--memory", "1024",
-      "--vram", "16",
+      "--vram", default_video_ram.to_s
     ]
     if enable_audio
       vb.customize [
