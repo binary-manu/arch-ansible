@@ -89,8 +89,12 @@ and prepares one large partition used as root. There is no swap space or
 separate boot partition by default. Syslinux is used as the bootloader.
 
 There is support for installing hypervisor guest additions as part of
-the process, although it can be disabled. As of today, only VirtualBox
-is supported.
+the process, although it can be disabled. Currently supported hypervisors
+are:
+
+* VirtualBox;
+* QEMU. Using this hypervisor with Vagrant requires the `vagrant-libvirt`
+  plugin as well as `libvirt` installed on your system.
 
 The playbook relies on the [Yay](https://github.com/Jguer/yay) AUR
 helper to install packages. Using `yay` instead of the stock `pacman`
@@ -852,6 +856,9 @@ When installing under VirtualBox 6.0 and above, and the VM uses the
 reliably. As a workaround, `virtguest` can be instructed to install the
 `mplugd` daemon, configured to handle screen resizing. You can read more
 [here][mplugd-blog-post].
+
+When provisioning a QEMU VM, the QEMU guest agent and the SPICE agent are
+installed.
 
 #### wireless
 
