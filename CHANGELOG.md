@@ -12,6 +12,8 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.2.4] - 2021-03-03
+
 ### Added
 
 * The playbook can now provision QEMU/KVM guests.
