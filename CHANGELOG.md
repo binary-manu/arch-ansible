@@ -12,6 +12,17 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+### Added
+
+* The playbook can now provision QEMU/KVM guests.
+* Arch-Packer now supports the `qemu` builder.
+* Arch-Vagrant now supports the `libvirt` provider.
+
+### Changed
+
+* Common values have been moved to variables within the `Vagrantfile` and
+  the Packer template.
+
 ## [0.2.3] - 2021-01-20
 
 ### Changed
