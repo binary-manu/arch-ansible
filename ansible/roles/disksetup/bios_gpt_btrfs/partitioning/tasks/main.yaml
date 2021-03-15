@@ -1,0 +1,59 @@
+- name: Create the BIOS boot partition
+  parted:
+    device: "{{ partitioning_priv_device_node }}"
+    state: present
+    label: gpt
+    number: 1
+    name: bios
+    part_start: "{{ partitioning_priv_start_offset }}B"
+    part_end: "{{ (partitioning_priv_bios_part_size | int) + (partitioning_priv_start_offset | int) - 1 }}B"
+    flags:
+      - bios
+
+- name: Create the root partition
+  parted:
+    device: "{{ partitioning_priv_device_node }}"
+    state: present
+    label: gpt
+    number: 2
+    name: root
+    part_start: "{{ (partitioning_priv_bios_part_size | int) + (partitioning_priv_start_offset | int) }}B"
+
+- name: Enumerate created partitions
+  shell: lsblk -n -o PATH {{ partitioning_priv_device_node | quote }} | tail -n +2
+  register: _partitions
+  changed_when: no
+
+- name: Assign partitions to variables
+  set_fact:
+    partitioning_priv_bios_part_device_node: "{{ _partitions.stdout_lines[0] }}"
+    partitioning_priv_root_device_node: "{{ _partitions.stdout_lines[1] }}"
+
+- name: Format the root partition with btrfs
+  filesystem:
+    dev:  "{{ partitioning_priv_root_device_node }}"
+    fstype: btrfs
+
+- name: Mount the default subvolume
+  mount:
+    state: mounted
+    src: "{{ partitioning_priv_root_device_node }}"
+    path: "{{ partitioning_root_mount_point }}"
+    fstype: btrfs
+
+- name: Create subvolumes
+  command: btrfs subvolume create {{ (partitioning_root_mount_point + "/" + item.name) | quote }}
+  loop: "{{ partitioning_priv_subvolumes }}"
+
+- name: Umount the default subvolume
+  mount:
+    state: unmounted
+    path: "{{ partitioning_root_mount_point }}"
+
+# Note: the mount module seems not to mount '@' correctly. Falling back
+# to using the commandline until further investigations.
+- name: Mount the subvolumes
+  shell: |
+    mkdir -m 0755 -p {{ (partitioning_root_mount_point + item.mountpoint) | quote }}
+    mount -t btrfs -o defaults,subvol={{ item.name | quote }} {{ partitioning_priv_root_device_node | quote }} {{ (partitioning_root_mount_point + item.mountpoint) | quote }}
+  loop: "{{ partitioning_priv_subvolumes }}"

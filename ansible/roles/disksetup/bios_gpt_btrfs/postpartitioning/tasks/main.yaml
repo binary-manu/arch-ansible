@@ -1,0 +1,5 @@
+- name: Use genfstab to generate an appropriate fstab for subvolumes
+  include_role:
+    name: genfstab
+  vars:
+    chroot: "{{ partitioning_root_mount_point }}"
