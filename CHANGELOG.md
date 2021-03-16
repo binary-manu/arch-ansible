@@ -12,6 +12,8 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.2.5] - 2021-03-16
+
 ### Added
 
 * Added a new partitioning flow: `bios_gpt_btrfs` for btrfs-on-root.
