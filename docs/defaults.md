@@ -7,6 +7,7 @@ layout: default
 * [roles/base_packages/defaults/main.yaml](#rolesbase_packagesdefaultsmainyaml)
 * [roles/bluetooth/defaults/main.yaml](#rolesbluetoothdefaultsmainyaml)
 * [roles/custom_repos/defaults/main.yaml](#rolescustom_reposdefaultsmainyaml)
+* [roles/disksetup/bios_gpt_btrfs/partitioning/defaults/main.yaml](#rolesdisksetupbios_gpt_btrfspartitioningdefaultsmainyaml)
 * [roles/disksetup/defaults/main.yaml](#rolesdisksetupdefaultsmainyaml)
 * [roles/disksetup/gpt_singlepart/partitioning/defaults/main.yaml](#rolesdisksetupgpt_singlepartpartitioningdefaultsmainyaml)
 * [roles/disksetup/mbr_lvm/partitioning/defaults/main.yaml](#rolesdisksetupmbr_lvmpartitioningdefaultsmainyaml)
@@ -122,6 +123,50 @@ custom_repos_list: [
 custom_repos_servers: [
 #  "http://localhost:8080/$repo/os/$arch"
 ]
+```
+
+## roles/disksetup/bios_gpt_btrfs/partitioning/defaults/main.yaml
+
+```yaml
+##### Public variables used by the rest of the playbook #####
+partitioning_root_mount_point: "/mnt"
+
+##### Private variables used only by the partitioning roles #####
+
+# On this device node, two partitions will be created:
+# * /dev/xxx1 will be used as the BIOS boot partition
+# * /dev/xxx2 will be used as /
+partitioning_priv_device_node: "/dev/sda"
+
+# Offsets where partition starts, in bytes
+partitioning_priv_start_offset: "{{ '{{' }} 1024 * 1024 }}"
+
+# Size of the BIOS boot partition, in bytes
+partitioning_priv_bios_part_size: "{{ '{{' }} 1024 * 1024 }}"
+
+# Subvolumes are laid out in a flat fashion and named following snapper naming
+# conventions:
+#
+# toplevel         (default subvolume, not mounted)
+#   +-- @          (to be mounted at /)
+#   +-- @snapshots (to be mounted at /.snapshots)
+#   +-- @home      (to be mmounted at /home)
+#   +-- ...
+#
+partitioning_priv_subvolumes: "{{ '{{' }} partitioning_priv_core_subvolumes + partitioning_priv_extra_subvolumes }}"
+
+# You can add other subvolumes here, just add an @ at the beginning and
+# keep them in mount order, By default /home gets its own subvolume.
+partitioning_priv_extra_subvolumes:
+  - name: "@home"
+    mountpoint: /home
+
+# These subvolumes should always be present. Do not override.
+partitioning_priv_core_subvolumes:
+  - name: "@"
+    mountpoint: /
+  - name: "@snapshots"
+    mountpoint: /.snapshots
 ```
 
 ## roles/disksetup/defaults/main.yaml

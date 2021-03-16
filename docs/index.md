@@ -290,7 +290,16 @@ cover some basic scenarios and are mostly useful for VM provisioning:
   the root LV, ext4-formatted. The boot partition will hold the kernels
   for the non-LVM-aware bootloader. Syslinux is used to boot up. The
   size of the boot partition can be configured and defaults to 512MiB.
-  Don't make it too small if you want to install additional kernels.
+  Don't make it too small if you want to install additional kernels;
+* `disksetup/bios_gpt_btrfs`: a single disk gets a GPT label and two
+  partitions. The first is a 1MiB BIOS boot partition for GRUB to use
+  and the second is the btrfs root. The root gets at least two
+  subvolumes, one for `/` and one for snapshots mounted at
+  `/.snapshots`. By default `/home` also gets its own subvolume, but
+  this can be disabled by tweaking `partitioning_priv_extra_subvolumes`.
+  The same variable can be used to define additions subvolumes, like
+  `/var`. `grub-btrfs` is pre-installed and snapshots of `/` will
+  automatically appear in GRUB.
 
 ### Flow structure and location
 
