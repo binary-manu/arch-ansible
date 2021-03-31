@@ -12,6 +12,8 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.2.6] - 2021-03-31
+
 ### Fixed
 
 * Fixed `pacman`/`yay` cache cleaning in role `clean`.
