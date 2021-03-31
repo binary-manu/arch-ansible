@@ -12,6 +12,12 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+### Fixed
+
+* Fixed `pacman`/`yay` cache cleaning in role `clean`.
+* Hardened uses of the `shell` and `command` modules by quoting all
+  Jinja replacements.
+
 ## [0.2.5] - 2021-03-16
 
 ### Added
