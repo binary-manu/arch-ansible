@@ -1,3 +1,6 @@
 - name: Run pacstrap
-  command: pacstrap {{ chroot }} --needed
-    {{ packages | join(' ') }}
+  command: >
+    pacstrap {{ chroot | quote }} --needed
+    {% for pkg in packages %}
+      {{ pkg | quote }}
+    {% endfor %}

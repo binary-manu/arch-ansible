@@ -20,7 +20,7 @@
       - lvm
 
 - name: Enumerate created partitions
-  shell: lsblk -n -o PATH "{{ partitioning_priv_device_node }}" | tail -n +2
+  shell: lsblk -n -o PATH {{ partitioning_priv_device_node | quote }} | tail -n +2
   register: _partitions
   changed_when: no
 

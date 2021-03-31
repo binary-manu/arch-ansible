@@ -1,6 +1,6 @@
 - name: Obtain regulatory domain country code from the locale
   shell: >-
-    echo '{{ locale_locale }}' |
+    echo {{ locale_locale | quote }} |
       grep -Po '(?<=^[[:lower:]]{2}_)[[:upper:]]{2}(?=\..*$|$)'
   register: _regdom_country
   when: wireless_regdom_country == ""

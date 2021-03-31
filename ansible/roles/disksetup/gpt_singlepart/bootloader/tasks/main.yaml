@@ -8,7 +8,7 @@
       - efibootmgr
 
 - name: Install GRUB2
-  command: arch-chroot {{ partitioning_root_mount_point }} /usr/bin/grub-install
+  command: arch-chroot {{ partitioning_root_mount_point | quote }} /usr/bin/grub-install
 
 - name: Generate GRUB2 configuration file
-  command: arch-chroot {{ partitioning_root_mount_point }} /usr/bin/grub-mkconfig -o /boot/grub/grub.cfg
+  command: arch-chroot {{ partitioning_root_mount_point | quote }} /usr/bin/grub-mkconfig -o /boot/grub/grub.cfg

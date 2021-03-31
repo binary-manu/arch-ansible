@@ -1,6 +1,6 @@
 - name: Enable services on installed system
-  command: arch-chroot {{ partitioning_root_mount_point}}
-    systemctl enable {{ item }}
+  command: arch-chroot {{ partitioning_root_mount_point | quote }}
+    systemctl enable {{ item | quote }}
   loop:
     - sshd
     - NetworkManager

@@ -4,23 +4,23 @@
     path: "{{ partitioning_root_mount_point }}/boot/syslinux"
 
 - name: Copy syslinux files to /boot
-  shell: cp {{ partitioning_root_mount_point }}/usr/lib/syslinux/bios/*.c32
-    {{ partitioning_root_mount_point }}/usr/lib/syslinux/bios/memdisk
-    {{ partitioning_root_mount_point }}/boot/syslinux/
+  shell: cp {{ partitioning_root_mount_point | quote }}/usr/lib/syslinux/bios/*.c32
+    {{ partitioning_root_mount_point | quote }}/usr/lib/syslinux/bios/memdisk
+    {{ partitioning_root_mount_point | quote }}/boot/syslinux/
 
 - name: Install syslinux
-  command: arch-chroot {{ partitioning_root_mount_point }} /usr/bin/extlinux --install /boot/syslinux
+  command: arch-chroot {{ partitioning_root_mount_point | quote }} /usr/bin/extlinux --install /boot/syslinux
 
 - name: Map / and /boot to their device nodes
-  shell: awk '$2 == "'"$(stat -c %m "{{ item }}")"'" { print $1; }' /etc/mtab
+  shell: awk '$2 == "'"$(stat -c %m {{ item | quote }})"'" { print $1; }' /etc/mtab
   register: _mounts
   loop:
     - "{{ partitioning_root_mount_point }}"
     - "{{ partitioning_root_mount_point }}/boot"
   changed_when: no
 
-- name: Get root's UUID
-  command: lsblk -n -o UUID {{ _mounts.results[0].stdout }}
+- name: "Get root's UUID"
+  command: lsblk -n -o UUID {{ _mounts.results[0].stdout_lines[0] | quote }}
   register: _uuid
   changed_when: false
 
@@ -52,8 +52,8 @@
 
 - name: Install IPL
   command: dd
-    if={{ partitioning_root_mount_point }}/usr/lib/syslinux/bios/mbr.bin
-    of={{ (_mounts.results[1].stdout | split_partition_number)[0] }}
+    if={{ partitioning_root_mount_point | quote }}/usr/lib/syslinux/bios/mbr.bin
+    of={{ (_mounts.results[1].stdout | split_partition_number)[0] | quote }}
     bs=440
     count=1
   when: ipl | default(False)

@@ -1,6 +1,10 @@
 - name: Install batch of packages
   become: yes
   become_user: "{{ passwordless_sudo_user_name }}"
-  command: yay -S {{ packages | join(' ') }}
-    --answerclean none --answeredit none --answerupgrade none --answerdiff none
-    --removemake --noconfirm --combinedupgrade --needed
+  command: >
+    yay -S
+      --answerclean none --answeredit none --answerupgrade none --answerdiff none
+      --removemake --noconfirm --combinedupgrade --needed
+      {% for pkg in packages %}
+        {{ pkg | quote }}
+      {% endfor %}

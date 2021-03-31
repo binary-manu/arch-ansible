@@ -10,7 +10,7 @@
 - name: Set locale
   shell: set -o pipefail || exit 1;
     { localectl status &&
-      localectl set-locale {{ locale_locale }} &&
+      localectl set-locale {{ locale_locale | quote }} &&
       localectl status
     ;} | sort | uniq -u
   register: _locale_changed
@@ -19,7 +19,7 @@
 - name: Set keymap
   shell: set -o pipefail || exit 1;
     { localectl status &&
-      localectl set-keymap {{ locale_keymap }} &&
+      localectl set-keymap {{ locale_keymap | quote }} &&
       localectl status
     ;} | sort | uniq -u
   register: _keymap_changed

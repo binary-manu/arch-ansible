@@ -5,7 +5,7 @@
 
 - name: Check if package {{ package_name }} is already installed
   shell: set -o pipefail || exit 1; pacman -Qsq |
-    { grep '^{{ package_name }}$' ; [ $? -lt 2 ]; }
+    { grep '^'{{ package_name | quote }}'$' ; [ $? -lt 2 ]; }
   register: _package_installed
   changed_when: no
 
@@ -26,7 +26,7 @@
         dest: "{{ _tempdir.path }}"
         
     - name: Run makepkg
-      shell: cd '{{ _tempdir.path }}/{{ package_name }}' && makepkg -rsi --noconfirm
+      shell: cd '{{ _tempdir.path | quote }}/{{ package_name | quote }}' && makepkg -rsi --noconfirm
   always:
     - name: Remove temporary build directory
       file:
