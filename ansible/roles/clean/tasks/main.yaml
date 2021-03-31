@@ -1,5 +1,13 @@
+# Yay never gets its own input if we do something like:
+# printf "y\nn\ny\n" | LC_ALL=C yay -Scc
+# because pacman runs first and consumes all input.
+# So we first explicitly run pacman to clean its own stuff
+# and later we run yay, disabling its call to pacman
+# with --pacman true.
 - name: Clear package cache
-  shell: printf "y\nn\ny\n" | LANG=C yay -Scc
+  shell: |
+    printf "y\nn\n" | LC_ALL=C pacman -Scc
+    printf "y\n" | LC_ALL=C yay -Scc --pacman true
 
 - name: Remove proxy settings
   import_role:
