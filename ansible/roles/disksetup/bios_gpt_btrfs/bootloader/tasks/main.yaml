@@ -1,5 +1,5 @@
 - name: Install GRUB2 package
-  include_role:
+  import_role:
     name: pacstrap
   vars:
     chroot: "{{ partitioning_root_mount_point }}"
