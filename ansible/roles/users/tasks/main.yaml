@@ -13,7 +13,7 @@
             {{- users_info[item].groups | default([]) | unique -}}
         {%- endif -%}"
     password: "{{ users_info[item].password |
-        password_hash('sha512', 1000000 | random )}}"
+        password_hash('sha512', 1000000 | random | string )}}"
   loop: "{{ users_names }}"
   register: users_created
 
@@ -21,7 +21,7 @@
   user:
     name: root
     password: "{{ users_root_info.password |
-        password_hash('sha512', 1000000 | random )}}"
+        password_hash('sha512', 1000000 | random | string )}}"
 
 - name: Allow admins to sudo by authorizing the wheel group
   lineinfile:
