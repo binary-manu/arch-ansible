@@ -12,6 +12,17 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.2.7] - 2021-08-23
+
+### Fixed
+
+* Ansible `password_hash` filter no longer accepts integers as salt
+  values.
+
+### Changed
+
+* `private_role_vars` is now enabled in the configuration file.
+
 ## [0.2.6] - 2021-03-31
 
 ### Fixed
