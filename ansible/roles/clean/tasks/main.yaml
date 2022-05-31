@@ -4,10 +4,13 @@
 # So we first explicitly run pacman to clean its own stuff
 # and later we run yay, disabling its call to pacman
 # with --pacman true.
-- name: Clear package cache
-  shell: |
-    printf "y\nn\n" | LC_ALL=C pacman -Scc
-    printf "y\n" | LC_ALL=C yay -Scc --pacman true
+- name: Clear pacman caches
+  shell: printf "y\nn\n" | LC_ALL=C pacman -Scc
+
+- name: Clear yay caches
+  shell: printf "y\n" | LC_ALL=C yay -Scc --pacman true
+  become: yes
+  become_user: "{{ passwordless_sudo_user_name }}"
 
 - name: Remove proxy settings
   import_role:
