@@ -12,6 +12,13 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.2.8] - 2022-05-31
+
+### Fixed
+
+* When cleaning `yay` caches, ensure that the passwordless sudo user is
+  employed rather than root.
+
 ## [0.2.7] - 2021-08-23
 
 ### Fixed
