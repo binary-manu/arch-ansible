@@ -1,0 +1,29 @@
+- name: Create kvantum config directory
+  become: yes
+  become_user: "{{ item }}"
+  file:
+    path: "{{ users_created | user_home(item) }}/.config/Kvantum"
+    state: directory
+    mode: "0755"
+  loop: "{{ users_names }}"
+
+- name: Copy kvantum theme configuration to user home
+  become: yes
+  become_user: "{{ item }}"
+  template:
+    src: kvantum.kvconfig.j2
+    dest: "{{ users_created | user_home(item) }}/.config/Kvantum/kvantum.kvconfig"
+    mode: "0644"
+  loop: "{{ users_names }}"
+
+- name: Override the QT theme and set it to kvantum in each user's profile
+  become: yes
+  become_user: "{{ item }}"
+  lineinfile:
+    regexp: "^export QT_STYLE_OVERRIDE="
+    line: "export QT_STYLE_OVERRIDE=kvantum"
+    state: present
+    path: "{{ users_created | user_home(item) }}/.bashrc"
+    # .bashrc should come from /etc/skel
+    create: no
+  loop: "{{ users_names }}"

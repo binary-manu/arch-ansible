@@ -1,0 +1,7 @@
+dependencies:
+  - role: xorg
+  - role: users
+  - role: packages
+    vars:
+      packages:
+        - kvantum-qt5

@@ -13,3 +13,10 @@
   loop_control:
     loop_var: item_theme
   when: item_theme.installed | default(False, True) == True
+
+- name: Add kvantum
+  import_role:
+    name: kvantum
+  vars:
+    kvantum_theme: "{{ xfce_user_customizations_kvantum_theme }}"
+  when: xfce_user_customizations_kvantum_theme | length != 0

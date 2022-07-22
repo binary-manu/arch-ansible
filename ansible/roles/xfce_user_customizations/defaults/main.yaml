@@ -39,3 +39,7 @@ xfce_user_customizations_themes:
     installed: true
   - theme: dracula
     installed: true
+
+# If not empty, install kvantum-qt5 and set the theme to the value of the
+# variable.  Also, add QT_STYLE_OVERRIDE=kvantum to the user's profile
+xfce_user_customizations_kvantum_theme: ""
