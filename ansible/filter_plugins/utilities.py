@@ -1,11 +1,21 @@
 import re
+import random
+import base64
+import crypt
+
+_SHA512_PREFIX     = "$6$"
+# Limits taken from crypt(5) on Arch
+_SHA512_SALT_BYTES = 12
+_SHA512_MIN_ROUNDS = 10**3
+_SHA512_MAX_ROUNDS = 10**9 - 1
 
 class FilterModule:
 
     def filters(self):
         return {
             'user_home': self.user_home,
-            'split_partition_number': self.split_partition_number
+            'split_partition_number': self.split_partition_number,
+            'sha512_hash': self.sha512_hash
         }
 
     def user_home(self, d, username):
@@ -26,3 +36,11 @@ class FilterModule:
             match.group(1) or ""
         )
         return (dev, part)
+
+    def sha512_hash(self, pw, rounds):
+        if not _SHA512_MIN_ROUNDS <= rounds <= _SHA512_MAX_ROUNDS:
+            raise ValueError("sha512 password hashing requires a rounds value between "
+                f"{ _SHA512_MIN_ROUNDS } and { _SHA512_MAX_ROUNDS }")
+        salt = base64.b64encode(random.randbytes(_SHA512_SALT_BYTES)).decode("utf-8")
+        return crypt.crypt(pw, f"{ _SHA512_PREFIX }rounds={ rounds }${ salt }")
+
