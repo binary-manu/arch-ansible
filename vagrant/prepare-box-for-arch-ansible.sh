@@ -45,7 +45,8 @@ systemctl start reflector-init
 # installs some packages because, again, the bootstrap phase of arch-ansible
 # would have done that. Ansible is installed here because Vagrant 2.2.5 fails
 # to install it.
-pacman -Syyu --noconfirm --needed base-devel networkmanager ansible \
+pacman -Syy --noconfirm --needed archlinux-keyring
+pacman -Su --noconfirm --needed base-devel networkmanager ansible \
     $EXTRA_BASE_PACKAGES
 
 # Replace systemd-networkd with NetworkManager
