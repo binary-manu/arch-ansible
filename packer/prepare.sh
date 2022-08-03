@@ -15,5 +15,6 @@ unset_proxy() {
 }
 
 set_proxy
-pacman -Sy --noconfirm --needed ansible
+pacman -Syy --noconfirm --needed archlinux-keyring
+pacman -S --noconfirm --needed ansible
 unset_proxy
