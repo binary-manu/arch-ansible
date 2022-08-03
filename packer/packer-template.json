@@ -3,7 +3,7 @@
     "http_proxy"  : "{{env `http_proxy`}}",
     "https_proxy" : "{{env `https_proxy`}}",
     "no_proxy"    : "{{env `no_proxy`}}",
-    "arch_iso"    : "http://mirror.rackspace.com/archlinux/iso/latest/archlinux-{{isotime \"2006.01\"}}.01-x86_64.iso",
+    "arch_iso"    : "http://mirror.rackspace.com/archlinux/iso/latest/archlinux-x86_64.iso",
     "arch_iso_sum": "file:http://mirror.rackspace.com/archlinux/iso/latest/md5sums.txt",
     "ssh_authkey" : "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMxWY/8/m23+oBuOdC8YH7SdhaRdTQ0fRqcL8O3EaIUX TempKey",
     "cmd_cow"     : "<tab><end> cow_spacesize=1G<enter>",
