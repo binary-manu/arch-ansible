@@ -12,6 +12,8 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.2.9] - 2022-08-04
+
 ### Fixed
 
 * Some dots in regular expessions were not escaped, matching any
