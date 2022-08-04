@@ -297,6 +297,17 @@ users_info:
     password: "abcd$1234_manu"
     is_admin: true # Optional item, true if missing
     groups: []     # Optional item, empty list if missing
+
+# Increase or decrease the number of rounds used to generate password hashes
+users_hash_rounds: 500000
+
+# Set to true to override the system-wide password hashing policy to match what
+# is used for the initial user passwords. As of now, Arch already uses SHA512,
+# so this only adds rounds, but this may change in future system installations.
+# Please note that due to the format of PAM files, it may be difficult to strip
+# parameters related to the old algorithm, so it is recommended to check
+# /etc/pam.d/passwd for saneness if setting this to true.
+users_override_passwd_hash_systemwide: no
 ```
 
 ## roles/utils/defaults/main.yaml
@@ -402,6 +413,10 @@ xfce_user_customizations_themes:
     installed: true
   - theme: dracula
     installed: true
+
+# If not empty, install kvantum-qt5 and set the theme to the value of the
+# variable.  Also, add QT_STYLE_OVERRIDE=kvantum to the user's profile
+xfce_user_customizations_kvantum_theme: ""
 ```
 
 ## roles/xorg/defaults/main.yaml
