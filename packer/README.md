@@ -68,40 +68,4 @@ stored unencrypted in the repo. The provisioning process takes care of
 removing this key from the VM before exporting it, so that VMs created from
 the image cannot be compromised using this key.
 
-## Why VM preparation fails at the start of the month?
-
-Arch Linux installation media are released monthly, at the beginning of the
-month and their URLs contain the year and month of the release, for example:
-
-    http://mirror.rackspace.com/archlinux/iso/latest/archlinux-2021.02.01-x86_64.iso
-
-The Packer template uses a parameterized URL to always download the most
-recent ISO, and uses today's date to obtain the year and the month (the day
-is always `01`). This means that, as soon as the system clock moves to the midnight
-of the first day of a new month, the URL changes. If the upstream mirror does not yet
-provide a copy of the new ISO image, Packer will fail because it cannot download the
-installation media.
-
-This issue goes away in a few hours as the mirror is updated. Meanwhile, you
-can simply edit the template and replace the parametric URL with a fixed one,
-pointing to the previous ISO:
-
-```diff
-diff --git a/packer/packer-template.json b/packer/packer-template.json
-index bbd4f45..235df1e 100644
---- a/packer/packer-template.json
-+++ b/packer/packer-template.json
-@@ -3,8 +3,8 @@
-     "http_proxy"  : "{{env `http_proxy`}}",
-     "https_proxy" : "{{env `https_proxy`}}",
-     "no_proxy"    : "{{env `no_proxy`}}",
--    "arch_iso"    : "http://mirror.rackspace.com/archlinux/iso/latest/archlinux-{{isotime \"2006.01\"}}.01-x86_64.iso",
--    "arch_iso_sum": "file:http://mirror.rackspace.com/archlinux/iso/latest/md5sums.txt",
-+    "arch_iso"    : "http://mirror.rackspace.com/archlinux/iso/2021.02.01/archlinux-2021.02.01-x86_64.iso",
-+    "arch_iso_sum": "file:http://mirror.rackspace.com/archlinux/iso/2021.02.01/md5sums.txt",
-     "ssh_authkey" : "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMxWY/8/m23+oBuOdC8YH7SdhaRdTQ0fRqcL8O3EaIUX TempKey",
-     "cmd_cow"     : "<tab><end> cow_spacesize=1G<enter>",
-     "cmd_ssh"     : "<wait60>systemctl start sshd && mkdir -m 0700 /root/.ssh<enter>",,
-```
-
 <!-- vi: set tw=72 et sw=2 fo=tcroqan autoindent: -->
