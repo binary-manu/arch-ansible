@@ -18,12 +18,11 @@ users_info:
     is_admin: true # Optional item, true if missing
     groups: []     # Optional item, empty list if missing
 
-# Increase or decrease the number of rounds used to generate the password
-# hash
+# Increase or decrease the number of rounds used to generate password hashes
 users_hash_rounds: 500000
 
 # Set to true to override the system-wide password hashing policy to match what
-# is used foe the initial user passwords. As of now, Arch already uses SHA512,
+# is used for the initial user passwords. As of now, Arch already uses SHA512,
 # so this only adds rounds, but this may change in future system installations.
 # Please note that due to the format of PAM files, it may be difficult to strip
 # parameters related to the old algorithm, so it is recommended to check
