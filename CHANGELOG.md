@@ -12,6 +12,42 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+### Fixed
+
+* Some dots in regular expessions were not escaped, matching any
+  characters rather than just dots.
+* Ensure that updates to `archlinux-keyring` are applied first than any
+  other update, in case new keys have been added.
+* Don't start the qemu guest agent during the installation, just enable it.
+  This solves a provisioning issue with packer and qemu that caused the
+  VM to fail, because the agent could not find the communication port to
+  talk to the host.
+
+### Added
+
+* A new `kvantum` role is available to install and configure the Kvantum QT
+  theme engine, in an attempt to select a QT theme that blends well with the GTK
+  theme used by XFCE. Users of the stock XFCE DE should not call this role
+  directly: instead, they should set `xfce_user_customizations_kvantum_theme` to
+  the name of the Kvantum theme they want to use, such as `KvGnomeDark`.
+* The `users` role have been improved to use more secure password hashing by
+  default: it still uses SHA512 hashing as before, but now it is possible to set
+  the number of rounds, instead of relying on the system default of 5000. The
+  playbook's own default is 500000, which is still acceptable on modern or
+  semi-modern hardware.  Also, the salt is generated randomly to be as long as
+  possible given the limits of SHA512 hashing. All of this uses a new password
+  generation filter instead of Ansible's `password_hash`, built on top of `random`
+  and `crypt`.
+* `users` can now also update relevant system files so that the selected number
+  of rounds is also applied to passwords generated via `passwd`.
+
+### Changed
+
+* Packer now downloads an ISO image which does not contain the release date in
+  the name. This solves the issue of failed Packer runs during the first days of
+  the month if new monthly images haven't been published yet. It will just use the
+  ISO from the previous month unless the new one appears.
+
 ## [0.2.8] - 2022-05-31
 
 ### Fixed
