@@ -7,5 +7,5 @@
   - name: Enable QEMU guest agent
     systemd:
       name: qemu-guest-agent
-      state: started
+      state: stopped
       enabled: yes
