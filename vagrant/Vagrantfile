@@ -20,7 +20,8 @@ Vagrant.configure("2") do |config|
     vb.memory = default_memory
     vb.customize [
       "modifyvm", :id,
-      "--vram", default_video_ram.to_s
+      "--vram", default_video_ram.to_s,
+      "--graphicscontroller", "vmsvga"
     ]
     if enable_audio
       vb.customize [
