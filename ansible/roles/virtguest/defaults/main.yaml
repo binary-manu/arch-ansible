@@ -6,8 +6,3 @@ virtguest_supported_hypervisors:
 # Packages to install to add VirtualBox support to the VM
 virtguest_virtualbox_packages:
   - virtualbox-guest-utils
-
-# If set to yes, mplugd (https://github.com/anyc/mplugd) will be installed and
-# used to handle guest screen resizing in place of VBoxClient.
-virtguest_virtualbox_use_mplugd: "{{ virtguest_use_mplugd }}" # Deprecated alias
-virtguest_use_mplugd: no

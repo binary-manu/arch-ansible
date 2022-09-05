@@ -4,6 +4,3 @@
   notify: Start VirtualBox service
   register: _vboxinstalled
   changed_when: _vboxinstalled.changed or (run_handlers | default(false))
-
-- include_tasks: ./mplugd.yaml
-  when: virtguest_virtualbox_use_mplugd
