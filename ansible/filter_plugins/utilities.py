@@ -1,5 +1,5 @@
 import re
-import random
+import secrets
 import base64
 import crypt
 
@@ -41,6 +41,6 @@ class FilterModule:
         if not _SHA512_MIN_ROUNDS <= rounds <= _SHA512_MAX_ROUNDS:
             raise ValueError("sha512 password hashing requires a rounds value between "
                 f"{ _SHA512_MIN_ROUNDS } and { _SHA512_MAX_ROUNDS }")
-        salt = base64.b64encode(random.randbytes(_SHA512_SALT_BYTES)).decode("utf-8")
+        salt = base64.b64encode(secrets.token_bytes(_SHA512_SALT_BYTES)).decode("utf-8")
         return crypt.crypt(pw, f"{ _SHA512_PREFIX }rounds={ rounds }${ salt }")
 
