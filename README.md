@@ -50,6 +50,8 @@ cd vagrant
 vagrant up --provider=virtualbox && vagrant reload
 ```
 
+After login, type `startx` to run the GUI.
+
 There's a good deal of things that can be customized: DE themes,
 preinstalled utilities, screensaver behaviour and more. Have a look at
 the [documentation][docs] for more information. The [side
