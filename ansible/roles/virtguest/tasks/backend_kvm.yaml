@@ -6,3 +6,5 @@
   notify: Enable QEMU guest agent
   register: _self
   changed_when: _self.changed or (run_handlers | default(false))
+
+- include_tasks: guest_resize.yaml

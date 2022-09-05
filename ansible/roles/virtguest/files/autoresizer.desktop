@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=autoresizer
+Type=Application
+Comment=Automatically resizes the guest VM screen when the resolution changes
+NoDisplay=true
+Exec=/bin/sh -c "xev -root -1 -event randr | sed -un 's/^RRNotify .* output \([^,]\+\).*/\1/p' | xargs -I_ xrandr --output _ --auto"
