@@ -900,14 +900,10 @@ hypervisor, as reported by Ansible and potentially overridden by
 `virtguest_force`. It installs guest additions and any other package
 required for optimal execution under an hypervisor.
 
-When installing under VirtualBox 6.0 and above, and the VM uses the
-`VBoxVGA` adapter, automatic guest screen resizing will no longer work
-reliably. As a workaround, `virtguest` can be instructed to install the
-`mplugd` daemon, configured to handle screen resizing. You can read more
-[here][mplugd-blog-post].
-
 When provisioning a QEMU VM, the QEMU guest agent and the SPICE agent are
-installed.
+installed. Also, an autostarted desktop entry is created to handle screen
+autoresize inside the guest when the host window is resized. This is not
+required for VirtualBox when using the `VMSVGA` adapter.
 
 #### wireless
 
@@ -1272,7 +1268,6 @@ These paths are:
 * `$PROJECT_ROOT/ansible/extra_toles`
 
 
-[mplugd-blog-post]: https://binary-manu.github.io/binary-is-better/virtualbox/resize-vbox-screen-with-mplugd
 [arch-way]: https://wiki.archlinux.org/index.php/Arch_Linux#Principles
 [changelog]: {{ site.repository_url }}/blob/master/CHANGELOG.md
 [defaults]: {{ site.baseurl }}/{% link defaults.md %}
