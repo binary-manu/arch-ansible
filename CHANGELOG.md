@@ -12,6 +12,36 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.2.10] - 2022-09-07
+
+### Fixed
+
+* Replace Python's `random` module with `secrets` when generating password
+  salts. This should produce a better random byte array using the most secure
+  entropy source available on the system.
+
+### Changed
+
+* The ability to automatically install `mplugd` to handle guest screen
+  autoresize in response to host window resize has been removed. `mplugd` is
+  a Python 2 application, and due to the removal of some of its dependencies, it
+  can no longer be installed from the mainstream repos. Despite this, guest
+  autoresizing keeps working using a different approach, depending on the hypervisor:
+    * for VirtualBox, switching the VGA adapter from `VBoxVGA` to `VMSVGA`, which is also
+      the recommened value for Linux, causes it to work automatically as long as the
+      guest additions are installed;
+    * for QEMU/KVM, the job of `mplugd` has been moved to a script using `xev` and `xrandr`,
+      which is launched alongside the GUI using a desktop entry.
+
+  To summarize:
+    * `mplugd` will no longer be available in new installations;
+    * VirtualBox machines will now use the `VMSVGA` adapter, in place of `VBoxVGA`;
+    * guest screen autoresizing will still work.
+
+  Unless you used `mplugd` for anything else other than resizing the screen, or depended
+  on the `VBoxVGA` adapter in some way, you should notice no issues with this new arrangment.
+  Otherwise, you now where the issue tracker is!
+
 ## [0.2.9] - 2022-08-04
 
 ### Fixed
