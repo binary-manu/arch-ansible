@@ -12,6 +12,14 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.2.11] - 2022-10-02
+
+### Fixed
+
+* Fix installation failure caused by a `pacman` package replacement prompt
+  getting a `N` answer due to `--noconfirm`. It has been solved by simply postponing
+  the installation of `xscreensaver` _after_ `xfce4`.
+
 ## [0.2.10] - 2022-09-07
 
 ### Fixed
