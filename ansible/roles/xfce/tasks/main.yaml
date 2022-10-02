@@ -7,3 +7,7 @@
   pacman:
     name: xfce4-screensaver
     state: absent
+
+- name: Install xscreensaver
+  import_role:
+    name: xscreensaver
