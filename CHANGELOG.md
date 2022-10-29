@@ -12,6 +12,13 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.2.12] - 2022-10-29
+
+### Fixed
+
+* Packer now uses SHA256 digests, rather than MD5s, to validate ISO
+  images.
+
 ## [0.2.11] - 2022-10-02
 
 ### Fixed

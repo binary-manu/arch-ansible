@@ -62,6 +62,10 @@ the [documentation][docs] for more information. The [side
 projects][side-projects] section links to specific documentation about
 integration with Vagrant and Packer.
 
+Since Arch is a rolling release distro, it may happen that upstream
+changes break the playbook. If such issues happen to you, please open an
+issue.
+
 If you find this project helpful, why not showing some ♥ by giving it a
 star on GitHub?
 
