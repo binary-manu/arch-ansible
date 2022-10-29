@@ -4,7 +4,7 @@
     "https_proxy" : "{{env `https_proxy`}}",
     "no_proxy"    : "{{env `no_proxy`}}",
     "arch_iso"    : "http://mirror.rackspace.com/archlinux/iso/latest/archlinux-x86_64.iso",
-    "arch_iso_sum": "file:http://mirror.rackspace.com/archlinux/iso/latest/md5sums.txt",
+    "arch_iso_sum": "file:http://mirror.rackspace.com/archlinux/iso/latest/sha256sums.txt",
     "ssh_authkey" : "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMxWY/8/m23+oBuOdC8YH7SdhaRdTQ0fRqcL8O3EaIUX TempKey",
     "cmd_cow"     : "<tab><end> cow_spacesize=1G<enter>",
     "cmd_ssh"     : "<wait60>systemctl start sshd && mkdir -m 0700 /root/.ssh<enter>",
