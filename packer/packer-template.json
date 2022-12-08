@@ -7,7 +7,7 @@
     "arch_iso_sum": "file:http://mirror.rackspace.com/archlinux/iso/latest/sha256sums.txt",
     "ssh_authkey" : "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMxWY/8/m23+oBuOdC8YH7SdhaRdTQ0fRqcL8O3EaIUX TempKey",
     "cmd_cow"     : "<tab><end> cow_spacesize=1G<enter>",
-    "cmd_ssh"     : "<wait60>systemctl start sshd && mkdir -m 0700 /root/.ssh<enter>",
+    "cmd_ssh"     : "<wait60>systemctl start sshd && mkdir -p -m 0700 /root/.ssh<enter>",
     "memory"      : "2048",
     "disk_size"   : "65536",
     "off_cmd"     : "poweroff"
