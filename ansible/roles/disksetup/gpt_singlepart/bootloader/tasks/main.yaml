@@ -8,7 +8,13 @@
       - efibootmgr
 
 - name: Install GRUB2
-  command: arch-chroot {{ partitioning_root_mount_point | quote }} /usr/bin/grub-install
+  command: arch-chroot {{ partitioning_root_mount_point | quote }} /usr/bin/grub-install --bootloader-id arch
+
+- name: Make GRUB2 the default bootloader
+  shell: |
+    cd {{ partitioning_root_mount_point | quote }}/boot/efi/EFI/
+    mkdir Boot
+    cp arch/grubx64.efi Boot/Bootx64.efi
 
 - name: Generate GRUB2 configuration file
   command: arch-chroot {{ partitioning_root_mount_point | quote }} /usr/bin/grub-mkconfig -o /boot/grub/grub.cfg
