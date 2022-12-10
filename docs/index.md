@@ -1,5 +1,6 @@
 ---
 layout: default
+title: "Main page"
 ---
 
 # Arch-Ansible: an Ansible playbook to install Arch Linux

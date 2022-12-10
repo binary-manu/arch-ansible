@@ -1,5 +1,6 @@
 ---
 layout: default
+title: Defaults files index
 ---
 # Defaults files index
 

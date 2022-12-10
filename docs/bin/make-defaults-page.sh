@@ -35,6 +35,7 @@ esac
 {
     echo "---"
     echo "layout: default"
+    echo "title: Defaults files index"
     echo "---"
     echo "# Defaults files index"
     echo
