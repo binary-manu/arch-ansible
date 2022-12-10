@@ -31,10 +31,13 @@ If you need to build just one type of VM, you can specify the desired
 builder on the command line:
 
 ```sh
-# Only build a VirtualBox image
+# Only build a VirtualBox image using BIOS firmware
 packer build -only=virtualbox-iso packer-template.json
 
-# Only build a QEMU QCOW2 image
+# Only build a VirtualBox image using UEFI firmware
+packer build -only=virtualbox-uefi packer-template.json
+
+# Only build a QEMU QCOW2 image usig BIOS firmware
 packer build -only=qemu packer-template.json
 ```
 
