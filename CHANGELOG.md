@@ -12,6 +12,21 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.2.13] - 2022-12-10
+
+### Fixed
+
+* Do not copy non-existent SSH host keys from the installation media.
+  Use a wildcard-based approach instead.
+* Fix a harmless error message in Packer boot commands if `/root/.ssh`
+  already exists.
+
+### Added
+
+* Packer now provides a `virtualbox-uefi` builder, that can be used
+  together with the `gpt_singlepart` partitioning flow to quickly create
+  a 64-bit UEFI machine.
+
 ## [0.2.12] - 2022-10-29
 
 ### Fixed
