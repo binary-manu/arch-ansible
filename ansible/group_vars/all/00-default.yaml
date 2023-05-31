@@ -14,3 +14,4 @@ global_proxy_env : "{{ global_proxy_env_ | dict2items |
 # proxy settings.
 global_portable_image: False
 partitioning_root_mount_point: "/mnt"
+passwordless_sudo_user_name: sudonopw
