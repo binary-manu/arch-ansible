@@ -16,5 +16,6 @@ unset_proxy() {
 
 set_proxy
 pacman -Syy --noconfirm --needed archlinux-keyring
+pacman -S --noconfirm $(pacman -Q | awk '/python/{print $1}')
 pacman -S --noconfirm --needed ansible
 unset_proxy
