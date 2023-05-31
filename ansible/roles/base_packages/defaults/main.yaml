@@ -21,6 +21,7 @@ base_packages_list:
   - mdadm
   - nano
   - netctl
+  - parted
   - perl
   - sysfsutils
   - texinfo
