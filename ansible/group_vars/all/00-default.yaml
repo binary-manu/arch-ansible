@@ -15,3 +15,4 @@ global_proxy_env : "{{ global_proxy_env_ | dict2items |
 global_portable_image: False
 partitioning_root_mount_point: "/mnt"
 passwordless_sudo_user_name: sudonopw
+xfce_user_customizations_kvantum_theme: ""
