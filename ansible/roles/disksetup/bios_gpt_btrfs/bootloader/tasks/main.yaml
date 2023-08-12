@@ -6,6 +6,7 @@
     packages:
       - grub
       - grub-btrfs
+      - inotify-tools
 
 - name: Install GRUB2
   command: arch-chroot {{ partitioning_root_mount_point | quote }} /usr/bin/grub-install {{ partitioning_priv_device_node | quote }}
@@ -14,4 +15,4 @@
   command: arch-chroot {{ partitioning_root_mount_point | quote }} /usr/bin/grub-mkconfig -o /boot/grub/grub.cfg
 
 - name: Enable grub-btrfs
-  command: systemctl --root={{ partitioning_root_mount_point | quote }} enable grub-btrfs.path
+  command: systemctl --root={{ partitioning_root_mount_point | quote }} enable grub-btrfsd.service
