@@ -6,7 +6,7 @@ require 'etc'
 # Set audio backend for VirtualBox, host-dependant
 enable_audio = nil
 http_proxy = nil
-default_memory = 1024
+default_memory = 1536
 default_video_ram = 16
 default_cpus = (Etc.nprocessors / 2).ceil()
 
@@ -63,6 +63,8 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "ansible_local" do |ansible|
     ansible.install = false
+    ansible.compatibility_mode = "2.0"
+    ansible.playbook_command = "/tmp/ansible_venv/bin/ansible-playbook"
     ansible.playbook = "site.yaml"
     ansible.provisioning_path = "/vagrant/ansible"
     ansible.tags = ["mainconfig"]

@@ -1,6 +1,8 @@
 #!/bin/sh
 
-set -e
+set -ex
+
+ANSIBLE_VENV=/tmp/ansible_venv
 
 # These packages are no longer pulled in by the "base" package. So we install
 # them explicitly. `base` is present because the initial Vagrant image may
@@ -46,8 +48,10 @@ systemctl start reflector-init
 # would have done that. Ansible is installed here because Vagrant 2.2.5 fails
 # to install it.
 pacman -Syy --noconfirm --needed archlinux-keyring
-pacman -Su --noconfirm --needed base-devel networkmanager ansible \
+pacman -Su --noconfirm --needed base-devel networkmanager python-pip \
     $EXTRA_BASE_PACKAGES
+python -m venv "$ANSIBLE_VENV"
+"$ANSIBLE_VENV/bin/pip" install 'ansible>=7,<8'
 
 # Replace systemd-networkd with NetworkManager
 # The actual service swap happens at the next reboot
