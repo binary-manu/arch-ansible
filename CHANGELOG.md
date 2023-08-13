@@ -12,6 +12,29 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.2.14] - 2023-08-13
+
+### Changed
+
+* The deprecated `crypt` Python module has been replaced by `passlib`.
+* Manually install `ansible` via `pip` in a virtual environment, and
+  select a version that comes with `ansible-core` v2.14. v2.15 has
+  introduced a breaking change, for which I have opened an
+  [issue](https://github.com/ansible/ansible/issues/81500). Until I
+  understand how to proceed (either the change is reverted or I need to
+  update the playbook) I'll stick to `ansible-core` v2.14, which means
+  `ansible` v7 branch. For Vagrant provisioning, the RAM size has been
+  increased from 1024MiB to 1536MiB, to accomodate the virtual
+  environemnt under `/tmp` and simplify clean-up.
+
+### Fixed
+
+* When provisioning Vagrant boxes, do not wait for `reflector` anymore.
+* When using btrfs partitioning flows, enable `grub-btrfsd.service`
+  instead of the old path unit.
+* Fix the Packer boot command for the UEFI VM, since the boot
+  script on the install media has changed.
+
 ## [0.2.13] - 2022-12-10
 
 ### Fixed
