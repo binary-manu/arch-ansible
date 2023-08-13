@@ -9,6 +9,7 @@
     "cmd_cow"     : "<tab><end> cow_spacesize=1G<enter>",
     "cmd_cow_uefi": "e<down><down><down><end> cow_spacesize=1G<F10>",
     "cmd_ssh"     : "<wait60>systemctl start sshd && mkdir -p -m 0700 /root/.ssh<enter>",
+    "cmd_ansible" : "/tmp/ansible_venv/bin/ansible-playbook",
     "memory"      : "2048",
     "disk_size"   : "65536",
     "off_cmd"     : "poweroff"
@@ -105,6 +106,7 @@
     },
     {
       "type" : "ansible-local",
+      "command": "{{ user `cmd_ansible` }}",
       "playbook_dir" : "../ansible",
       "playbook_file" : "../ansible/site.yaml",
       "extra_arguments" : [
@@ -131,6 +133,7 @@
     },
     {
       "type" : "ansible-local",
+      "command": "{{ user `cmd_ansible` }}",
       "playbook_dir" : "../ansible",
       "playbook_file" : "../ansible/site.yaml",
       "extra_arguments" : [

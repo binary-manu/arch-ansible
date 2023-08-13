@@ -1,8 +1,7 @@
 #!/bin/sh
 
-set -e
+set -ex
 
-pacman -Rs --noconfirm ansible
 rm -rf /root/.ansible
 
 # Packer's QEMU builder seems to fail to remove the SSH key

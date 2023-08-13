@@ -1,6 +1,8 @@
 #!/bin/sh
 
-set -e
+set -ex
+
+ANSIBLE_VENV=/tmp/ansible_venv
 
 set_proxy() {
     if [ -n "$http_proxy" ]; then
@@ -16,5 +18,7 @@ unset_proxy() {
 
 set_proxy
 pacman -Syy --noconfirm --needed archlinux-keyring
-pacman -S --noconfirm --needed ansible
+pacman -S --noconfirm --needed python-pip
+python -m venv "$ANSIBLE_VENV"
+"$ANSIBLE_VENV/bin/pip" install 'ansible>=7,<8'
 unset_proxy
