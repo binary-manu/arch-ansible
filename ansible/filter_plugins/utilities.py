@@ -1,13 +1,8 @@
 import re
 import secrets
 import base64
-import crypt
-
-_SHA512_PREFIX     = "$6$"
-# Limits taken from crypt(5) on Arch
-_SHA512_SALT_BYTES = 12
-_SHA512_MIN_ROUNDS = 10**3
-_SHA512_MAX_ROUNDS = 10**9 - 1
+from passlib.context import CryptContext
+from passlib.hash import sha512_crypt
 
 class FilterModule:
 
@@ -38,9 +33,9 @@ class FilterModule:
         return (dev, part)
 
     def sha512_hash(self, pw, rounds):
-        if not _SHA512_MIN_ROUNDS <= rounds <= _SHA512_MAX_ROUNDS:
-            raise ValueError("sha512 password hashing requires a rounds value between "
-                f"{ _SHA512_MIN_ROUNDS } and { _SHA512_MAX_ROUNDS }")
-        salt = base64.b64encode(secrets.token_bytes(_SHA512_SALT_BYTES)).decode("utf-8")
-        return crypt.crypt(pw, f"{ _SHA512_PREFIX }rounds={ rounds }${ salt }")
+        return CryptContext(
+            schemes=["sha512_crypt"],
+            sha512_crypt__rounds=rounds,
+            sha512_crypt__salt_size=sha512_crypt.max_salt_size
+        ).hash(pw)
 
