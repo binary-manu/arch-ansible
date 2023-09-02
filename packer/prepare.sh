@@ -16,6 +16,7 @@ unset_proxy() {
     fi
 }
 
+systemctl is-system-running --wait
 set_proxy
 pacman -Syy --noconfirm --needed archlinux-keyring
 pacman -S --noconfirm --needed python-pip
