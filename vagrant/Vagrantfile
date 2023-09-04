@@ -23,6 +23,15 @@ Vagrant.configure("2") do |config|
       "--vram", default_video_ram.to_s,
       "--graphicscontroller", "vmsvga"
     ]
+
+    # Must use printf below, the last \n is not stripped
+    if `VBoxManage modifyvm --help 2>&1 | grep -q -- --nat-localhostreachableN; printf %d $?` == "0"
+      vb.customize [
+        "modifyvm", :id,
+        "--nat-localhostreachable1", "on"
+      ]
+    end
+
     if enable_audio
       vb.customize [
         "modifyvm", :id,
