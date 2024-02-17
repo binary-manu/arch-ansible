@@ -9,12 +9,13 @@ http_proxy = nil
 default_memory = 1536
 default_video_ram = 16
 default_cpus = (Etc.nprocessors / 2).ceil()
+headless = !ENV["ARCH_ANSIBLE_HEADLESS"].nil? && ENV["ARCH_ANSIBLE_HEADLESS"].length > 0
 
 Vagrant.configure("2") do |config|
   config.vm.box = "archlinux/archlinux"
 
   config.vm.provider "virtualbox" do |vb, override|
-    vb.gui = true
+    vb.gui = !headless
     vb.default_nic_type = "virtio"
     vb.cpus = default_cpus
     vb.memory = default_memory
