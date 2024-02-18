@@ -1,0 +1,41 @@
+FROM docker.io/debian:12
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    DBUS_SYSTEM_BUS_ADDRESS=unix:path=/run/dbus/system_bus_socket \
+    APT_INSTALL="apt-get install --no-install-recommends -o 'dpkg::options::=--force-confold' -o 'dpkg::options::=--force-confdef' -y" \
+    HOME=/home \
+    PKGPROXY=/usr/local/bin/pkgproxy \
+    SRC=/src \
+    ARCH_ANSIBLE_LIBVIRT_USER_SESSION=1 \
+    ARCH_ANSIBLE_HEADLESS=1
+ENV PACKER_CACHE_DIR=$HOME/.cache/packer
+
+RUN \
+    : "Add Debian backports" && \
+        echo 'deb http://deb.debian.org/debian bookworm-backports main' > /etc/apt/sources.list.d/backports.list && \
+        apt-get update && \
+    : "Add Debian fast track repo" && \
+        $APT_INSTALL fasttrack-archive-keyring && \
+        echo 'deb http://fasttrack.debian.net/debian-fasttrack/ bookworm-fasttrack         main contrib' >  /etc/apt/sources.list.d/fasttrack.list && \
+        echo 'deb http://fasttrack.debian.net/debian-fasttrack/ bookworm-backports-staging main contrib' >> /etc/apt/sources.list.d/fasttrack.list && \
+        apt-get update && \
+    : "Install tools and additional packages" && \
+        $APT_INSTALL virtualbox vagrant vagrant-libvirt libvirt-daemon-system dnsmasq packer qemu-system-x86 qemu-utils tini && \
+    : "Install CircleCI machine runner agent" && \
+        curl -s 'https://packagecloud.io/install/repositories/circleci/runner/script.deb.sh?any=true' | bash && \
+        ${APT_INSTALL} circleci-runner && \
+    : "Install pkgproxy" && \
+        curl -L 'https://github.com/binary-manu/pkgproxy/releases/download/v2.0.1/pkgproxy' > "$PKGPROXY" && \
+        chmod a+x "$PKGPROXY" && \
+    : "Cleanup" && \
+        apt-get clean && apt-get autoremove --purge && \
+        rm -rf /var/lib/apt/lists/* && \
+    : "Fixup the home directory (if it already exists) so that we can keep our host UID and write to it" && \
+        chmod 1777 "$HOME" && \
+    : "Ensure qemu's bridge helper can be run with appropriate privileges" && \
+        mkdir -p /etc/qemu/ && echo "allow virbr0" > /etc/qemu/bridge.conf && \
+        chmod u+s /usr/lib/qemu/qemu-bridge-helper
+
+COPY ./entry.sh /entry.sh
+ENTRYPOINT ["/usr/bin/tini", "--", "/entry.sh"]
+CMD ["/usr/bin/circleci-runner", "machine", "-c", "/etc/circleci-runner/circleci-runner-config.yaml"]
