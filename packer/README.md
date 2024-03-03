@@ -71,15 +71,15 @@ stored unencrypted in the repo. The provisioning process takes care of
 removing this key from the VM before exporting it, so that VMs created from
 the image cannot be compromised using this key.
 
-<!-- vi: set tw=72 et sw=2 fo=tcroqan autoindent: -->
-
 ## Packer >= 1.10
 
-Since version 1.10 Packer stopped bundling plugins therefore they need
+Since version 1.10 Packer stopped bundling plugins, therefore they need
 to be installed manually:
 
 ```sh
 packer plugins install github.com/hashicorp/ansible
 packer plugins install github.com/hashicorp/virtualbox
+packer plugins install github.com/hashicorp/qemu
 ```
 
+<!-- vi: set tw=72 et sw=2 fo=tcroqan autoindent: -->
