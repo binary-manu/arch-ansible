@@ -46,7 +46,7 @@ pacman -Syy --noconfirm --needed archlinux-keyring
 pacman -Su --noconfirm --needed base-devel networkmanager python-pip \
     $EXTRA_BASE_PACKAGES
 python -m venv "$ANSIBLE_VENV"
-"$ANSIBLE_VENV/bin/pip" install 'ansible>=7,<8' passlib
+"$ANSIBLE_VENV/bin/pip" install ansible passlib
 
 # Replace systemd-networkd with NetworkManager
 # The actual service swap happens at the next reboot
