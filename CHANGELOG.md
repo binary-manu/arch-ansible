@@ -12,6 +12,58 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+### Fixed
+
+* When booting from the Arch Linux install media, wait for the system
+  to settle before starting provisioning.
+* For VirtualBox, detect if the installed version requires
+  `--nat-localhostreachableN` in order to allow thw guest to access services on
+  the host via NAT interfaces. In that case, add this option to the VM
+  configuration.
+* Ansible will now default to the latest version available, rather than sticking to
+  version 7. Blocking bugs in Ansible have been fixed, so we can now go back to the
+  latest version.
+
+## Changed
+
+* Due to Arch Linux shifting from SHA512 to YESCRYPT for password hashing, tasks
+  which tried to increase the hashing rounds when generating password are now
+  broken.  User-provided values (such as the default of 500000 rounds) are not
+  applicable to YESCRYPT, and the current default load factor is probably sensible
+  enough. Since YESCRYPT is deemed superior, I see no reason to keep SHA512-related
+  stuff in the playbook.
+
+  For this reasons:
+  * `users_hash_rounds` and `users_override_passwd_hash_systemwide` are now ignored.
+    New passwords are generated using YESCRYPT with default parameters as defined by
+    Arch itself.
+  * The `sha512_hash` custom filter is no longer available, and `passlib` is no
+    longer installed.
+  * New users are created with a password of `*`, then updated via `chpasswd`.
+
+* To make the Packer template more flexible, some settings are now taken from
+  environment variables.  A wrapper script `packer-wrapper.sh` is used to
+  populate those variables before calling Packer. The wrapper shall be used in
+  place of plain Packer and passes all command-line arguments down to Packer.
+  Using the template directly without going through the wrapper is now
+  unsupported. That is, if you used to run:
+
+  ```sh
+  packer build [options] packer-template.json
+  ```
+
+  you must now use:
+
+  ```sh
+  ./packer-wrapper.sh build [options] packer-template.json
+  ```
+
+### Added
+
+* Add an environment variable (`ARCH_ANSIBLE_HEADLESS`) to control if VMs should
+  suppress their GUIs during provisioning or not. Defaults to false (GUIs will
+  be shown by default, with the exception of libvirt).
+
 ## [0.2.14] - 2023-08-13
 
 ### Changed
