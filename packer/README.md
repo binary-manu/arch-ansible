@@ -20,7 +20,7 @@ installation.
 To prepare VM images for all supported virtualization solutions, run:
 
 ```sh
-packer build -parallel-builds=1 packer-template.json
+./packer-wrapper.sh build -parallel-builds=1 packer-template.json
 ```
 
 The option `-parallel-builds=1` ensures that VMs are built in sequence.
@@ -32,13 +32,13 @@ builder on the command line:
 
 ```sh
 # Only build a VirtualBox image using BIOS firmware
-packer build -only=virtualbox-iso packer-template.json
+./packer-wrapper.sh build -only=virtualbox-iso packer-template.json
 
 # Only build a VirtualBox image using UEFI firmware
-packer build -only=virtualbox-uefi packer-template.json
+./packer-wrapper.sh build -only=virtualbox-uefi packer-template.json
 
 # Only build a QEMU QCOW2 image usig BIOS firmware
-packer build -only=qemu packer-template.json
+./packer-wrapper.sh build -only=qemu packer-template.json
 ```
 
 The output process produces either an OVF appliance for VirtualBox or a QCOW2
