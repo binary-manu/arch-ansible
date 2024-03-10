@@ -1035,6 +1035,10 @@ Both projects honor the following environment variables:
 
   By defaults, GUI are shown.
 
+* `ARCH_ANSIBLE_LIBVIRT_USER_SESSION`: if set to any non-empty value,
+  and libvirt is being used to create a VM, connect to its user session, rather
+  than to its system session.
+
 ## Integration with pkgproxy
 
 If you are going to do multiple installations using arch-ansible in a
