@@ -21,5 +21,5 @@ set_proxy
 pacman -Syy --noconfirm --needed archlinux-keyring
 pacman -S --noconfirm --needed python-pip
 python -m venv "$ANSIBLE_VENV"
-"$ANSIBLE_VENV/bin/pip" install ansible passlib
+"$ANSIBLE_VENV/bin/pip" install ansible
 unset_proxy

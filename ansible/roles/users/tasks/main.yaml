@@ -1,56 +1,3 @@
-- when: users_override_passwd_hash_systemwide
-  block:
-    - name: Set SHA512 as the password hashing method system-wide in /etc/login.defs
-      lineinfile:
-        path: /etc/login.defs
-        regexp: '^\s*ENCRYPT_METHOD\b'
-        line: 'ENCRYPT_METHOD SHA512'
-        create: no
-  
-    - name: Extract current pam_unix.so parameters
-      shell: |
-        set -o pipefail
-        grep -E '^\s*password\s+required\s+pam_unix\.so\b' /etc/pam.d/passwd |
-        sed -En '
-          # Grab everything after the module name, minus the rounds if already
-          # present. Also remove the algorithm specifier.
-          1 {
-            s/.*\bpam_unix\.so\b(.*)/\1/
-            s/\brounds=\w*//
-            s/\bmd5\b//
-            s/\bbigcrypt\b//
-            s/\bsha256\b//
-            s/\bsha512\b//
-            s/\bblowfish\b//
-            s/\bgost_yescrypt\b//
-            s/\byescrypt\b//
-            s/[[:blank:]]/ /g
-            p
-            n
-          }
-
-          # There should be just one candidate line
-          Q1
-        ' | tr -s ' '
-      register: _passwd_pam
-      failed_when: no
-      changed_when: no
-  
-    - name: If something failed, ask for a bug report as the playbook may need an update
-      assert:
-        that: _passwd_pam.rc == 0
-        fail_msg: >
-          The contents of /etc/pam.d/passwd have likely changed and can no longer
-          be handled by this version of the playbook. Please update to the latest
-          version. If the problem persist, kindly open a bug report.
-  
-    - name: Set SHA512 as the password hashing method system-wide in /etc/pam.d/passwd
-      lineinfile:
-        path: /etc/pam.d/passwd
-        regexp: '^\s*password\s+required\s+pam_unix\.so\b'
-        line: 'password required pam_unix.so {{ _passwd_pam.stdout_lines[0] }} sha512 rounds={{ users_hash_rounds }}'
-        create: no
-
 - name: Generate the username list from users_info
   set_fact:
     users_names: "{{ users_info | dict2items | map(attribute='key') | list }}"
@@ -65,15 +12,18 @@
         {%- else -%}
             {{- users_info[item].groups | default([]) | unique -}}
         {%- endif -%}"
-    password: "{{ users_info[item].password | sha512_hash(users_hash_rounds) }}"
+    password: "*"
   loop: "{{ users_names }}"
   register: users_created
 
+- name: Set user passwords
+  shell: echo {{ item | quote }}:{{ users_info[item].password | quote }} | chpasswd
+  loop: "{{ users_names }}"
+  no_log: true
+
 - name: Set root password
-  user:
-    name: root
-    password: "{{ users_root_info.password |
-        password_hash('sha512', 1000000 | random | string )}}"
+  shell: echo root:{{ users_root_info.password | quote }} | chpasswd
+  no_log: true
 
 - name: Allow admins to sudo by authorizing the wheel group
   lineinfile:
