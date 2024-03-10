@@ -805,8 +805,7 @@ Flags: `[ms]`
 This role creates user accounts, sets their passwords and makes them
 able to use sudo, if appropriate. It should be a dependency of all those
 roles which copy files to home dirs or expect users/home folders to
-exist. It can optionally set the system-wide password hashing method to
-SHA512, with a specified number of rounds.
+exist.
 
 After execution, it will have defined two variables that can be used to
 iterate over user information:
@@ -836,33 +835,6 @@ as role output.
 All user info (such as username, password, additional groups) is stored
 into this module's defaults file. As usual, it can be overridden in host
 or group variables.
-
-The following defaults control the role behaviour:
-
-* `users_hash_rounds`: an integer defining the number of rounds of hashing
-  applied when generating password digests. Lower values mean faster compute
-  times, which also make it easier for a threat actor to crack them. The default
-  value on Arch is 5000. This playbook uses 500000, which is still quite fast on
-  modern hardware.
-* `users_override_passwd_hash_systemwide`: if set to `true` (default is `false`)
-  the system is configured to compute hashes for new passwords (when calling
-  `passwd`) using the SHA512 method, with an amount of rounds specified by
-  `users_hash_rounds`.
-
-It is important to note that `users_hash_rounds` is always used when generating
-password for new users created by the playbook, and these passwords always use
-the SHA512 method (which is the current system-wide default on new Arch
-installations). However, unless `users_override_passwd_hash_systemwide` is also
-specified, the system will retain it default configuration for passwords
-generated via `passwd`, which currently means SHA512 but with only 5000 rounds,
-a value considered too low by modern standards.
-
-`users_override_passwd_hash_systemwide` makes the role try to patch
-`/etc/pam.d/passwd` and `/etc/login.defs`. PAM files are tricky to update
-because they can contain multiple entries and their configuration parameters can
-change over time. The role performs some sanity checks and bails out if it cannot
-reasonably patch the file. It also asks to open a bug report, so that the
-playbook can be updated.
 
 #### utils
 
@@ -1051,6 +1023,17 @@ provisioning of VM's with Arch-Ansible. They rely on HashiCorp
 the corresponding names. For simplicity, I'll refer to them as
 [Arch-Vagrant][arch-vagrant] and [Arch-Packer][arch-packer].
 Click the links to read their own docs.
+
+Both projects honor the following environment variables:
+
+* `ARCH_ANSIBLE_HEADLESS`: set it to any non-empty value (ex. `1`, `true`) to
+  suppress the hypervisor GUI during provisioning. You can still access the VM
+  screen by opening the appropriate management GUI (ex. VirtualBox,
+  `virt-manager`). Machines created via `libvirt` will not display their GUI by default,
+  regardless of this setting. Also, Packer machines using QEMU starting without GUI
+  cannot be switched to GUI mode during provisioning,
+
+  By defaults, GUI are shown.
 
 ## Integration with pkgproxy
 
