@@ -20,6 +20,7 @@ cpus = number_or_zero(ENV["ARCH_ANSIBLE_CPUS"])
 if cpus > 0
   default_cpus = cpus
 end
+libvirt_user_session = !ENV["ARCH_ANSIBLE_LIBVIRT_USER_SESSION"].nil? && ENV["ARCH_ANSIBLE_LIBVIRT_USER_SESSION"].length > 0
 
 Vagrant.configure("2") do |config|
   config.vm.box = "archlinux/archlinux"
@@ -59,6 +60,7 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.provider "libvirt" do |virt|
+    virt.uri = libvirt_user_session ? "qemu:///session" : "qemu:///system"
     virt.cpus = default_cpus
     virt.memory = default_memory
     virt.graphics_type = "spice"
