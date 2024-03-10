@@ -298,17 +298,6 @@ users_info:
     password: "abcd$1234_manu"
     is_admin: true # Optional item, true if missing
     groups: []     # Optional item, empty list if missing
-
-# Increase or decrease the number of rounds used to generate password hashes
-users_hash_rounds: 500000
-
-# Set to true to override the system-wide password hashing policy to match what
-# is used for the initial user passwords. As of now, Arch already uses SHA512,
-# so this only adds rounds, but this may change in future system installations.
-# Please note that due to the format of PAM files, it may be difficult to strip
-# parameters related to the old algorithm, so it is recommended to check
-# /etc/pam.d/passwd for saneness if setting this to true.
-users_override_passwd_hash_systemwide: no
 ```
 
 ## roles/utils/defaults/main.yaml
@@ -337,16 +326,7 @@ virtguest_supported_hypervisors:
 # Packages to install to add VirtualBox support to the VM
 virtguest_virtualbox_packages:
   - virtualbox-guest-utils
-
-# These variables were used to control the installation of mplugd to handle
-# guest screen resizing when the host window is resized.
-# Since mplugd is no longer available due to missing dependencies, a new
-# way to handle resizing has been devised, and these settings have been
-# deprecated in v0.2.10. However, they are kept for compatibility, so that
-# if other user-defined settings reference them, they will not throw an error.
-# Setting them to true has no effect.
-virtguest_virtualbox_use_mplugd: "{{ '{{' }} virtguest_use_mplugd }}" # Deprecated alias
-virtguest_use_mplugd: no```
+```
 
 ## roles/virtguest_force/defaults/main.yaml
 
