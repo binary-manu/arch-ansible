@@ -22,8 +22,8 @@ Swipe the following image left or right to see all screenshots.
   <img src="{{ site.baseurl }}/assets/dracula-windows.png" style="max-width: 100%;">
 </div>
 
-_IMPORTANT NOTE: the new default branch is v0.2.x, which is not backward
-compatible with v0.1.x. Have a look at the differences in the
+_IMPORTANT NOTE: the new default branch is v0.3.x, which is not backward
+compatible with v0.2.x. Have a look at the differences in the
 [changelog][changelog] and in the [migration
 instructions](#migrating-to-a-non-backward-compatible-playbook-version)._
 
@@ -84,10 +84,6 @@ These are handled by the `utils` and `xutils` roles.
 
 Users (including `root`) get their passwords from
 `roles/users/defaults/main.yaml`.
-
-The system uses an entire disk, creates an MBR partition table on it,
-and prepares one large partition used as root. There is no swap space or
-separate boot partition by default. Syslinux is used as the bootloader.
 
 There is support for installing hypervisor guest additions as part of
 the process, although it can be disabled. Currently supported hypervisors
@@ -805,8 +801,7 @@ Flags: `[ms]`
 This role creates user accounts, sets their passwords and makes them
 able to use sudo, if appropriate. It should be a dependency of all those
 roles which copy files to home dirs or expect users/home folders to
-exist. It can optionally set the system-wide password hashing method to
-SHA512, with a specified number of rounds.
+exist.
 
 After execution, it will have defined two variables that can be used to
 iterate over user information:
@@ -836,33 +831,6 @@ as role output.
 All user info (such as username, password, additional groups) is stored
 into this module's defaults file. As usual, it can be overridden in host
 or group variables.
-
-The following defaults control the role behaviour:
-
-* `users_hash_rounds`: an integer defining the number of rounds of hashing
-  applied when generating password digests. Lower values mean faster compute
-  times, which also make it easier for a threat actor to crack them. The default
-  value on Arch is 5000. This playbook uses 500000, which is still quite fast on
-  modern hardware.
-* `users_override_passwd_hash_systemwide`: if set to `true` (default is `false`)
-  the system is configured to compute hashes for new passwords (when calling
-  `passwd`) using the SHA512 method, with an amount of rounds specified by
-  `users_hash_rounds`.
-
-It is important to note that `users_hash_rounds` is always used when generating
-password for new users created by the playbook, and these passwords always use
-the SHA512 method (which is the current system-wide default on new Arch
-installations). However, unless `users_override_passwd_hash_systemwide` is also
-specified, the system will retain it default configuration for passwords
-generated via `passwd`, which currently means SHA512 but with only 5000 rounds,
-a value considered too low by modern standards.
-
-`users_override_passwd_hash_systemwide` makes the role try to patch
-`/etc/pam.d/passwd` and `/etc/login.defs`. PAM files are tricky to update
-because they can contain multiple entries and their configuration parameters can
-change over time. The role performs some sanity checks and bails out if it cannot
-reasonably patch the file. It also asks to open a bug report, so that the
-playbook can be updated.
 
 #### utils
 
@@ -1052,6 +1020,21 @@ the corresponding names. For simplicity, I'll refer to them as
 [Arch-Vagrant][arch-vagrant] and [Arch-Packer][arch-packer].
 Click the links to read their own docs.
 
+Both projects honor the following environment variables:
+
+* `ARCH_ANSIBLE_HEADLESS`: set it to any non-empty value (ex. `1`, `true`) to
+  suppress the hypervisor GUI during provisioning. You can still access the VM
+  screen by opening the appropriate management GUI (ex. VirtualBox,
+  `virt-manager`). Machines created via `libvirt` will not display their GUI by default,
+  regardless of this setting. Also, Packer machines using QEMU starting without GUI
+  cannot be switched to GUI mode during provisioning.
+
+  By defaults, GUIs are shown.
+* `ARCH_ANSIBLE_LIBVIRT_USER_SESSION`: if set to any non-empty value,
+  and libvirt is being used to create a VM, connect to its user session, rather
+  than to its system session.
+* `ARCH_ANSIBLE_CPUS`: set the number of CPUs used by VMs.
+
 ## Integration with pkgproxy
 
 If you are going to do multiple installations using arch-ansible in a
@@ -1182,7 +1165,72 @@ Apply any other customization via host/group variables. And finally run:
 After installation is complete, you can delete the key pair generated
 above, from both the controller and the target.
 
+## Continuous integration
+
+Since this playbook supports different hypervisors and partitioning flows, it has come
+to a point where manual tests on my machine are no longer feasible, as there are too
+many conbinations to check.
+
+For this reason, there is now a dedicated CI pipeline that tests that installation completes
+successfully in the most important scenarios. While it can't cover every possible
+configuration entry, it checks all the available partitioning flows, Vagrant and Packer.
+It should give reasonable confidence that stuff still works in face of upstream updates.
+
+The CI is provided by CircleCI, but since it needs to create VMs, it doesn't cope well
+with SaaS runners which run inside VMs and/or containers. CircleCI does provide machines with
+nested virtualization enabled, but as of now I had to give up because VM boot often hangs.
+Thus, a self-hosted runner is the best choice for the moment.
+
+To simplify the setup, a container image definition is provided under the `ci` folder. It will
+create a Debian-based image shipping VirtualBox, QEmu, libvirt, packer and Vagrant, plus
+obviously the CircleCI runner agent. It can be run with `podman` (Docker is untested) in rootless
+mode. Once started, it allows running test Arch installtions with minimal configuration of the
+runner host.
+
+However, the container cannot be totally independent from the host, as it depends on its ability to
+run VirtualBox, QEmu and libvirt with appropriate networking. Therefore:
+
+* hardware-assisted virtualization must be enabled (VT-x or SVM depending on the CPU maker);
+* KVM support must be enabled, and `/dev/kvm` must be accessible by the user the container runs as;
+* VirtualBox drivers must be installed, and `/dev/vbox*` nodes must be accessible by the user the
+  container runs as. Note that only the drivers are needed, as VirtualBox ships inside the container;
+* the system must allow the creation of `tun`/`tap` devices.
+
+A script `ci/start.sh` can be used to start the CI container with approproate options (bindings,
+device nodes, capabilities). It will start as root in order to perform initial setup (bridges, `dbus`,
+libvirt and other stuff) then will drop privileges and impersonate the calling user to start the agent.
+Note that `root` here still means `root` inside a user namespace, as the container is meant to run rootless.
+A  `storage` folder is created besides the `start.sh` script, and will hold all temporary stuff, including
+package caches, ISO images, Vagrant boxes and logs. It can grow large and should be cleared periodically.
+
+CircleCI configuration with valid tokens must be provided besides `start.sh` as `config.yaml`.
+
 ## Migrating to a non-backward-compatible playbook version
+
+### 0.2.x ➔ 0.3.x
+
+#### Deprecated stuff
+
+The following have been removed:
+
+* `users_hash_rounds` and `users_override_passwd_hash_systemwide` variables 
+  have been removed. Configurations referring to them in variables or filters will
+  raise errors about undefined variables. Configurations that just set them will
+  keep working, but they no longer have any effect.
+* `virtguest_virtualbox_use_mplugd` and `virtguest_use_mplugd` have been removed.
+  These variables were unused since a long time, but were kept to avoid breaking
+  references to them. If your configuration refers to them, please update it to
+  avoid undefined variable errors.
+* `passlib` is no longer installed alongside `ansible`.
+* The `sha512_hash` custom filter for password hashing has been removed. All hashing
+  is now done directly via `chpasswd`.  
+
+#### Packer invocations
+
+Plain use of Packer from the CLI is now unsupported. The `packer-wrapper.sh` script from
+[Arch-Packer][arch-packer] must be used instead. It passes all its arguments down to Packer,
+but it also exports some environment variables which are expected by the template. See
+[Arch-Packer][arch-packer] documentation and the changelog for more information.
 
 ### 0.1.x ➔ 0.2.x
 
