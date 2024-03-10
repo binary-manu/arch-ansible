@@ -12,4 +12,11 @@ else
   export ARCH_ANSIBLE_PACKER_VBOX_NAT_LOCALHOST_VAL="nat"
 fi
 
+# For backward compatibility, show the GUI until overridden
+if [ -n "$ARCH_ANSIBLE_HEADLESS" ]; then
+  export ARCH_ANSIBLE_PACKER_HEADLESS=true
+else
+  export ARCH_ANSIBLE_PACKER_HEADLESS=false
+fi
+
 packer "$@"

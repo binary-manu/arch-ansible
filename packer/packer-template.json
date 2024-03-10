@@ -14,13 +14,15 @@
     "disk_size"   : "65536",
     "off_cmd"     : "poweroff",
     "nat_key"     : "{{env `ARCH_ANSIBLE_PACKER_VBOX_NAT_LOCALHOST_KEY`}}",
-    "nat_val"     : "{{env `ARCH_ANSIBLE_PACKER_VBOX_NAT_LOCALHOST_VAL`}}"
+    "nat_val"     : "{{env `ARCH_ANSIBLE_PACKER_VBOX_NAT_LOCALHOST_VAL`}}",
+    "headless"    : "{{env `ARCH_ANSIBLE_PACKER_HEADLESS`}}"
   },
 
   "builders": [
     {
       "name" : "virtualbox-uefi",
       "type" : "virtualbox-iso",
+      "headless" : "{{user `headless`}}",
       "guest_os_type" : "ArchLinux_64",
       "iso_url" : "{{user `arch_iso`}}",
       "iso_checksum" : "{{user `arch_iso_sum`}}",
@@ -50,6 +52,7 @@
     {
       "type" : "virtualbox-iso",
       "guest_os_type" : "ArchLinux_64",
+      "headless" : "{{user `headless`}}",
       "iso_url" : "{{user `arch_iso`}}",
       "iso_checksum" : "{{user `arch_iso_sum`}}",
       "boot_command" : [
@@ -76,6 +79,7 @@
     },
     {
       "type" : "qemu",
+      "headless" : "{{user `headless`}}",
       "iso_url" : "{{user `arch_iso`}}",
       "iso_checksum" : "{{user `arch_iso_sum`}}",
       "vm_name" : "archlinux.qcow2",
