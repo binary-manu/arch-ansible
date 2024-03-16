@@ -6,13 +6,3 @@ virtguest_supported_hypervisors:
 # Packages to install to add VirtualBox support to the VM
 virtguest_virtualbox_packages:
   - virtualbox-guest-utils
-
-# These variables were used to control the installation of mplugd to handle
-# guest screen resizing when the host window is resized.
-# Since mplugd is no longer available due to missing dependencies, a new
-# way to handle resizing has been devised, and these settings have been
-# deprecated in v0.2.10. However, they are kept for compatibility, so that
-# if other user-defined settings reference them, they will not throw an error.
-# Setting them to true has no effect.
-virtguest_virtualbox_use_mplugd: "{{ virtguest_use_mplugd }}" # Deprecated alias
-virtguest_use_mplugd: no
