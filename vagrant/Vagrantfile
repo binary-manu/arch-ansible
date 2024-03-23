@@ -3,6 +3,12 @@
 
 require 'etc'
 
+def number_or_zero(s)
+  number = s.to_i
+  number = 0 if (number.to_s != s)
+  return number
+end
+
 # Set audio backend for VirtualBox, host-dependant
 enable_audio = nil
 http_proxy = nil
@@ -10,6 +16,10 @@ default_memory = 1536
 default_video_ram = 16
 default_cpus = (Etc.nprocessors / 2).ceil()
 headless = !ENV["ARCH_ANSIBLE_HEADLESS"].nil? && ENV["ARCH_ANSIBLE_HEADLESS"].length > 0
+cpus = number_or_zero(ENV["ARCH_ANSIBLE_CPUS"])
+if cpus > 0
+  default_cpus = cpus
+end
 
 Vagrant.configure("2") do |config|
   config.vm.box = "archlinux/archlinux"
