@@ -19,4 +19,10 @@ else
   export ARCH_ANSIBLE_PACKER_HEADLESS=false
 fi
 
+if [ -n "$ARCH_ANSIBLE_CPUS" ]; then
+  export ARCH_ANSIBLE_PACKER_CPUS="$ARCH_ANSIBLE_CPUS"
+else
+  export ARCH_ANSIBLE_PACKER_CPUS=1
+fi
+
 packer "$@"
