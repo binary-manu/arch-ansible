@@ -15,7 +15,8 @@
     "off_cmd"     : "poweroff",
     "nat_key"     : "{{env `ARCH_ANSIBLE_PACKER_VBOX_NAT_LOCALHOST_KEY`}}",
     "nat_val"     : "{{env `ARCH_ANSIBLE_PACKER_VBOX_NAT_LOCALHOST_VAL`}}",
-    "headless"    : "{{env `ARCH_ANSIBLE_PACKER_HEADLESS`}}"
+    "headless"    : "{{env `ARCH_ANSIBLE_PACKER_HEADLESS`}}",
+    "cpus"        : "{{env `ARCH_ANSIBLE_PACKER_CPUS`}}"
   },
 
   "builders": [
@@ -35,6 +36,7 @@
       "shutdown_command" : "{{ user `off_cmd` }}",
       "ssh_username" : "root",
       "ssh_clear_authorized_keys" : false,
+      "cpus" : "{{ user `cpus` }}",
       "memory" : "{{ user `memory` }}",
       "disk_size" : "{{ user `disk_size` }}",
       "hard_drive_interface" : "sata",
@@ -64,6 +66,7 @@
       "shutdown_command" : "{{ user `off_cmd` }}",
       "ssh_username" : "root",
       "ssh_clear_authorized_keys" : false,
+      "cpus" : "{{ user `cpus` }}",
       "memory" : "{{ user `memory` }}",
       "disk_size" : "{{ user `disk_size` }}",
       "hard_drive_interface" : "sata",
@@ -86,6 +89,7 @@
       "shutdown_command" : "{{ user `off_cmd` }}",
       "ssh_username" : "root",
       "ssh_clear_authorized_keys" : false,
+      "cpus" : "{{ user `cpus` }}",
       "memory" : "{{ user `memory` }}",
       "disk_size" : "{{ user `disk_size` }}",
       "ssh_private_key_file": "./insecure_key",
