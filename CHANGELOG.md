@@ -12,6 +12,8 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.3.0] - 2024-03-31
+
 ### Fixed
 
 * When booting from the Arch Linux install media, wait for the system
