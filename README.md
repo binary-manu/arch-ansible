@@ -43,7 +43,7 @@ Now, if you want Packer to build a brand new VM image, type:
 
 ```sh
 cd packer
-packer build -only=virtualbox-iso packer-template.json
+./packer-wrapper.sh build -only=virtualbox-iso packer-template.json
 ```
 
 or, if you prefer to spin up a turn-key Vagrant machine, go with:
