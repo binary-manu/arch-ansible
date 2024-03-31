@@ -87,24 +87,34 @@ workflows:
         name: install_media-virtualbox_iso-mbr_singlepart
         disksetup: disksetup/mbr_singlepart/
         provider: virtualbox-iso
+        filters: &filters
+          branches:
+            only:
+              - master
+              - private/manu/ci
     - install-media:
         name: install_media-qemu-mbr_lvm
         disksetup: disksetup/mbr_lvm/
         provider: qemu
+        filters: *filters
     - install-media:
         name: install_media-virtualbox_iso-bios_gpt_btrfs
         disksetup: disksetup/bios_gpt_btrfs/
         provider: virtualbox-iso
+        filters: *filters
     - install-media:
         name: install_media-virtualbox_uefi-mbr_singlepart
         disksetup: disksetup/gpt_singlepart/
         provider: virtualbox-uefi
+        filters: *filters
   # Test provisioning of the ArchLinux Vagrant base box.
   vagrant:
     jobs:
     - vagrant:
         name: vagrant-virtualbox
         provider: virtualbox
+        filters: *filters
     - vagrant:
         name: vagrant-libvirt
         provider: libvirt
+        filters: *filters
