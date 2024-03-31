@@ -4,6 +4,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/binary-manu/arch-ansible/blob/master/LICENSE.txt)
 [![Link to the docs](https://img.shields.io/badge/Read%20the%20full%20docs!-%F0%9F%8E%93-brightgreen)][docs]
 [![Changelog](https://img.shields.io/badge/Changelog-%F0%9F%97%9E-purple)](CHANGELOG.md)
+![CI status](https://img.shields.io/circleci/build/gh/binary-manu/arch-ansible/master?label=CI%20Tests)
 
 Arch-Ansible is a playbook designed to install Arch Linux on a target
 machine. It was conceived to ease the preparation of virtual machines,
