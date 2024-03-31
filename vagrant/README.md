@@ -30,9 +30,11 @@ The following variables can be tweaked in the Vagrantfile:
 * `default_memory` is the amount of RAM the VM will get, in MiB;
 * `default_video_ram` is the amount of video RAM the VM will get, in
   MiB;
-* `default_cpus` is the number of virtual CPUs the VM will get. By
+* ~~`default_cpus` is the number of virtual CPUs the VM will get. By
   default, it is set to half the logical processor of the host, so if
-  you have a 12-thread CPU it will be set to 6.
+  you have a 12-thread CPU it will be set to 6.~~
+  Set the environment variable `ARCH_ANSIBLE_CPUS` instead. If unset, the
+  defaults above apply.
 
 Please note that RAM settings are usually adequate for booting and
 provisioning the VM and to allow the final system to start the GUI.  You
