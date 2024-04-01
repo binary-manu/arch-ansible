@@ -20,7 +20,13 @@ installation.
 To prepare VM images for all supported virtualization solutions, run:
 
 ```sh
-./packer-wrapper.sh build -parallel-builds=1 packer-template.json
+# Linux
+./packer-wrapper.sh build -parallel-builds=1 packer-template.json  
+```
+
+```powershell
+# Windows
+.\packer-wrapper.ps1 build -parallel-builds=1 packer-template.json  
 ```
 
 The option `-parallel-builds=1` ensures that VMs are built in sequence.
@@ -28,7 +34,8 @@ This is necessary because two different hypervisors such as VirtualBox
 and QEMU cannot use hardware acceleration at the same time.
 
 If you need to build just one type of VM, you can specify the desired
-builder on the command line:
+builder on the command line (remember to replace the `.sh` with the `.ps1`
+script under Windows):
 
 ```sh
 # Only build a VirtualBox image using BIOS firmware
