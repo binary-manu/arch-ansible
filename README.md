@@ -40,11 +40,18 @@ users_info:
     is_admin: true
 ```
 
-Now, if you want Packer to build a brand new VM image, type:
+Now, if you want Packer to build a brand new VM image, if under Linux type:
 
 ```sh
 cd packer
 ./packer-wrapper.sh build -only=virtualbox-iso packer-template.json
+```
+
+or, under Windows:
+
+```powershell
+cd packer
+.\packer-wrapper.ps1 build -only=virtualbox-iso packer-template.json
 ```
 
 or, if you prefer to spin up a turn-key Vagrant machine, go with:
