@@ -1227,9 +1227,10 @@ The following have been removed:
 
 #### Packer invocations
 
-Plain use of Packer from the CLI is now unsupported. The `packer-wrapper.sh` script from
-[Arch-Packer][arch-packer] must be used instead. It passes all its arguments down to Packer,
-but it also exports some environment variables which are expected by the template. See
+Plain use of Packer from the CLI is now unsupported. The `packer-wrapper.sh`
+(`packer-wrapper.ps1` under Windows) script from [Arch-Packer][arch-packer] must
+be used instead. It passes all its arguments down to Packer, but it also exports
+some environment variables which are expected by the template. See
 [Arch-Packer][arch-packer] documentation and the changelog for more information.
 
 ### 0.1.x ➔ 0.2.x
