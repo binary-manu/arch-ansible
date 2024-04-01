@@ -12,6 +12,24 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.3.1] - 2024-04-01
+
+### Fixed
+
+* Fix spots in the docs missed during the update for v0.3.0.
+* Make the Vagrantfile work under Windows by not calling `grep` or other tools.
+  To detect if VirtualBox needs additional tweaks depending on the help output,
+  matching is now done in Ruby. Only `VBoxManage` needs to be in the path
+  (under Windows you may need to add it manually).
+* Explicitly set the Ansible configuration file in the Vagrantfile. This is a workaround
+  for when the playbook is made available in the guest in a world-writeable folder:
+  Ansible refuses to load configs from such dirs.
+
+### Added
+
+* Create a `packer-wrapper.ps1` script that works under Windows. It replaces
+  `packer-wrapper.sh` on that OS.
+
 ## [0.3.0] - 2024-03-31
 
 ### Fixed
