@@ -12,6 +12,13 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.3.2] - 2024-05-06
+
+### Fixed
+
+* Update the boot command typed into UEFI VMs to start the system. The old
+  command no longer boots the system, instead it remains stuck in edit mode,
+
 ## [0.3.1] - 2024-04-01
 
 ### Fixed
