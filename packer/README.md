@@ -21,12 +21,12 @@ To prepare VM images for all supported virtualization solutions, run:
 
 ```sh
 # Linux
-./packer-wrapper.sh build -parallel-builds=1 packer-template.json  
+./packer-wrapper.sh build -parallel-builds=1 packer-template.json
 ```
 
 ```powershell
 # Windows
-.\packer-wrapper.ps1 build -parallel-builds=1 packer-template.json  
+.\packer-wrapper.ps1 build -parallel-builds=1 packer-template.json
 ```
 
 The option `-parallel-builds=1` ensures that VMs are built in sequence.
