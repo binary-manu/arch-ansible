@@ -12,6 +12,13 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.3.3] - 2024-09-22
+
+### Changed
+
+* The CI system has been switched from CircleCI to GitHub Actions. The
+  CI container and workflows have thus been updated.
+
 ## [0.3.2] - 2024-05-06
 
 ### Fixed
