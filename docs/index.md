@@ -1176,16 +1176,17 @@ successfully in the most important scenarios. While it can't cover every possibl
 configuration entry, it checks all the available partitioning flows, Vagrant and Packer.
 It should give reasonable confidence that stuff still works in face of upstream updates.
 
-The CI is provided by CircleCI, but since it needs to create VMs, it doesn't cope well
-with SaaS runners which run inside VMs and/or containers. CircleCI does provide machines with
-nested virtualization enabled, but as of now I had to give up because VM boot often hangs.
-Thus, a self-hosted runner is the best choice for the moment.
+The CI is provided by GitHub Actions, but since it needs to create VMs,
+it doesn't cope well with SaaS runners which run inside VMs and/or
+containers. Thus, a self-hosted runner is the best choice for the
+moment.
 
 To simplify the setup, a container image definition is provided under the `ci` folder. It will
-create a Debian-based image shipping VirtualBox, QEmu, libvirt, packer and Vagrant, plus
-obviously the CircleCI runner agent. It can be run with `podman` (Docker is untested) in rootless
-mode. Once started, it allows running test Arch installtions with minimal configuration of the
-runner host.
+create a Debian-based image shipping VirtualBox, QEmu, libvirt, packer
+and Vagrant, plus obviously the GitHub agent. It can be run with
+`podman` (Docker is untested) in rootless mode. Once started, it allows
+running test Arch installtions with minimal configuration of the runner
+host.
 
 However, the container cannot be totally independent from the host, as it depends on its ability to
 run VirtualBox, QEmu and libvirt with appropriate networking. Therefore:
@@ -1203,7 +1204,19 @@ Note that `root` here still means `root` inside a user namespace, as the contain
 A  `storage` folder is created besides the `start.sh` script, and will hold all temporary stuff, including
 package caches, ISO images, Vagrant boxes and logs. It can grow large and should be cleared periodically.
 
-CircleCI configuration with valid tokens must be provided besides `start.sh` as `config.yaml`.
+GitHub agent configuration with valid tokens must be provided besides
+`start.sh` in a `config` folder. The files produced by running the agent
+configuration must be placed there and are copied into the container at
+boot:
+
+    config
+    ├── .credentials
+    ├── .credentials_rsaparams
+    ├── .env
+    ├── .path
+    └── .runner
+
+Note that they are all hidden.
 
 ## Migrating to a non-backward-compatible playbook version
 
