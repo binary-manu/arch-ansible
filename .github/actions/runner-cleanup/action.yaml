@@ -1,0 +1,33 @@
+name: 'runner-cleanup'
+description: 'Clean leftover VMs and prepare configuration files'
+runs:
+  using: "composite"
+  steps:
+    - name: Delete all existing VirtualBox VMs
+      shell: bash
+      run: |
+        VBoxManage list vms |
+        sed 's/.*{\([-[:xdigit:]]\+\)}$/\1/' |
+        xargs -I% sh -c "VBoxManage controlvm % poweroff; sleep 3; VBoxManage unregistervm % --delete"
+    - name: Delete existing virsh VMs
+      shell: bash
+      run: |
+        virsh list --all --name |
+        xargs -I% sh -c "virsh destroy %; sleep 3; virsh undefine % --remove-all-storage"
+    - name: Clean existing override files
+      shell: bash
+      run: |
+        rm -f ansible/group_vars/all/9*.yaml
+    - name: Add Ansible configuration for pkgproxy
+      shell: bash
+      run: |
+        echo 'custom_repos_servers: ["http://10.0.2.2:8080/$repo/os/$arch"]' > ansible/group_vars/all/99-ci-pkgproxy.yaml
+    - name: Add Ansible variables for testing
+      shell: bash
+      run: |
+        echo '
+        global_portable_image: true
+        bluetooth_override: active
+        xfce_user_customizations_kvantum_theme: KvAdaptaDark
+        xscreensaver_override: active
+        ' > ansible/group_vars/all/90-ci-defaults.yaml
