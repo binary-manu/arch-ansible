@@ -15,4 +15,5 @@ fi
 
 cd
 start-stop-daemon -b -m -p /tmp/pkgproxy.pid -O "$HOME/pkgproxy.log" -x "$PKGPROXY" -S -- -keep-cache
+cp -v /config/.[a-z]* /opt/gh/
 exec "$@"

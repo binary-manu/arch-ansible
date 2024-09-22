@@ -1,9 +1,8 @@
 #!/bin/sh
 
 HERE="$(realpath "$(dirname "$0")")"
-BASEDIR="$(realpath "$HERE/..")"
 HOMEDIR="$(realpath "$HERE/storage")"
-IMAGE="ghcr.io/binary-manu/arch-ansible-ci:circleci"
+IMAGE="ghcr.io/binary-manu/arch-ansible-ci:github"
 ADD_CAPS="NET_ADMIN,NET_RAW"
 HOSTNAME="linux-runner"
 KEEP_SUP_GROUPS="--annotation=run.oci.keep_original_groups=1"
@@ -29,8 +28,7 @@ podman run $FOREGROUND \
     --user root \
     --cap-add="$ADD_CAPS" \
     --security-opt=unmask=/proc/sys \
-    -v "$BASEDIR:/src" \
+    -v "$HERE/config:/config" \
     -v "$HOMEDIR:/home" \
-    -v "$HERE/config.yaml:/etc/circleci-runner/circleci-runner-config.yaml" \
     $KEEP_SUP_GROUPS \
     "$IMAGE" "$@"
