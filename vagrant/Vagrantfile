@@ -62,7 +62,7 @@ Vagrant.configure("2") do |config|
 
   end
 
-  config.vm.provider "libvirt" do |virt|
+  config.vm.provider "libvirt" do |virt, override|
     virt.uri = libvirt_user_session ? "qemu:///session" : "qemu:///system"
     virt.cpus = default_cpus
     virt.memory = default_memory
@@ -72,6 +72,10 @@ Vagrant.configure("2") do |config|
     virt.sound_type = "ac97"
     virt.channel :type => 'unix', :target_name => 'org.qemu.guest_agent.0', :target_type => 'virtio'
     virt.channel :type => 'spicevmc', :target_name => 'com.redhat.spice.0', :target_type => 'virtio'
+
+    if libvirt_user_session then
+      override.vm.synced_folder "../", "/vagrant", type: "9p"
+    end
   end
 
   if Vagrant.has_plugin?("vagrant-proxyconf") and http_proxy
