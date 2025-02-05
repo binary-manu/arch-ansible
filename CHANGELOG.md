@@ -12,6 +12,17 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.3.4] - 2025-02-05
+
+### Changed
+
+* The CI system now uses the latest official Packer, Vagrant and
+  `vagrant-libvirt` rather than those coming with Debian 12.
+* When provisioning Vagrant boxes using libvirt under user sessions,
+  `9p` is used to mount shared folders. The CI system uses this kind of
+  session and by default tries to use `virtiofs`, which is not supported
+  in user mode by the libvirt shipped by Debian.
+
 ## [0.3.3] - 2024-09-22
 
 ### Changed
