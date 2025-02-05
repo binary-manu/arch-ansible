@@ -58,9 +58,9 @@ USER ci:ci
 
 RUN \
     : "Install GH Agent to ~" && \
-       mkdir -p ~/gh && \
+        mkdir -p ~/gh && \
         tar -xzf /tmp/ghrunner.tar.gz -C ~/gh && \
-    : "Build for vagrant-libvirt" && \
+    : "Install vagrant-libvirt" && \
         vagrant plugin install vagrant-libvirt && \
     : "Install Packer plugins" && \
         packer plugins install github.com/hashicorp/ansible && \

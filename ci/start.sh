@@ -23,7 +23,7 @@ podman run $FOREGROUND \
     --device=/dev/vboxdrvu:rw \
     --device=/dev/vboxnetctl:rw \
     --device=/dev/net/tun:rw \
-    --userns keep-id:uid=$CI_GID,gid=$CI_GID \
+    --userns keep-id:uid=$CI_UID,gid=$CI_GID \
     --user root \
     --cap-add="$ADD_CAPS" \
     --security-opt=unmask=/proc/sys \
