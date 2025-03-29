@@ -7,4 +7,5 @@ utils_packages:
   - hexer
   - net-tools
   - iotop
+  - pulseaudio
   - pulseaudio-alsa
