@@ -1,0 +1,8 @@
+- name: Copy xinitrc to user home
+  become: yes
+  become_user: "{{ item }}"
+  copy:
+    src: xinitrc
+    dest: "{{ users_created | user_home(item) }}/.xinitrc"
+    mode: "0644"
+  loop: "{{ users_names }}"

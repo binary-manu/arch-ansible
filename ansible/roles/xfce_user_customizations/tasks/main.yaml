@@ -1,12 +1,3 @@
-- name: Copy xfce's xinitrc to user home
-  become: yes
-  become_user: "{{ item }}"
-  copy:
-    src: xinitrc
-    dest: "{{ users_created | user_home(item) }}/.xinitrc"
-    mode: "0644"
-  loop: "{{ users_names }}"
-
 - name: Install the themes
   include_tasks: "{{ item_theme.theme }}.yaml"
   loop: "{{ xfce_user_customizations_themes }}"
