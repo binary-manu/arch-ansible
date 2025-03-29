@@ -2,6 +2,18 @@
   set_fact:
     users_names: "{{ users_info | dict2items | map(attribute='key') | list }}"
 
+- name: Force .bashrc to source vte.sh
+  blockinfile:
+    append_newline: yes
+    prepend_newline: yes
+    create: no
+    path: /etc/skel/.bashrc
+    marker: "# {mark} VTE IMPORT IF AVAILABLE"
+    block: |
+      if [ -r /etc/profile.d/vte.sh ] && { [ -n "$TILIX_ID" ] || [ -n "$VTE_VERSION" ]; }; then
+        . /etc/profile.d/vte.sh
+      fi
+
 - name: Add initial users
   user:
     shell: /bin/bash
