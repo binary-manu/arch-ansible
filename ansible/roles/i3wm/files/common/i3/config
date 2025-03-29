@@ -1,0 +1,10 @@
+# i3 config file (v4)
+#
+# Please see https://i3wm.org/docs/userguide.html for a complete reference!
+
+set $mod Mod4
+floating_modifier $mod
+font pango:Ubuntu Mono 12
+
+include *.conf
+include *.d/*.conf

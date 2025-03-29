@@ -1,0 +1,25 @@
+# List of packages to be installed if i3wm_enabled is true
+i3wm_packages:
+  - i3-wm
+  - i3status
+  - i3-exitx-systemd-git
+  - dex
+  - pasystray
+  - tilix
+  - rofi
+  - mate-polkit
+  - pcmanfm-gtk3
+  - ttf-ubuntu-font-family
+  - ttf-sourcecodepro-nerd
+  - dunst
+  - seahorse
+
+# Set either values to "active" to force starting the screensaver/compositor
+# when i3 starts. Set it to "inactive" to keep them off. Leave blank to use a
+# fact-based choice: on on physical machines, off in VMs.
+i3wm_screensaver_override: ""
+i3wm_compositor_override: ""
+
+# Inactivity timer after which the screen will be powered off and blocked by
+# xsecurelock.
+i3wm_screensaver_timeout_in_secs: 180

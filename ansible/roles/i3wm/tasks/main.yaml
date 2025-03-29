@@ -1,0 +1,89 @@
+- name: Install i3wm
+  import_role:
+    name: packages
+  vars:
+    packages: "{{ i3wm_packages }}"
+
+# Avoid conflicts with other notifications services registering with D-Bus. i3
+# will start dunst explicitly.
+- name: Disable the dunst user service
+  systemd_service:
+      unit: dunst.service
+      scope: global
+      masked: yes
+
+- name: Copy configuration for i3
+  become: yes
+  become_user: "{{ item }}"
+  copy:
+    src: ./common/
+    dest: "{{ users_created | user_home(item) }}/.config/"
+    mode: "0644"
+  loop: "{{ users_names }}"
+
+- name: Check i3wm_screensaver_override
+  assert:
+    that: i3wm_screensaver_override | lower in ["active", "inactive", ""]
+    fail_msg: Value '{{ i3wm_screensaver_override }}' is not
+      supported for i3wm_screensaver_override
+
+- name: Install screensaver for i3wm
+  when: >
+    i3wm_screensaver_override == "active" or
+    i3wm_screensaver_override == "" and ansible_virtualization_role | lower != "guest"
+  block:
+    - import_role:
+        name: packages
+      vars:
+        packages:
+          - xss-lock
+          - xsecurelock
+
+    - become: yes
+      become_user: "{{ item }}"
+      template:
+        src: autostart.d/screensaver.conf
+        dest: "{{ users_created | user_home(item) }}/.config/i3/autostart.d/"
+        mode: "0644"
+      loop: "{{ users_names }}"
+
+    - become: yes
+      become_user: "{{ item }}"
+      copy:
+        src: bindings.d/screensaver.conf
+        dest: "{{ users_created | user_home(item) }}/.config/i3/bindings.d/"
+        mode: "0644"
+      loop: "{{ users_names }}"
+
+- name: Check i3wm_compositor_override
+  assert:
+    that: i3wm_compositor_override | lower in ["active", "inactive", ""]
+    fail_msg: Value '{{ i3wm_compositor_override }}' is not
+      supported for i3wm_compositor_override
+
+- name: Install compositor for i3wm
+  when: >
+    i3wm_compositor_override == "active" or
+    i3wm_compositor_override == "" and ansible_virtualization_role | lower != "guest"
+  block:
+    - import_role:
+        name: packages
+      vars:
+        packages:
+          - picom
+
+    - become: yes
+      become_user: "{{ item }}"
+      copy:
+        src: autostart.d/compositor.conf
+        dest: "{{ users_created | user_home(item) }}/.config/i3/autostart.d/"
+        mode: "0644"
+      loop: "{{ users_names }}"
+
+    - become: yes
+      become_user: "{{ item }}"
+      copy:
+        src: picom.conf
+        dest: "{{ users_created | user_home(item) }}/.config/picom/"
+        mode: "0644"
+      loop: "{{ users_names }}"
