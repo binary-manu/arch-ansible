@@ -2,3 +2,4 @@ dependencies:
   - role: virtguest_force
   - role: users
   - role: xinitrc
+  - role: de_eyecandy

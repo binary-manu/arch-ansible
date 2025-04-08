@@ -1,0 +1,19 @@
+- name: Install packages for Numix theme
+  import_role:
+    name: packages
+  vars:
+    packages:  "{{ de_eyecandy_packages_numix }}"
+
+- name: Set the theme as default
+  when: item_theme.default | default(False, True) == True
+  block:
+    - name: GTK
+      include_tasks: gtk_settings.yaml
+      vars:
+          theme: Numix
+          icon_theme: Numix
+          cursor_theme: Numix-Cursor-Light
+    - name: X
+      include_tasks: x_settings.yaml
+      vars:
+          cursor_theme: Numix-Cursor-Light

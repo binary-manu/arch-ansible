@@ -1,13 +1,20 @@
+# Compatibility shim: delegate to de_eyecandy while honoring old variable names
 - name: Install the themes
+  import_role:
+    name: de_eyecandy
+  vars:
+    de_eyecandy_packages_numix: "{{ xfce_user_customizations_packages_numix }}"
+    de_eyecandy_packages_darkblue: "{{ xfce_user_customizations_packages_darkblue }}"
+    de_eyecandy_packages_equilux: "{{ xfce_user_customizations_packages_equilux }}"
+    de_eyecandy_packages_dracula: "{{ xfce_user_customizations_packages_dracula }}"
+    de_eyecandy_dracula_gtk: "{{ xfce_user_customizations_dracula_gtk }}"
+    de_eyecandy_dracula_icons: "{{ xfce_user_customizations_dracula_icons }}"
+    de_eyecandy_themes: "{{ xfce_user_customizations_themes }}"
+    de_eyecandy_qt_theme: "{{ xfce_user_customizations_kvantum_theme }}"
+
+- name: Copy the config files
   include_tasks: "{{ item_theme.theme }}.yaml"
   loop: "{{ xfce_user_customizations_themes }}"
   loop_control:
-    loop_var: item_theme
+      loop_var: item_theme
   when: item_theme.installed | default(False, True) == True
-
-- name: Add kvantum
-  import_role:
-    name: kvantum
-  vars:
-    kvantum_theme: "{{ xfce_user_customizations_kvantum_theme }}"
-  when: xfce_user_customizations_kvantum_theme | length != 0

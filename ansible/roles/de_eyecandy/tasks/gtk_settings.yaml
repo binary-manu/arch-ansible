@@ -1,0 +1,113 @@
+- name: Set GTK theming
+  when: theme | default("", true) | length != 0
+  block:
+    - name: For GTK 2
+      become: yes
+      become_user: "{{ item }}"
+      lineinfile:
+        path: "{{ users_created | user_home(item) }}/.gtkrc-2.0"
+        create: yes
+        mode: "0644"
+        regexp: '^\s*gtk-theme-name\s*='
+        line: 'gtk-theme-name="{{ theme }}"'
+      loop: "{{ users_names }}"
+
+    - name: For GTK 3
+      become: yes
+      become_user: "{{ item }}"
+      ini_file:
+        path: "{{ users_created | user_home(item) }}/.config/gtk-3.0/settings.ini"
+        create: yes
+        mode: "0644"
+        section: Settings
+        option: gtk-theme-name
+        value: "{{ theme }}"
+      loop: "{{ users_names }}"
+
+    - name: For GTK 4
+      become: yes
+      become_user: "{{ item }}"
+      ini_file:
+        path: "{{ users_created | user_home(item) }}/.config/gtk-4.0/settings.ini"
+        create: yes
+        mode: "0644"
+        section: Settings
+        option: gtk-theme-name
+        value: "{{ theme }}"
+      loop: "{{ users_names }}"
+
+- name: Set GTK icons
+  when: icon_theme | default("", true) | length != 0
+  block:
+    - name: For GTK 2
+      become: yes
+      become_user: "{{ item }}"
+      lineinfile:
+        path: "{{ users_created | user_home(item) }}/.gtkrc-2.0"
+        create: yes
+        mode: "0644"
+        regexp: '^\s*gtk-icon-theme-name\s*='
+        line: 'gtk-icon-theme-name="{{ icon_theme }}"'
+      loop: "{{ users_names }}"
+
+    - name: For GTK 3
+      become: yes
+      become_user: "{{ item }}"
+      ini_file:
+        path: "{{ users_created | user_home(item) }}/.config/gtk-3.0/settings.ini"
+        create: yes
+        mode: "0644"
+        section: Settings
+        option: gtk-icon-theme-name
+        value: "{{ icon_theme }}"
+      loop: "{{ users_names }}"
+
+    - name: For GTK 4
+      become: yes
+      become_user: "{{ item }}"
+      ini_file:
+        path: "{{ users_created | user_home(item) }}/.config/gtk-4.0/settings.ini"
+        create: yes
+        mode: "0644"
+        section: Settings
+        option: gtk-icon-theme-name
+        value: "{{ icon_theme }}"
+      loop: "{{ users_names }}"
+
+- name: Set GTK cursors
+  when: cursor_theme | default("", true) | length != 0
+  block:
+    - name: For GTK 2
+      become: yes
+      become_user: "{{ item }}"
+      lineinfile:
+        path: "{{ users_created | user_home(item) }}/.gtkrc-2.0"
+        create: yes
+        mode: "0644"
+        regexp: '^\s*gtk-cursor-theme-name\s*='
+        line: 'gtk-cursor-theme-name="{{ cursor_theme }}"'
+      loop: "{{ users_names }}"
+
+    - name: For GTK 3
+      become: yes
+      become_user: "{{ item }}"
+      ini_file:
+        path: "{{ users_created | user_home(item) }}/.config/gtk-3.0/settings.ini"
+        create: yes
+        mode: "0644"
+        section: Settings
+        option: gtk-cursor-theme-name
+        value: "{{ cursor_theme }}"
+      loop: "{{ users_names }}"
+
+    - name: For GTK 4
+      become: yes
+      become_user: "{{ item }}"
+      ini_file:
+        path: "{{ users_created | user_home(item) }}/.config/gtk-4.0/settings.ini"
+        create: yes
+        mode: "0644"
+        section: Settings
+        option: gtk-cursor-theme-name
+        value: "{{ cursor_theme }}"
+      loop: "{{ users_names }}"

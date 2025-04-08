@@ -1,0 +1,30 @@
+- name: Install packages for DarkBlue theme
+  import_role:
+    name: packages
+  vars:
+    packages:  "{{ de_eyecandy_packages_darkblue }}"
+
+- name: Create local backgrounds folder
+  file:
+    state: directory
+    path: /usr/local/share/backgrounds
+
+- name: Copy wallpaper
+  copy:
+    src: darkblue/wallpaper.jpg
+    dest: /usr/local/share/backgrounds/darkblue_wallpaper.jpg
+    mode: "0644"
+
+- name: Set the theme as default
+  when: item_theme.default | default(False, True) == True
+  block:
+    - name: GTK
+      include_tasks: gtk_settings.yaml
+      vars:
+          theme: Numix-DarkBlue
+          icon_theme: kora
+          cursor_theme: Numix-Cursor-Light
+    - name: X
+      include_tasks: x_settings.yaml
+      vars:
+          cursor_theme: Numix-Cursor-Light

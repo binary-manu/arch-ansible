@@ -1,5 +1,5 @@
 # Additional packages to be installed for the Numix theme
-xfce_user_customizations_packages_numix:
+de_eyecandy_packages_numix:
   - gtk-engine-murrine
   - numix-gtk-theme-git
   - numix-cursor-theme-git
@@ -7,21 +7,21 @@ xfce_user_customizations_packages_numix:
   - numix-square-icon-theme-git
 
 # Additional packages to be installed for the DarkBlue theme
-xfce_user_customizations_packages_darkblue:
+de_eyecandy_packages_darkblue:
   - gtk-engine-murrine
   - numix-themes-darkblue
   - numix-cursor-theme-git
   - kora-icon-theme
 
-xfce_user_customizations_packages_equilux:
+de_eyecandy_packages_equilux:
   - equilux-theme
   - kora-icon-theme
 
-xfce_user_customizations_packages_dracula:
+de_eyecandy_packages_dracula:
   - unzip
 
-xfce_user_customizations_dracula_gtk: https://github.com/dracula/gtk/archive/master.zip
-xfce_user_customizations_dracula_icons: https://github.com/dracula/gtk/files/5214870/Dracula.zip
+de_eyecandy_dracula_gtk: https://github.com/dracula/gtk/archive/master.zip
+de_eyecandy_dracula_icons: https://github.com/dracula/gtk/files/5214870/Dracula.zip
 
 # This controls which themes are installed (`installed: true`) and which one
 # will be configured as the default for all non-root users (`default: true`).
@@ -29,7 +29,7 @@ xfce_user_customizations_dracula_icons: https://github.com/dracula/gtk/files/521
 # Only one theme should have `default` set, otherwise it is undefined behaviour
 # whether an error is thrown or one of them is effectively set as the default.
 # `installed` and `default` can be omitted and default to `false`.
-xfce_user_customizations_themes:
+de_eyecandy_themes:
   - theme: numix
     installed: true
   - theme: darkblue
@@ -42,4 +42,4 @@ xfce_user_customizations_themes:
 
 # If not empty, install kvantum and set the theme to the value of the variable.
 # Also, add QT_STYLE_OVERRIDE=kvantum to the user's profile
-xfce_user_customizations_kvantum_theme: ""
+de_eyecandy_qt_theme: "KvFlat"

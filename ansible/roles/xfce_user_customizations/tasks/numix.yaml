@@ -1,9 +1,3 @@
-- name: Install packages for Numix theme
-  import_role:
-    name: packages
-  vars:
-    packages:  "{{ xfce_user_customizations_packages_numix }}"
-
 - name: Copy xfce's configuration for Numix
   become: yes
   become_user: "{{ item }}"

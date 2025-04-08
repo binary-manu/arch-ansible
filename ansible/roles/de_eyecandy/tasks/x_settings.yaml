@@ -1,0 +1,11 @@
+- name: Set X cursor
+  become: yes
+  become_user: "{{ item }}"
+  when: cursor_theme | default("", true) | length != 0
+  loop: "{{ users_names }}"
+  lineinfile:
+    path: "{{ users_created | user_home(item) }}/.Xresources"
+    create: yes
+    mode: "0644"
+    regexp: '^\s*Xcursor.theme\s*:'
+    line: 'Xcursor.theme: {{ cursor_theme }}'

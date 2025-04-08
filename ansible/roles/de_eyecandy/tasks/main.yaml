@@ -1,0 +1,6 @@
+- name: Install the themes
+  include_tasks: "{{ item_theme.theme }}.yaml"
+  loop: "{{ de_eyecandy_themes }}"
+  loop_control:
+    loop_var: item_theme
+  when: item_theme.installed | default(False, True) == True

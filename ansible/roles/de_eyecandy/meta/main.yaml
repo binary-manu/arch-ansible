@@ -1,0 +1,5 @@
+dependencies:
+  - role: kvantum
+    vars:
+      kvantum_theme: "{{ de_eyecandy_qt_theme }}"
+    when: de_eyecandy_qt_theme | length != 0
