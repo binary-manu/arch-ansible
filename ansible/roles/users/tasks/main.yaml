@@ -44,3 +44,12 @@
     regexp: '^%wheel ALL='
     line: '%wheel ALL=(ALL) ALL'
     validate: '/usr/sbin/visudo -cf %s'
+
+- name: Fixup /etc/pam.d/system-auth to avoid account locking on non-auth-fail errors from pam_unix
+  when: users_fixup_faillock
+  lineinfile:
+    path: /etc/pam.d/system-auth
+    create: no
+    regexp: '^\s*auth\s+\[[^]]*\]\s+pam_unix\.so\s+(.*)$'
+    line: 'auth [success=1 auth_err=bad default=die] pam_unix.so \1'
+    backrefs: yes

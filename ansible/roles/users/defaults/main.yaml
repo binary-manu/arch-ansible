@@ -17,3 +17,7 @@ users_info:
     password: "abcd$1234_manu"
     is_admin: true # Optional item, true if missing
     groups: []     # Optional item, empty list if missing
+
+# Apply a patch to PAM configuration to avoid locking accounts in face of
+# authentication errors that do not imply a wrong password.
+users_fixup_faillock: no
