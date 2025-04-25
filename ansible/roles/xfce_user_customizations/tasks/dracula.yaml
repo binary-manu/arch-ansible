@@ -7,3 +7,4 @@
     mode: "0644"
   loop: "{{ users_names }}"
   when: item_theme.default | default(False, True) == True
+  notify: Fix monitor name in XFCE settings
