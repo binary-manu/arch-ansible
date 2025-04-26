@@ -20,6 +20,7 @@ Swipe the following image left or right to see all screenshots.
   <img src="{{ site.baseurl }}/assets/equilux-windows.png" style="max-width: 100%;">
   <img src="{{ site.baseurl }}/assets/dracula-desktop.png" style="max-width: 100%;">
   <img src="{{ site.baseurl }}/assets/dracula-windows.png" style="max-width: 100%;">
+  <img src="{{ site.baseurl }}/assets/i3.png" style="max-width: 100%;">
 </div>
 
 _IMPORTANT NOTE: the new default branch is v0.3.x, which is not backward
@@ -73,6 +74,8 @@ By default, systems installed in VM's will have it disabled, since I
 would assume that the host already has a screensaver/lock. Bare metal
 installations, conversely, have it enabled by default to power off the
 screen after a few minutes. It is possible to override this behaviour.
+
+The i3 tiling WM is also available.
 
 Optional Bluetooth support can be installed. By default it is only
 installed on bare-metal installations. This behaviour can be overridden
@@ -532,6 +535,7 @@ role. The role name is given by the variable name.
 * `utils_enabled`
 * `xutils_enabled`
 * `bluetooth_enabled`
+* `i3wm_enabled`
 
 #### Custom roles
 
@@ -629,6 +633,20 @@ It accepts a `state` variable, to be set to either `present` or
 `absent`. `present` will add repository definitions to `pacman` files,
 while `absent` will remove them.
 
+<a name="de_eyecandy"></a>
+
+#### de_eyecandy
+
+Flags: `[ms]`
+
+Installs themes for GTK2/3/4 and Qt applications, window decorations,
+some wallpapers and sets system-wide defaults so that they are applied.
+
+Settings are read directly by GUI toolkits (using files such as
+`~/.config/gtk-3.0/settings.ini` or variables such as
+`QT_STYLE_OVERRIDE` so they are honored under most DEs or WMs, unless
+the GUI environment overrides them with its own settings.
+
 #### genfstab
 
 Flags: `[bs]`
@@ -651,6 +669,32 @@ and `/etc/hosts`. The host domain is set to `localdomain`.
 When invoked, a `chroot` variable can be specified, to indicate where
 files holding host information are to be found. If not passed, the
 current root is used.
+
+#### i3wm
+
+Flags: `[ms]`
+
+Installs the i3 tiling window manager and configures it with a bunch of
+keybindings and startup apps to be immediately ready for action. You
+get:
+* Tilix terminal, also in Quake mode;
+* dunst for notifications;
+* mate-polkit for authentication;
+* xsecurelock as the screensaver (only on bare metal or when forced);
+* picom compositor (only on bare metal or when forced);
+* pcmanfm file manager;
+* seahorse key manager;
+* rofi to launch apps;
+* pasystray to control volume;
+* i3-exitx replaces i3 nagbar when quitting.
+
+Unlike Xfce, there is no separate role for customization: vanilla i3 is
+too "hardcore" and minimal out of the box, so this role will always pull
+in [de_eyecandy](#de_eyecandy) to install themes for apps.
+
+By default, the screensaver is only enabled for bare-metal setups, but
+this can be controlled via `i3wm_screensaver_override`. The same is also
+true for the compositor, but via `i3wm_compositor_override`.
 
 #### kvantum
 
@@ -832,6 +876,28 @@ All user info (such as username, password, additional groups) is stored
 into this module's defaults file. As usual, it can be overridden in host
 or group variables.
 
+`users_fixup_faillock` can be set to `true` to apply a patch to the way
+PAM handles system authentication. By default, when the `pam_unix`
+module returns any error during authentication, `pam_faillock` is
+triggered to increment the login attempt counter for the user: when it
+reaches a system-defined maximum (usually 3) the account is locked for
+10 minutes.
+
+This poses a problem when your screensaver or authentication tool can
+time out or be cancelled. It will return an error code to PAM and thus
+cause the counter to increment. After a number of timeouts, your account
+will be locked, even if you didn't type anything wrong!
+
+PAM has a specific code that reports authentication failures, while
+others report other kinds of problems (like the inability to open a
+module) or generic failure. The patch simply tells PAM not to call
+`pam_faillock` in face of non-authentication errors.
+
+It is recommended to turn this option on if using `xsecurelock` (the
+default for an i3 setup) to avoid the problem mentioned above. For
+`xscreensaver` this is not required, as it kills itself upon timeout or
+user abort, and never reports back to PAM.
+
 #### utils
 
 Flags: `[ms]`
@@ -915,6 +981,37 @@ specify themes on a per-user basis.
 
 The role can optionally install Kvantum in order to give a degree of control
 over theming of QT apps.
+
+_NOTE: Since introducing alternative DEs/WMs, most activity related to
+eye-candy setup has been moved to [de_eyecandy](#de_eyecandy).
+Similarly, `.xinitrc` handling now partains to [xinitrc](#xinitrc). This
+role calls them to do most of its job._
+
+<a name="xinitrc"></a>
+
+#### xinitrc
+
+Flags: `[ms]`
+
+Copies a working `.xinitrc` under all users' homes, so that it is
+possible to launch a GUI session via `startx`.
+
+This `.xinitrc` will try to start the first usable session according to
+the following list:
+* if `startx` is run with an argument, that argument is started as the
+  session: `startx startxfce4` or `startx i3`. Otherwise, if no argument
+  is given;
+* if the `XINITRC_DEFAULT_SESSION` environment variable is defined and
+  non-empty, it is used instead. You can set it in your `.bashrc` to
+  control yout default DE. Otherwise:
+* it starts Xfce if it is installed. Othwerwise;
+* it starts i3 if it is installed. Othwerise;
+* it bails out.
+
+Note that when the `startx` argument or `XINITRC_DEFAULT_SESSION` are
+expanded, they are used unquoted. This means that commands can have
+arguments, but also that if anything contains spaces, things won't work.
+In that case you should wrap the session command in its own script.
 
 #### xorg
 
@@ -1201,8 +1298,6 @@ A script `ci/start.sh` can be used to start the CI container with approproate op
 device nodes, capabilities). It will start as root in order to perform initial setup (bridges, `dbus`,
 libvirt and other stuff) then will drop privileges and impersonate the calling user to start the agent.
 Note that `root` here still means `root` inside a user namespace, as the container is meant to run rootless.
-A  `storage` folder is created besides the `start.sh` script, and will hold all temporary stuff, including
-package caches, ISO images, Vagrant boxes and logs. It can grow large and should be cleared periodically.
 
 GitHub agent configuration with valid tokens must be provided besides
 `start.sh` in a `config` folder. The files produced by running the agent
@@ -1217,6 +1312,16 @@ boot:
     └── .runner
 
 Note that they are all hidden.
+
+## Installing multiple DEs/WMs side by side
+
+It is possible to install multiple GUI environments side by side.
+However, since some settings are shared (there is just a single GTK3
+configuration file, for example) and some services compete for the same
+DBus names, doing so may result in a mix-up of them.
+
+At the time of writing, I'd suggest users to pick only one and disable
+the other.
 
 ## Migrating to a non-backward-compatible playbook version
 

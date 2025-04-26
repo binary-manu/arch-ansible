@@ -8,12 +8,14 @@ title: Defaults files index
 * [roles/base_packages/defaults/main.yaml](#rolesbase_packagesdefaultsmainyaml)
 * [roles/bluetooth/defaults/main.yaml](#rolesbluetoothdefaultsmainyaml)
 * [roles/custom_repos/defaults/main.yaml](#rolescustom_reposdefaultsmainyaml)
+* [roles/de_eyecandy/defaults/main.yaml](#rolesde_eyecandydefaultsmainyaml)
 * [roles/disksetup/bios_gpt_btrfs/partitioning/defaults/main.yaml](#rolesdisksetupbios_gpt_btrfspartitioningdefaultsmainyaml)
 * [roles/disksetup/defaults/main.yaml](#rolesdisksetupdefaultsmainyaml)
 * [roles/disksetup/gpt_singlepart/partitioning/defaults/main.yaml](#rolesdisksetupgpt_singlepartpartitioningdefaultsmainyaml)
 * [roles/disksetup/mbr_lvm/partitioning/defaults/main.yaml](#rolesdisksetupmbr_lvmpartitioningdefaultsmainyaml)
 * [roles/disksetup/mbr_singlepart/partitioning/defaults/main.yaml](#rolesdisksetupmbr_singlepartpartitioningdefaultsmainyaml)
 * [roles/hostname/defaults/main.yaml](#roleshostnamedefaultsmainyaml)
+* [roles/i3wm/defaults/main.yaml](#rolesi3wmdefaultsmainyaml)
 * [roles/locale/defaults/main.yaml](#roleslocaledefaultsmainyaml)
 * [roles/makepkg/defaults/main.yaml](#rolesmakepkgdefaultsmainyaml)
 * [roles/passwordless_sudo_user/defaults/main.yaml](#rolespasswordless_sudo_userdefaultsmainyaml)
@@ -94,7 +96,7 @@ base_packages_list:
 ```yaml
 # Controls if Bluetooth support is installed or not:
 #
-# * leave it empty to use the default behaviour, ehich installs
+# * leave it empty to use the default behaviour, which installs
 #   BT on bare metal systems only;
 # * set to `active` to force installation even under hypervisors;
 # * set to `inactive` to disable BT support.
@@ -124,6 +126,56 @@ custom_repos_list: [
 custom_repos_servers: [
 #  "http://localhost:8080/$repo/os/$arch"
 ]
+```
+
+## roles/de_eyecandy/defaults/main.yaml
+
+```yaml
+# Additional packages to be installed for the Numix theme
+de_eyecandy_packages_numix:
+  - gtk-engine-murrine
+  - numix-gtk-theme-git
+  - numix-cursor-theme-git
+  - numix-icon-theme-git
+  - numix-square-icon-theme-git
+
+# Additional packages to be installed for the DarkBlue theme
+de_eyecandy_packages_darkblue:
+  - gtk-engine-murrine
+  - numix-themes-darkblue
+  - numix-cursor-theme-git
+  - kora-icon-theme
+
+de_eyecandy_packages_equilux:
+  - equilux-theme
+  - kora-icon-theme
+
+de_eyecandy_packages_dracula:
+  - unzip
+
+de_eyecandy_dracula_gtk: https://github.com/dracula/gtk/archive/master.zip
+de_eyecandy_dracula_icons: https://github.com/dracula/gtk/files/5214870/Dracula.zip
+
+# This controls which themes are installed (`installed: true`) and which one
+# will be configured as the default for all non-root users (`default: true`).
+# The `theme` corresponds to the name of a task file under `tasks/`.
+# Only one theme should have `default` set, otherwise it is undefined behaviour
+# whether an error is thrown or one of them is effectively set as the default.
+# `installed` and `default` can be omitted and default to `false`.
+de_eyecandy_themes:
+  - theme: numix
+    installed: true
+  - theme: darkblue
+    installed: true
+    default: true
+  - theme: equilux
+    installed: true
+  - theme: dracula
+    installed: true
+
+# If not empty, install kvantum and set the theme to the value of the variable.
+# Also, add QT_STYLE_OVERRIDE=kvantum to the user's profile
+de_eyecandy_qt_theme: "KvFlat"
 ```
 
 ## roles/disksetup/bios_gpt_btrfs/partitioning/defaults/main.yaml
@@ -237,6 +289,36 @@ partitioning_priv_root_device_node: "/dev/sda1"
 hostname_hostname: archlinux
 ```
 
+## roles/i3wm/defaults/main.yaml
+
+```yaml
+# List of packages to be installed if i3wm_enabled is true
+i3wm_packages:
+  - i3-wm
+  - i3status
+  - i3-exitx-systemd-git
+  - dex
+  - pasystray
+  - tilix
+  - rofi
+  - mate-polkit
+  - pcmanfm-gtk3
+  - ttf-ubuntu-font-family
+  - ttf-sourcecodepro-nerd
+  - dunst
+  - seahorse
+
+# Set either values to "active" to force starting the screensaver/compositor
+# when i3 starts. Set it to "inactive" to keep them off. Leave blank to use a
+# fact-based choice: on on physical machines, off in VMs.
+i3wm_screensaver_override: ""
+i3wm_compositor_override: ""
+
+# Inactivity timer after which the screen will be powered off and blocked by
+# xsecurelock.
+i3wm_screensaver_timeout_in_secs: 180
+```
+
 ## roles/locale/defaults/main.yaml
 
 ```yaml
@@ -298,6 +380,10 @@ users_info:
     password: "abcd$1234_manu"
     is_admin: true # Optional item, true if missing
     groups: []     # Optional item, empty list if missing
+
+# Apply a patch to PAM configuration to avoid locking accounts in face of
+# authentication errors that do not imply a wrong password.
+users_fixup_faillock: no
 ```
 
 ## roles/utils/defaults/main.yaml
@@ -312,6 +398,7 @@ utils_packages:
   - hexer
   - net-tools
   - iotop
+  - pulseaudio
   - pulseaudio-alsa
 ```
 
@@ -399,8 +486,8 @@ xfce_user_customizations_themes:
   - theme: dracula
     installed: true
 
-# If not empty, install kvantum-qt5 and set the theme to the value of the
-# variable.  Also, add QT_STYLE_OVERRIDE=kvantum to the user's profile
+# If not empty, install kvantum and set the theme to the value of the variable.
+# Also, add QT_STYLE_OVERRIDE=kvantum to the user's profile
 xfce_user_customizations_kvantum_theme: ""
 ```
 
