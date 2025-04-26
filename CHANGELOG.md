@@ -12,6 +12,54 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+### Fixed
+
+* `pulseaudio` was not being installed.
+* Xfce theme settings related to background images were broken, as
+  recent Xfce versions changed the properties read to apply the
+  background. This resulted in the default background being used instead
+  of those provided by the themes.
+
+### Added
+
+* This release introduces multi DE/WM, adding i3 to the set of GUI
+  environments that can be installed. Xfce4 remains the default, while
+  i3 must be enabled explicitly.
+
+  Since vanilla i3 is not really usable, there is no separation between
+  plain i3 installation and it's theming, as had been done for Xfce:
+  installing i3 also bring in application theming (GTK2/3/4 and Qt),
+  some predefined keybindings and a bar configuration reporting CPU and
+  memory usage, plus the clock.
+
+  See the `i3wm` role and `i3wm_enabled` global option.
+* Optionally, one can change the PAM system authentication configuration
+  to tweak how errors from `pam_unix` are handled. The default scenario
+  triggers `pam_faillock` even for unsuccessful login attempts that are
+  not directly related to typing a bad password.
+
+  A side effect of this is that, when using `xsecurelock`, when the
+  prompt times out, that counts as a failed attempt, even if you didn't
+  type anything. If you get into a situation where something triggers
+  the prompt repeatedly, such as the mouse sending garbage, you'll find
+  your account locked.
+
+### Changed
+
+* To support multi DE/WM, some parts of Xfce-related roles have been
+  factored out for sharing. In particular, there is now a new `xinitrc`
+  role responsible for creating `.xinitrc` in user homes.
+* Eyecandy stuff has also been moved to `de_eyecandy`. This does mostly
+  of what `xfce_user_customizations` used to do: installs themes and
+  wallpapers and sets system-wide defaults for GTK/2/3/4 and Qt apps.
+  `xfce_user_customizations` calls it to do the heavy lifting, and then
+  copies Xfce-specific configuration files.
+* The `users` role now patches `/etc/skel/.bashrc` so that, if the shell
+  is run under a VTE terminal, such as Tilix, it sources appropriate
+  profile files. This is a workaround to a performance isssue with
+  Tilix, the default terminal under i3. The patch is applied
+  unconditionally, since it only sources stuff when needed.
+
 ## [0.3.4] - 2025-02-05
 
 ### Changed
