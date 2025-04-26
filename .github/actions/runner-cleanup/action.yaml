@@ -30,4 +30,7 @@ runs:
         bluetooth_override: active
         xfce_user_customizations_kvantum_theme: KvAdaptaDark
         xscreensaver_override: active
+        i3wm_enabled: true
+        i3wm_screensaver_override: active
+        i3wm_compositor_override: active
         ' > ansible/group_vars/all/90-ci-defaults.yaml
