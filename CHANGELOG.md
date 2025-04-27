@@ -19,6 +19,8 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
   recent Xfce versions changed the properties read to apply the
   background. This resulted in the default background being used instead
   of those provided by the themes.
+* Vagrant base box switched to `boxen/archlinux-rolling`, as
+  `archlinux/archlinux` seems to have vanished.
 
 ### Added
 
