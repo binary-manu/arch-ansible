@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-set -ex
+set -exo pipefail
 
 ANSIBLE_VENV=/tmp/ansible_venv
 
@@ -42,7 +42,10 @@ fi
 # installs some packages because, again, the bootstrap phase of arch-ansible
 # would have done that. Ansible is installed here because Vagrant 2.2.5 fails
 # to install it.
-pacman -Syy --noconfirm --needed archlinux-keyring
+pacman -Syy --noconfirm --needed archlinux-keyring reflector
+# Generate a new mirror list: I get a lot of timeouts with the one from the
+# base box.
+reflector -f 5 -l 5 --save /etc/pacman.d/mirrorlist
 pacman -Su --noconfirm --needed base-devel networkmanager python-pip \
     $EXTRA_BASE_PACKAGES
 python -m venv "$ANSIBLE_VENV"
@@ -58,4 +61,11 @@ systemctl disable systemd-networkd.service
 # conflict with the -nox package which comes with the box.
 if pacman -Qi virtualbox-guest-utils-nox > /dev/null 2>&1; then
     pacman -Rs --noconfirm virtualbox-guest-utils-nox
+fi
+
+# The vagrant user should not be in the wheel group. It has specific rules that
+# may contradict %wheel (ex. NOPASSWD).
+in_wheel="$(id -Gn vagrant | sed '/\<wheel\>/ { s/.*/1/; q 0; }; s/.*/0/; q 0' )"
+if [ "$in_wheel" != "0" ]; then
+    gpasswd -d vagrant wheel
 fi
