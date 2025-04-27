@@ -1,13 +1,12 @@
 # Arch-Vagrant
 
 This project builds on [Arch-Ansible](../README.md) to integrate it with
-Vagrant, taking the official box `archlinux/archlinux` and provisioning
-it.  Due to some choices made by the base box maintainers, some aspects
-are different with respect to an installation performed using
-Arch-Ansible alone. For example, the base box uses GRUB while many
-partitioning flows opt for Syslinux. However, if you need to rapidly
-spin up an Arch Linux box for testing, these differences are likely to
-be of no concern.
+Vagrant, taking the box `boxen/archlinux-rolling` and provisioning it.
+Due to some choices made by the base box maintainers, some aspects are
+different with respect to an installation performed using Arch-Ansible
+alone. For example, the base box uses GRUB while many partitioning flows
+opt for Syslinux. However, if you need to rapidly spin up an Arch Linux
+box for testing, these differences are likely to be of no concern.
 
 Both VirtualBox and QEMU (via libvirt) are supported and the official
 base box provides support for both.
