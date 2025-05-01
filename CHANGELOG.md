@@ -21,6 +21,10 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
   of those provided by the themes.
 * Vagrant base box switched to `boxen/archlinux-rolling`, as
   `archlinux/archlinux` seems to have vanished.
+* The CI container was reworked to adapt to newer VirtualBox and
+  libvirt. *IMPORTANT*: running it as an unprivileged user requires
+  accessing `/dev/vboxdrv` as non-root, which is denied by the driver
+  when it was compiled with hardening options.
 
 ### Added
 
