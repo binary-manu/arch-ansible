@@ -1278,12 +1278,12 @@ it doesn't cope well with SaaS runners which run inside VMs and/or
 containers. Thus, a self-hosted runner is the best choice for the
 moment.
 
-To simplify the setup, a container image definition is provided under the `ci` folder. It will
-create a Debian-based image shipping VirtualBox, QEmu, libvirt, packer
-and Vagrant, plus obviously the GitHub agent. It can be run with
-`podman` (Docker is untested) in rootless mode. Once started, it allows
-running test Arch installtions with minimal configuration of the runner
-host.
+To simplify the setup, a container image definition is provided under
+the `ci` folder. It will create a Debian-based image shipping
+VirtualBox, QEmu, libvirt, packer and Vagrant, plus obviously the GitHub
+agent. It can be run with `podman` (Docker is untested) in rootless
+mode. Once started, it allows running test Arch installations with
+minimal configuration of the runner host.
 
 However, the container cannot be totally independent from the host, as it depends on its ability to
 run VirtualBox, QEmu and libvirt with appropriate networking. Therefore:
@@ -1292,7 +1292,13 @@ run VirtualBox, QEmu and libvirt with appropriate networking. Therefore:
 * KVM support must be enabled, and `/dev/kvm` must be accessible by the user the container runs as;
 * VirtualBox drivers must be installed, and `/dev/vbox*` nodes must be accessible by the user the
   container runs as. Note that only the drivers are needed, as VirtualBox ships inside the container;
-* the system must allow the creation of `tun`/`tap` devices.
+* the system must allow the creation of `tun`/`tap` devices;
+* *VirtualBox host drivers MUST be built without hardening*: when
+  hardened, they prevent any non-root user from accessing
+  `/dev/vboxdrv`, no matter the file mode. But since an unprivileged
+  user is used to run the container, that user must be able to access
+  it. Therefore the drivers must be rebuilt without hardening and then
+  appropriate mode/ACLs/... must be used to allow authorized users.
 
 A script `ci/start.sh` can be used to start the CI container with approproate options (bindings,
 device nodes, capabilities). It will start as root in order to perform initial setup (bridges, `dbus`,
