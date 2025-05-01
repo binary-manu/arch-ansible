@@ -43,3 +43,4 @@ jobs:
         run: |
           cd vagrant
           vagrant up --provider ${{ matrix.provider }}
+          vagrant halt

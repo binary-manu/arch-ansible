@@ -13,7 +13,7 @@ runs:
       shell: bash
       run: |
         virsh list --all --name |
-        xargs -I% sh -c "virsh destroy %; sleep 3; virsh undefine % --remove-all-storage"
+        xargs -I% sh -c "virsh destroy %; sleep 3; virsh undefine % --nvram --remove-all-storage"
     - name: Clean existing override files
       shell: bash
       run: |
