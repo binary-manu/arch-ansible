@@ -1264,6 +1264,8 @@ above, from both the controller and the target.
 
 ## Continuous integration
 
+### Overview
+
 Since this playbook supports different hypervisors and partitioning flows, it has come
 to a point where manual tests on my machine are no longer feasible, as there are too
 many conbinations to check.
@@ -1318,6 +1320,31 @@ boot:
     └── .runner
 
 Note that they are all hidden.
+
+### Host ↔ Container UID mapping
+
+The following map associates external UIDs to internal UIDs and tells
+which user accesses which device node on the host. `$USER` is the host
+user that started the container:
+
+    Host                           Container      Accesses
+    $USER                          root           /dev/vboxdrv
+    $USER SubUID base + 1000 - 1   ci             /dev/kvm
+
+For VirtualBox, internal `root` is used to open `/dev/vbox*`, so that
+externally it looks like `$USER` is doing that. This happens
+because VirtualBox executables are suid root so they always try to open
+device nodes as root. As soon as those files are open, VirtualBox drops
+privileges and runs the VM as the unprivileged `ci` user.
+
+For qemu, emulators are always started as `ci`, so this user must be
+able to access /dev/kvm. VMs then run as `ci`, just like the GH agent.
+
+On the host, appropriate permissions (usually with ACLs) must exists to
+allow file access: `user:$USER:rw` for `/dev/vbox*` and `user:$USER SubUID
+base + 1000 - 1:rw`. The latter derives from the fact that `ci` is
+always 1000 inside the container and unless overridden, it is mapped to
+the 1000th subuid for `$USER`.
 
 ## Installing multiple DEs/WMs side by side
 
