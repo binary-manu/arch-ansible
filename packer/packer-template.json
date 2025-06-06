@@ -46,7 +46,7 @@
         ["modifyvm", "{{.Name}}", "{{user `nat_key`}}", "{{user `nat_val`}}"],
         ["modifyvm", "{{.Name}}", "--vram", "16"],
         ["modifyvm", "{{.Name}}", "--rtcuseutc", "on"],
-        ["modifyvm", "{{.Name}}", "--graphicscontroller", "vmsvga"],
+        ["modifyvm", "{{.Name}}", "--graphicscontroller", "vboxvga"],
         ["modifyvm", "{{.Name}}", "--firmware", "efi64"],
         ["storagectl", "{{.Name}}", "--name", "IDE Controller", "--remove"]
       ]
@@ -76,7 +76,7 @@
         ["modifyvm", "{{.Name}}", "{{user `nat_key`}}", "{{user `nat_val`}}"],
         ["modifyvm", "{{.Name}}", "--vram", "16"],
         ["modifyvm", "{{.Name}}", "--rtcuseutc", "on"],
-        ["modifyvm", "{{.Name}}", "--graphicscontroller", "vmsvga"],
+        ["modifyvm", "{{.Name}}", "--graphicscontroller", "vboxvga"],
         ["storagectl", "{{.Name}}", "--name", "IDE Controller", "--remove"]
       ]
     },
