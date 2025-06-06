@@ -938,7 +938,7 @@ required for optimal execution under an hypervisor.
 When provisioning a QEMU VM, the QEMU guest agent and the SPICE agent are
 installed. Also, an autostarted desktop entry is created to handle screen
 autoresize inside the guest when the host window is resized. This is not
-required for VirtualBox when using the `VMSVGA` adapter.
+required for VirtualBox.
 
 #### wireless
 
