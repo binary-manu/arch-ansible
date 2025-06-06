@@ -12,6 +12,21 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.3.6] - 2025-06-14
+
+### Fixed
+
+* VirtualBox machines use the `VBoxVGA` adapter again. There is
+  currently an issue with Arch that causes Xorg to crash if `VMSVGA` is
+  selected.
+* Allow for longer timeouts when downloading from the AUR.
+
+### Changed
+
+* Change how X output names are looked up for XFCE settings: look for
+  the first connected screen, even if it's not the primary one.
+* Update the GH runner used for CI.
+
 ## [0.3.5] - 2025-05-04
 
 ### Fixed
