@@ -1,5 +1,5 @@
 - name: Determine the name of the primary X display output
-  shell: xinit /usr/bin/env LC_ALL=C xrandr 2>/dev/null | sed -En 's/^([^[:blank:]]+) connected primary .*/\1/p'
+  shell: xinit /usr/bin/env LC_ALL=C xrandr 2>/dev/null | sed -En 's/^([^[:blank:]]+) connected .*/\1/p'
   register: _x_primary_output
   changed_when: no
   failed_when: _x_primary_output.stdout | length == 0
@@ -9,5 +9,5 @@
   become_user: "{{ item }}"
   shell: |
      find {{ users_created | user_home(item) | quote }}/.config/xfce4 -type f -name xfce4-desktop.xml |
-       xargs -I% sed -i 's/@MONITOR@/{{ _x_primary_output.stdout }}/g' %
+       xargs -I% sed -i 's/@MONITOR@/{{ _x_primary_output.stdout_lines[0] }}/g' %
   loop: "{{ users_names }}"
