@@ -18,13 +18,20 @@
       tempfile:
         state: directory
       register: _tempdir
-      
+
     - name: Download package from the AUR
+      get_url:
+        url: "{{ makepkg_aur_url }}{{ package_name }}.tar.gz"
+        dest: "{{ _tempdir.path }}/{{ package_name }}.tar.gz"
+        decompress: no
+        timeout: 300
+
+    - name: Unarchive package
       unarchive:
         remote_src: yes
-        src: "{{ makepkg_aur_url }}{{ package_name }}.tar.gz"
+        src: "{{ _tempdir.path }}/{{ package_name }}.tar.gz"
         dest: "{{ _tempdir.path }}"
-        
+
     - name: Run makepkg
       shell: cd '{{ _tempdir.path | quote }}/{{ package_name | quote }}' && makepkg -rsi --noconfirm
   always:
