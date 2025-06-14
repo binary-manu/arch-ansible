@@ -42,7 +42,7 @@ RUN \
         mkdir -p /etc/qemu/ && echo "allow virbr0" > /etc/qemu/bridge.conf && \
         chmod u+s /usr/lib/qemu/qemu-bridge-helper && \
     : "Install GitHub runner agent" && \
-        curl -o /tmp/ghrunner.tar.gz -L https://github.com/actions/runner/releases/download/v2.319.1/actions-runner-linux-x64-2.319.1.tar.gz && \
+        curl -o /tmp/ghrunner.tar.gz -L https://github.com/actions/runner/releases/download/v2.325.0/actions-runner-linux-x64-2.325.0.tar.gz && \
         mkdir -p /tmp/gh && tar -xzf /tmp/ghrunner.tar.gz -C /tmp/gh && \
         /tmp/gh/bin/installdependencies.sh && \
     : "Fix /etc/libvirt/qemu.conf for rootless containers" && \
