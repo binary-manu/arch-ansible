@@ -16,7 +16,7 @@ end
 # Set audio backend for VirtualBox, host-dependant
 enable_audio = nil
 http_proxy = nil
-default_memory = 1536
+default_memory = 2048
 default_video_ram = 16
 default_cpus = (Etc.nprocessors / 2).ceil()
 headless = !ENV["ARCH_ANSIBLE_HEADLESS"].nil? && ENV["ARCH_ANSIBLE_HEADLESS"].length > 0
