@@ -1,0 +1,5 @@
+nix_self_packages:
+  - aws-sdk-cpp-iam
+  - nix
+
+nix_default_channel: https://nixos.org/channels/nixpkgs-unstable
