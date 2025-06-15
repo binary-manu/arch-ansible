@@ -8,3 +8,5 @@
   loop: "{{ users_names }}"
   when: item_theme.default | default(False, True) == True
   notify: Fix monitor name in XFCE settings
+  register: _equilux
+  changed_when: _equilux.changed or (run_handlers | default(false))
