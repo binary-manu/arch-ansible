@@ -1,0 +1,5 @@
+- name: Install nix packages
+  become: yes
+  become_user: "{{ item }}"
+  shell: nix-env -iA {% for pkg in packages %}nixpkgs.{{ pkg | quote }} {% endfor %}
+  loop: "{{ users_names }}"

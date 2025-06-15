@@ -1,0 +1,20 @@
+- name: Install nix
+  import_role:
+    name: packages
+  vars:
+    packages: "{{ nix_self_packages }}"
+
+- name: Start nix-daemon
+  service:
+    enabled: yes
+    state: started
+    name: nix-daemon
+
+- name: Add the default nix channel for all users
+  become: yes
+  become_user: "{{ item }}"
+  shell: nix-channel --add {{ nix_default_channel | quote }} nixpkgs && nix-channel --update
+  loop: "{{ users_names }}"
+
+- set_fact:
+    _install_nix: false

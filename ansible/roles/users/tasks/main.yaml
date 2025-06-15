@@ -14,6 +14,18 @@
         . /etc/profile.d/vte.sh
       fi
 
+- name: Force .bashrc to add the nix environment if present
+  blockinfile:
+    append_newline: yes
+    prepend_newline: yes
+    create: no
+    path: /etc/skel/.bashrc
+    marker: "# {mark} NIX ENV IF AVAILABLE"
+    block: |
+      if [ -d ~/.nix-profile/bin ]; then
+        PATH="$PATH:~/.nix-profile/bin"
+      fi
+
 - name: Add initial users
   user:
     shell: /bin/bash

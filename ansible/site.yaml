@@ -46,6 +46,8 @@
       when: bluetooth_enabled | default(True) | bool
     - role: i3wm
       when: i3wm_enabled | default(False) | bool
+    - role: nix
+      when: nix_enabled | default(False) | bool
   tasks:
     - name: Call custom roles
       include_role:

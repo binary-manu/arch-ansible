@@ -1,0 +1,2 @@
+- when: _install_nix | default(True)
+  include_tasks: install-nix.yaml
