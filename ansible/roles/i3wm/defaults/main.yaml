@@ -5,7 +5,6 @@ i3wm_packages:
   - i3-exitx-systemd-git
   - dex
   - pasystray
-  - tilix
   - rofi
   - mate-polkit
   - pcmanfm-gtk3
@@ -13,6 +12,9 @@ i3wm_packages:
   - ttf-sourcecodepro-nerd
   - dunst
   - seahorse
+
+i3wm_nix_packages:
+    - tilix
 
 # Set either values to "active" to force starting the screensaver/compositor
 # when i3 starts. Set it to "inactive" to keep them off. Leave blank to use a

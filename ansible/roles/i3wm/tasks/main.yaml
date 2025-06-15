@@ -4,6 +4,12 @@
   vars:
     packages: "{{ i3wm_packages }}"
 
+- name: Install nix packages for i3wm
+  import_role:
+    name: nix_packages
+  vars:
+    packages: "{{ i3wm_nix_packages }}"
+
 # Avoid conflicts with other notifications services registering with D-Bus. i3
 # will start dunst explicitly.
 - name: Disable the dunst user service
