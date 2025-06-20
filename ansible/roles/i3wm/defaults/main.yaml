@@ -25,3 +25,10 @@ i3wm_compositor_override: ""
 # Inactivity timer after which the screen will be powered off and blocked by
 # xsecurelock.
 i3wm_screensaver_timeout_in_secs: 180
+
+# Other DEs should not start these services, as they have their
+# own versions.
+i3wm_desktop_files_to_ignore:
+  - pasystray
+  - picom
+  - polkit-mate-authentication-agent-1

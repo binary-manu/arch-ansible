@@ -18,6 +18,26 @@
       scope: global
       masked: yes
 
+- name: Create .config dirs
+  become: yes
+  become_user: "{{ item }}"
+  file:
+    state: directory
+    path: "{{ users_created | user_home(item) }}/.config/autostart"
+  loop: "{{ users_names }}"
+
+# Same as above, for autostarting desktop files
+- name: Suppress autostarting of conflicting desktop files
+  become: yes
+  become_user: "{{ item[0] }}"
+  copy:
+    content: |
+      [Desktop Entry]
+      Hidden=true
+    dest: "{{ users_created | user_home(item[0]) }}/.config/autostart/{{ item[1] }}.desktop"
+    mode: "0644"
+  loop: "{{ users_names | product(i3wm_desktop_files_to_ignore) }}"
+
 - name: Copy configuration for i3
   become: yes
   become_user: "{{ item }}"
