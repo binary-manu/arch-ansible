@@ -18,6 +18,7 @@ title: Defaults files index
 * [roles/i3wm/defaults/main.yaml](#rolesi3wmdefaultsmainyaml)
 * [roles/locale/defaults/main.yaml](#roleslocaledefaultsmainyaml)
 * [roles/makepkg/defaults/main.yaml](#rolesmakepkgdefaultsmainyaml)
+* [roles/nix/defaults/main.yaml](#rolesnixdefaultsmainyaml)
 * [roles/passwordless_sudo_user/defaults/main.yaml](#rolespasswordless_sudo_userdefaultsmainyaml)
 * [roles/ttf_fonts/defaults/main.yaml](#rolesttf_fontsdefaultsmainyaml)
 * [roles/users/defaults/main.yaml](#rolesusersdefaultsmainyaml)
@@ -299,7 +300,6 @@ i3wm_packages:
   - i3-exitx-systemd-git
   - dex
   - pasystray
-  - tilix
   - rofi
   - mate-polkit
   - pcmanfm-gtk3
@@ -307,6 +307,9 @@ i3wm_packages:
   - ttf-sourcecodepro-nerd
   - dunst
   - seahorse
+
+i3wm_nix_packages:
+    - tilix
 
 # Set either values to "active" to force starting the screensaver/compositor
 # when i3 starts. Set it to "inactive" to keep them off. Leave blank to use a
@@ -317,6 +320,13 @@ i3wm_compositor_override: ""
 # Inactivity timer after which the screen will be powered off and blocked by
 # xsecurelock.
 i3wm_screensaver_timeout_in_secs: 180
+
+# Other DEs should not start these services, as they have their
+# own versions.
+i3wm_desktop_files_to_ignore:
+  - pasystray
+  - picom
+  - polkit-mate-authentication-agent-1
 ```
 
 ## roles/locale/defaults/main.yaml
@@ -333,6 +343,16 @@ locale_keymap: it
 # When downloading PKGBUILD tarball snapshots from the AUR, this
 # URL is used.
 makepkg_aur_url: https://aur.archlinux.org/cgit/aur.git/snapshot/
+```
+
+## roles/nix/defaults/main.yaml
+
+```yaml
+nix_self_packages:
+  - aws-sdk-cpp-iam
+  - nix
+
+nix_default_channel: https://nixos.org/channels/nixpkgs-unstable
 ```
 
 ## roles/passwordless_sudo_user/defaults/main.yaml

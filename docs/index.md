@@ -536,6 +536,7 @@ role. The role name is given by the variable name.
 * `xutils_enabled`
 * `bluetooth_enabled`
 * `i3wm_enabled`
+* `nix_enabled`
 
 #### Custom roles
 
@@ -772,6 +773,22 @@ Since the role name is provided at call time, the prefix should contain
 everything up to it, _including the trailing `/` or `.`_ This is way the
 default value ends with `/`. For a flow stored as a collection, the
 prefix ends with a `.`.
+
+#### nix
+
+Flags: `[ms]`
+
+Installs the `nix` package manager in multi-user (daemon) mode, adds an
+initial channel to it (default is `unstable`) and adds the profile `bin`
+folder to the `PATH` of each user. Each user gets its own, independent
+profile.
+
+#### nix_packages
+
+Flags: `[mm]`
+
+Installs packages using `nix-env` to the profiles of all configured
+users.
 
 #### passwordless\_sudo\_user
 
