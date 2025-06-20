@@ -12,6 +12,39 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.3.7] - 2025-06-20
+
+### Fixed
+
+* Some handlers did not respect the `run_handlers` variable.
+* Better coexistence between i3 and Xfce: services installed for use by
+  i3 only, but that are also needlessly automically loaded by Xfce (such
+  as `pasystray`, `picom` or the MATE polkit agent) have been disarmed.
+
+### Changed
+
+* The Vagrant base box has been changed again, to `Kppqju77/arch`. As
+  per the box page:
+  > unofficial build made the exact same way arch-boxes was made to
+  > provide archlinux/archlinux.
+* The Vagrant box now uses 2GiB of RAM by default, the same as Packer
+  machines.
+
+### Added
+
+* The `nix` package manager can now be installed by the playbook. By
+  default it is not: you need to set `nix_enabled` to true. But if some
+  other role needs to install packages via `nix`, it will be installed
+  even if `nix_enabled` is false. It uses the `unstable` channel.
+* `tilix` (the default terminal emulator for the i3 setup) is now
+  grabbed via `nix`. It has been removed from Arch repos and building it
+  from the AUR, including its transitive dependencies, takes too much
+  time. Note that the upstream project has entered maintenance mode, so
+  it may be replaced by something else in the future. Also, there is
+  currently no prebuilt package for it in the `unstable` channel, so for
+  the time being the default channel will be `nixos-25.05`, where a
+  prebuilt is available.
+
 ## [0.3.6] - 2025-06-14
 
 ### Fixed
