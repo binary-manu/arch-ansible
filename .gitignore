@@ -1,6 +1,7 @@
 /ansible/*.retry
 /ansible/group_vars/all/*
 !/ansible/group_vars/all/00-default.yaml
+!/ansible/group_vars/all/01-workarounds.yaml
 /ansible/collections/
 /ansible/extra_roles/
 /vagrant/.vagrant/
