@@ -10,7 +10,7 @@
     path: /etc/skel/.bashrc
     marker: "# {mark} VTE IMPORT IF AVAILABLE"
     block: |
-      if [ -r /etc/profile.d/vte.sh ] && { [ -n "$TILIX_ID" ] || [ -n "$VTE_VERSION" ]; }; then
+      if [ -r /etc/profile.d/vte.sh ] && [ -n "$VTE_VERSION" ]; then
         . /etc/profile.d/vte.sh
       fi
 
