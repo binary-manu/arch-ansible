@@ -2,9 +2,6 @@ name: Test the playbook
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - ci
 
 jobs:
   install_media:
