@@ -12,6 +12,13 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.3.8] - 2025-08-11
+
+### Changed
+
+* `tilix` has been replaced by `ghostty` as the default terminal under
+  `i3`. Drop-down features are implemented externally via `tdrop`.
+
 ## [0.3.7] - 2025-06-20
 
 ### Fixed
