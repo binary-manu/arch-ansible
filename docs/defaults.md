@@ -307,9 +307,8 @@ i3wm_packages:
   - ttf-sourcecodepro-nerd
   - dunst
   - seahorse
-
-i3wm_nix_packages:
-    - tilix
+  - ghostty
+  - tdrop
 
 # Set either values to "active" to force starting the screensaver/compositor
 # when i3 starts. Set it to "inactive" to keep them off. Leave blank to use a
