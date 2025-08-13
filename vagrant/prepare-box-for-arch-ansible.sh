@@ -45,7 +45,7 @@ fi
 pacman -Syy --noconfirm --needed archlinux-keyring reflector
 # Generate a new mirror list: I get a lot of timeouts with the one from the
 # base box.
-reflector -f 5 -l 5 --save /etc/pacman.d/mirrorlist
+reflector -f 5 -l 5 -p http,https --save /etc/pacman.d/mirrorlist
 pacman -Su --noconfirm --needed base-devel networkmanager python-pip \
     $EXTRA_BASE_PACKAGES
 python -m venv "$ANSIBLE_VENV"
