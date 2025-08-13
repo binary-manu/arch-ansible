@@ -12,6 +12,15 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.3.9] - 2025-08-13
+
+### Fixed
+
+* The `i3` screenshot in the docs has been updated to reflect the new
+  default terminal.
+* When provisioning Vagrant VMs, `reflector` will only consider HTTP(S)
+  mirrors.
+
 ## [0.3.8] - 2025-08-11
 
 ### Changed
