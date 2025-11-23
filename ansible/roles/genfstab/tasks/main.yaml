@@ -10,4 +10,4 @@
       cat {{ fstab }}
     } | sort | uniq -u
   register: _fstab_created
-  changed_when: _fstab_created.stdout
+  changed_when: _fstab_created.stdout != ""
