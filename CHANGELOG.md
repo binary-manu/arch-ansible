@@ -12,6 +12,16 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.3.10] - 2025-11-28
+
+### Fixed
+
+* A string was used in place of a boolean in a condition, breaking the
+  playbook.
+* Tasks that can grab files from the AUR now try several times, to cope
+  with spurious 5xx errors.
+* `/etc/vconsole.conf` must exist before running `mkinitcpio`.
+
 ## [0.3.9] - 2025-08-13
 
 ### Fixed
