@@ -20,6 +20,8 @@
       register: _tempdir
 
     - name: Download package from the AUR
+      retries: 5
+      delay: 5
       get_url:
         url: "{{ makepkg_aur_url }}{{ package_name }}.tar.gz"
         dest: "{{ _tempdir.path }}/{{ package_name }}.tar.gz"

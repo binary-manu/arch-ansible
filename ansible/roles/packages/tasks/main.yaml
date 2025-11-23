@@ -1,6 +1,8 @@
 - name: Install batch of packages
   become: yes
   become_user: "{{ passwordless_sudo_user_name }}"
+  retries: 5
+  delay: 5
   command: >
     yay -S
       --answerclean none --answeredit none --answerupgrade none --answerdiff none
