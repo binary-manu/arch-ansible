@@ -5,5 +5,11 @@
     line: \1lvm2 \2
     path: "{{ partitioning_root_mount_point }}/etc/mkinitcpio.conf"
 
+- name: Ensure /etc/vconsole.conf exists
+  file:
+    state: touch
+    path: "{{ partitioning_root_mount_point }}/etc/vconsole.conf"
+    mode: "0644"
+
 - name: Regenerate initramfs
   command: arch-chroot {{ partitioning_root_mount_point | quote }} mkinitcpio -P
