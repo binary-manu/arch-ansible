@@ -107,3 +107,20 @@
         dest: "{{ users_created | user_home(item) }}/.config/picom/"
         mode: "0644"
       loop: "{{ users_names }}"
+
+- name: Workaround for launching ghostty from PCManFM
+  loop: "{{ users_names }}"
+  become: yes
+  become_user: "{{ item }}"
+  ini_file:
+    path: "{{ users_created | user_home(item) }}/.config/libfm/libfm.conf"
+    mode: "0644"
+    section: config
+    option: terminal
+    value: ghostty.sh
+
+- name: Script for launching ghostty from PCManFM
+  copy:
+    src: ghostty.sh
+    dest: /usr/local/bin/
+    mode: "0755"
