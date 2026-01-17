@@ -12,6 +12,24 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.3.11] - 2026-01-22
+
+### Changed
+
+* Linting and cleanup to bring the playbook up with modern Ansible (like
+  using fully qualified module names). Suppress some benign warnings
+  issued during provisioning.
+* Replace the CI container with a simple Bash script running the same
+  scenarios locally.
+
+### Fixed
+
+* When installing `i3wm`, ensure that `pcmanfm` and `ghostty` interact
+  as intended when using "Open in terminal". The terminal `$PWD` should
+  be set to the folder that was selected in `pcmanfm`.
+* Ensure that leftover folders under `/var/cache/pacman/pkg/` are
+  deleted.
+
 ## [0.3.10] - 2025-11-28
 
 ### Fixed
