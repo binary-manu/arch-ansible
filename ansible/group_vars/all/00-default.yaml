@@ -10,6 +10,6 @@ global_proxy_env : "{{ global_proxy_env_ | dict2items |
   selectattr('value', 'ne', omit) | list | items2dict }}"
 
 # After everything is done, remove settings which would cause the image to be
-# non-portable to other systems. Currently this means removing cusom repos and
+# non-portable to other systems. Currently this means removing custom repos and
 # proxy settings.
 global_portable_image: False
