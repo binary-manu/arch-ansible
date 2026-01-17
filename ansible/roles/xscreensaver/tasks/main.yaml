@@ -11,7 +11,7 @@
     src: xscreensaver.
       {%- if xscreensaver_override != "" -%}
         {{ xscreensaver_override }}
-      {%- elif ansible_virtualization_role | lower != 'guest' -%}
+      {%- elif ansible_facts.virtualization_role | lower != 'guest' -%}
         active
       {%- else -%}
         inactive

@@ -50,7 +50,7 @@
 - name: Install screensaver for i3wm
   when: >
     i3wm_screensaver_override == "active" or
-    i3wm_screensaver_override == "" and ansible_virtualization_role | lower != "guest"
+    i3wm_screensaver_override == "" and ansible_facts.virtualization_role | lower != "guest"
   block:
     - import_role:
         name: packages
@@ -84,7 +84,7 @@
 - name: Install compositor for i3wm
   when: >
     i3wm_compositor_override == "active" or
-    i3wm_compositor_override == "" and ansible_virtualization_role | lower != "guest"
+    i3wm_compositor_override == "" and ansible_facts.virtualization_role | lower != "guest"
   block:
     - import_role:
         name: packages

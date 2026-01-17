@@ -7,7 +7,7 @@
 - name: Install Bluetooth support
   when: >
     bluetooth_override == "active" or
-    bluetooth_override == "" and ansible_virtualization_role | lower != "guest"
+    bluetooth_override == "" and ansible_facts.virtualization_role | lower != "guest"
   pacman:
     name:
       - bluez
