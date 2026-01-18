@@ -1,5 +1,6 @@
+---
 - name: Install VirtualBox guest additions
-  pacman:
+  community.general.pacman:
     name: "{{ virtguest_virtualbox_packages }}"
   notify: Start VirtualBox service
   register: _vboxinstalled

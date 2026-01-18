@@ -1,3 +1,4 @@
+---
 - name: Install X.org
-  pacman:
+  community.general.pacman:
     name: "{{ xorg_packages }}"

@@ -1,3 +1,4 @@
+---
 ##### Public variables used by the rest of the playbook #####
 partitioning_root_mount_point: "/mnt"
 

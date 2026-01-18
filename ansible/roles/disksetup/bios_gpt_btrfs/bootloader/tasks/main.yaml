@@ -1,5 +1,6 @@
+---
 - name: Install GRUB2 package
-  import_role:
+  ansible.builtin.import_role:
     name: pacstrap
   vars:
     chroot: "{{ partitioning_root_mount_point }}"
@@ -9,10 +10,10 @@
       - inotify-tools
 
 - name: Install GRUB2
-  command: arch-chroot {{ partitioning_root_mount_point | quote }} /usr/bin/grub-install {{ partitioning_priv_device_node | quote }}
+  ansible.builtin.command: arch-chroot {{ partitioning_root_mount_point | quote }} /usr/bin/grub-install {{ partitioning_priv_device_node | quote }}
 
 - name: Generate GRUB2 configuration file
-  command: arch-chroot {{ partitioning_root_mount_point | quote }} /usr/bin/grub-mkconfig -o /boot/grub/grub.cfg
+  ansible.builtin.command: arch-chroot {{ partitioning_root_mount_point | quote }} /usr/bin/grub-mkconfig -o /boot/grub/grub.cfg
 
 - name: Enable grub-btrfs
-  command: systemctl --root={{ partitioning_root_mount_point | quote }} enable grub-btrfsd.service
+  ansible.builtin.command: systemctl --root={{ partitioning_root_mount_point | quote }} enable grub-btrfsd.service # noqa: command-instead-of-module

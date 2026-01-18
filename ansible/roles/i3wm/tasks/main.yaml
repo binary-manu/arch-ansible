@@ -1,5 +1,6 @@
+---
 - name: Install i3wm
-  import_role:
+  ansible.builtin.import_role:
     name: packages
   vars:
     packages: "{{ i3wm_packages }}"
@@ -7,24 +8,25 @@
 # Avoid conflicts with other notifications services registering with D-Bus. i3
 # will start dunst explicitly.
 - name: Disable the dunst user service
-  systemd_service:
-      unit: dunst.service
-      scope: global
-      masked: yes
+  ansible.builtin.systemd_service:
+    unit: dunst.service
+    scope: global
+    masked: true
 
 - name: Create .config dirs
-  become: yes
+  become: true
   become_user: "{{ item }}"
-  file:
+  ansible.builtin.file:
     state: directory
     path: "{{ users_created | user_home(item) }}/.config/autostart"
+    mode: "0755"
   loop: "{{ users_names }}"
 
 # Same as above, for autostarting desktop files
 - name: Suppress autostarting of conflicting desktop files
-  become: yes
+  become: true
   become_user: "{{ item[0] }}"
-  copy:
+  ansible.builtin.copy:
     content: |
       [Desktop Entry]
       Hidden=true
@@ -33,16 +35,16 @@
   loop: "{{ users_names | product(i3wm_desktop_files_to_ignore) }}"
 
 - name: Copy configuration for i3
-  become: yes
+  become: true
   become_user: "{{ item }}"
-  copy:
+  ansible.builtin.copy:
     src: ./common/
     dest: "{{ users_created | user_home(item) }}/.config/"
     mode: "0644"
   loop: "{{ users_names }}"
 
 - name: Check i3wm_screensaver_override
-  assert:
+  ansible.builtin.assert:
     that: i3wm_screensaver_override | lower in ["active", "inactive", ""]
     fail_msg: Value '{{ i3wm_screensaver_override }}' is not
       supported for i3wm_screensaver_override
@@ -52,57 +54,62 @@
     i3wm_screensaver_override == "active" or
     i3wm_screensaver_override == "" and ansible_facts.virtualization_role | lower != "guest"
   block:
-    - import_role:
+    - name: Install xsecurelock
+      ansible.builtin.import_role:
         name: packages
       vars:
         packages:
           - xss-lock
           - xsecurelock
 
-    - become: yes
+    - name: Copy screensaver autostart files
+      become: true
       become_user: "{{ item }}"
-      template:
+      ansible.builtin.template:
         src: autostart.d/screensaver.conf
         dest: "{{ users_created | user_home(item) }}/.config/i3/autostart.d/"
         mode: "0644"
       loop: "{{ users_names }}"
 
-    - become: yes
+    - name: Copy screensaver config files
+      become: true
       become_user: "{{ item }}"
-      copy:
+      ansible.builtin.copy:
         src: bindings.d/screensaver.conf
         dest: "{{ users_created | user_home(item) }}/.config/i3/bindings.d/"
         mode: "0644"
       loop: "{{ users_names }}"
 
 - name: Check i3wm_compositor_override
-  assert:
+  ansible.builtin.assert:
     that: i3wm_compositor_override | lower in ["active", "inactive", ""]
-    fail_msg: Value '{{ i3wm_compositor_override }}' is not
-      supported for i3wm_compositor_override
+    fail_msg: Value '{{ i3wm_compositor_override }}' is not supported for i3wm_compositor_override
 
 - name: Install compositor for i3wm
   when: >
     i3wm_compositor_override == "active" or
     i3wm_compositor_override == "" and ansible_facts.virtualization_role | lower != "guest"
   block:
-    - import_role:
+    - name: Install compositor
+      ansible.builtin.import_role:
         name: packages
       vars:
         packages:
           - picom
 
-    - become: yes
+    - name: Copy compositor autostart files
+      become: true
       become_user: "{{ item }}"
-      copy:
+      ansible.builtin.copy:
         src: autostart.d/compositor.conf
         dest: "{{ users_created | user_home(item) }}/.config/i3/autostart.d/"
         mode: "0644"
       loop: "{{ users_names }}"
 
-    - become: yes
+    - name: Copy compositor config files
+      become: true
       become_user: "{{ item }}"
-      copy:
+      ansible.builtin.copy:
         src: picom.conf
         dest: "{{ users_created | user_home(item) }}/.config/picom/"
         mode: "0644"
@@ -110,9 +117,9 @@
 
 - name: Workaround for launching ghostty from PCManFM
   loop: "{{ users_names }}"
-  become: yes
+  become: true
   become_user: "{{ item }}"
-  ini_file:
+  community.general.ini_file:
     path: "{{ users_created | user_home(item) }}/.config/libfm/libfm.conf"
     mode: "0644"
     section: config
@@ -120,7 +127,7 @@
     value: ghostty.sh
 
 - name: Script for launching ghostty from PCManFM
-  copy:
+  ansible.builtin.copy:
     src: ghostty.sh
     dest: /usr/local/bin/
     mode: "0755"

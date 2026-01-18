@@ -1,10 +1,11 @@
+---
 - name: Install git for yay to use
-  pacman:
+  community.general.pacman:
     name: git
     state: present
 
 - name: Install yay
-  import_role:
+  ansible.builtin.import_role:
     name: makepkg
   vars:
     packages:

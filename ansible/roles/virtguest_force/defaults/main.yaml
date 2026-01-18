@@ -1,3 +1,4 @@
+---
 # Set this to a value from virtguest_supported_hypervisors
 # to force the corresponding backend to be invoked
 virtguest_force: ""

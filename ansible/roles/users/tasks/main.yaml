@@ -1,12 +1,13 @@
+---
 - name: Generate the username list from users_info
-  set_fact:
+  ansible.builtin.set_fact:
     users_names: "{{ users_info | dict2items | map(attribute='key') | list }}"
 
 - name: Force .bashrc to source vte.sh
-  blockinfile:
-    append_newline: yes
-    prepend_newline: yes
-    create: no
+  ansible.builtin.blockinfile:
+    append_newline: true
+    prepend_newline: true
+    create: false
     path: /etc/skel/.bashrc
     marker: "# {mark} VTE IMPORT IF AVAILABLE"
     block: |
@@ -15,10 +16,10 @@
       fi
 
 - name: Force .bashrc to add the nix environment if present
-  blockinfile:
-    append_newline: yes
-    prepend_newline: yes
-    create: no
+  ansible.builtin.blockinfile:
+    append_newline: true
+    prepend_newline: true
+    create: false
     path: /etc/skel/.bashrc
     marker: "# {mark} NIX ENV IF AVAILABLE"
     block: |
@@ -27,41 +28,41 @@
       fi
 
 - name: Add initial users
-  user:
+  ansible.builtin.user:
     shell: /bin/bash
     name: "{{ item }}"
     groups:
-        "{%- if users_info[item].is_admin | default(True) | bool -%}
-            {{- (['wheel'] + (users_info[item].groups | default([]))) | unique -}}
-        {%- else -%}
-            {{- users_info[item].groups | default([]) | unique -}}
-        {%- endif -%}"
+      "{%- if users_info[item].is_admin | default(True) | bool -%}
+        {{- (['wheel'] + (users_info[item].groups | default([]))) | unique -}}
+      {%- else -%}
+        {{- users_info[item].groups | default([]) | unique -}}
+      {%- endif -%}"
     password: "*"
   loop: "{{ users_names }}"
   register: users_created
 
 - name: Set user passwords
-  shell: echo {{ item | quote }}:{{ users_info[item].password | quote }} | chpasswd
+  ansible.builtin.shell: set -o pipefail && echo {{ item | quote }}:{{ users_info[item].password | quote }} | chpasswd
   loop: "{{ users_names }}"
   no_log: true
 
 - name: Set root password
-  shell: echo root:{{ users_root_info.password | quote }} | chpasswd
+  ansible.builtin.shell: set -o pipefail && echo root:{{ users_root_info.password | quote }} | chpasswd
   no_log: true
 
 - name: Allow admins to sudo by authorizing the wheel group
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/sudoers
     state: present
-    regexp: '^%wheel ALL='
-    line: '%wheel ALL=(ALL) ALL'
-    validate: '/usr/sbin/visudo -cf %s'
+    regexp: "^%wheel ALL="
+    line: "%wheel ALL=(ALL) ALL"
+    validate: "/usr/sbin/visudo -cf %s"
 
 - name: Fixup /etc/pam.d/system-auth to avoid account locking on non-auth-fail errors from pam_unix
   when: users_fixup_faillock
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/pam.d/system-auth
-    create: no
-    regexp: '^\s*auth\s+\[[^]]*\]\s+pam_unix\.so\s+(.*)$'
-    line: 'auth [success=1 auth_err=bad default=die] pam_unix.so \1'
-    backrefs: yes
+    create: false
+    regexp: "^\\s*auth\\s+\\[[^]]*\\]\\s+pam_unix\\.so\\s+(.*)$"
+    line: "auth [success=1 auth_err=bad default=die] pam_unix.so \\1"
+    backrefs: true

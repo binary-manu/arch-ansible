@@ -1,5 +1,6 @@
-  dependencies:
-    - role: pacstrap
-      vars:
-        packages: "{{ base_packages_list }}"
-        chroot:   "{{ partitioning_root_mount_point }}"
+---
+dependencies:
+  - role: pacstrap
+    vars:
+      packages: "{{ base_packages_list }}"
+      chroot: "{{ partitioning_root_mount_point }}"

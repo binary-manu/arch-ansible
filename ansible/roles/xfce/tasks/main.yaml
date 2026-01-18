@@ -1,13 +1,14 @@
+---
 - name: Install xfce
-  pacman:
+  community.general.pacman:
     name: "{{ xfce_packages }}"
 
 # For the time being, I'll stick to xscreensaver
 - name: Uninstall xfce4-screensaver
-  pacman:
+  community.general.pacman:
     name: xfce4-screensaver
     state: absent
 
 - name: Install xscreensaver
-  import_role:
+  ansible.builtin.import_role:
     name: xscreensaver

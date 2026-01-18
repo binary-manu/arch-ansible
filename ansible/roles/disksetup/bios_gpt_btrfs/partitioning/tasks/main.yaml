@@ -1,5 +1,6 @@
+---
 - name: Create the BIOS boot partition
-  parted:
+  community.general.parted:
     device: "{{ partitioning_priv_device_node }}"
     state: present
     label: gpt
@@ -11,7 +12,7 @@
       - bios
 
 - name: Create the root partition
-  parted:
+  community.general.parted:
     device: "{{ partitioning_priv_device_node }}"
     state: present
     label: gpt
@@ -20,40 +21,44 @@
     part_start: "{{ (partitioning_priv_bios_part_size | int) + (partitioning_priv_start_offset | int) }}B"
 
 - name: Enumerate created partitions
-  shell: lsblk -n -o PATH {{ partitioning_priv_device_node | quote }} | tail -n +2
+  ansible.builtin.shell: set -o pipefail && lsblk -n -o PATH {{ partitioning_priv_device_node | quote }} | tail -n +2
   register: _partitions
-  changed_when: no
+  changed_when: false
 
 - name: Assign partitions to variables
-  set_fact:
+  ansible.builtin.set_fact:
     partitioning_priv_bios_part_device_node: "{{ _partitions.stdout_lines[0] }}"
     partitioning_priv_root_device_node: "{{ _partitions.stdout_lines[1] }}"
 
 - name: Format the root partition with btrfs
-  filesystem:
-    dev:  "{{ partitioning_priv_root_device_node }}"
+  community.general.filesystem:
+    dev: "{{ partitioning_priv_root_device_node }}"
     fstype: btrfs
 
 - name: Mount the default subvolume
-  mount:
+  ansible.posix.mount:
     state: mounted
     src: "{{ partitioning_priv_root_device_node }}"
     path: "{{ partitioning_root_mount_point }}"
     fstype: btrfs
 
 - name: Create subvolumes
-  command: btrfs subvolume create {{ (partitioning_root_mount_point + "/" + item.name) | quote }}
+  ansible.builtin.command: btrfs subvolume create {{ (partitioning_root_mount_point + "/" + item.name) | quote }}
   loop: "{{ partitioning_priv_subvolumes }}"
 
 - name: Umount the default subvolume
-  mount:
+  ansible.posix.mount:
     state: unmounted
     path: "{{ partitioning_root_mount_point }}"
 
 # Note: the mount module seems not to mount '@' correctly. Falling back
 # to using the commandline until further investigations.
 - name: Mount the subvolumes
-  shell: |
+  ansible.builtin.shell: |
     mkdir -m 0755 -p {{ (partitioning_root_mount_point + item.mountpoint) | quote }}
-    mount -t btrfs -o defaults,subvol={{ item.name | quote }} {{ partitioning_priv_root_device_node | quote }} {{ (partitioning_root_mount_point + item.mountpoint) | quote }}
+    mount \
+      -t btrfs \
+      -o defaults,subvol={{ item.name | quote }} \
+      {{ partitioning_priv_root_device_node | quote }} \
+      {{ (partitioning_root_mount_point + item.mountpoint) | quote }}
   loop: "{{ partitioning_priv_subvolumes }}"

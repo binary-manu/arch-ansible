@@ -1,11 +1,12 @@
+---
 - name: Set X cursor
-  become: yes
+  become: true
   become_user: "{{ item }}"
   when: cursor_theme | default("", true) | length != 0
   loop: "{{ users_names }}"
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: "{{ users_created | user_home(item) }}/.Xresources"
-    create: yes
+    create: true
     mode: "0644"
-    regexp: '^\s*Xcursor.theme\s*:'
-    line: 'Xcursor.theme: {{ cursor_theme }}'
+    regexp: "^\\s*Xcursor.theme\\s*:"
+    line: "Xcursor.theme: {{ cursor_theme }}"

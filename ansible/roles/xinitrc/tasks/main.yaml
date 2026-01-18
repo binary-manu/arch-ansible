@@ -1,7 +1,8 @@
+---
 - name: Copy xinitrc to user home
-  become: yes
+  become: true
   become_user: "{{ item }}"
-  copy:
+  ansible.builtin.copy:
     src: xinitrc
     dest: "{{ users_created | user_home(item) }}/.xinitrc"
     mode: "0644"

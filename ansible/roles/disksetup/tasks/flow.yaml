@@ -1,26 +1,34 @@
+---
 - name: Gather the API for the partitioning flow
-  include_role:
+  ansible.builtin.include_role:
     name: "{{ disksetup_roles_prefix }}api"
   vars:
     namespace: partitioning_api
 
 - name: Check API version
-  assert:
+  ansible.builtin.assert:
     that: partitioning_api.apiVersion in disksetup_supported_apis
     fail_msg: >-
-        Sorry, but this version of arch-ansible only supports the following
-        API versions: {{ disksetup_supported_apis | join(", ") }}
+      Sorry, but this version of arch-ansible only supports the following
+      API versions: {{ disksetup_supported_apis | join(", ") }}
 
 # Actually we only support v1, so assume it
 
-- include_role:
-    public: yes
+- name: Execute partitioning
+  ansible.builtin.include_role:
+    public: true
     name: "{{ disksetup_roles_prefix }}partitioning"
-- import_role:
+
+- name: Install base packages
+  ansible.builtin.import_role:
     name: base_packages
-- include_role:
-    public: yes
+
+- name: Execute post-partitioning
+  ansible.builtin.include_role:
+    public: true
     name: "{{ disksetup_roles_prefix }}postpartitioning"
-- include_role:
-    public: yes
+
+- name: Install bootloader
+  ansible.builtin.include_role:
+    public: true
     name: "{{ disksetup_roles_prefix }}bootloader"

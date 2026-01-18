@@ -1,3 +1,4 @@
+---
 # Additional packages to be installed for the Numix theme
 xfce_user_customizations_packages_numix:
   - gtk-engine-murrine

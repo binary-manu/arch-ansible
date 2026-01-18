@@ -1,14 +1,15 @@
+---
 - name: Set timezone
-  timezone:
+  community.general.timezone:
     name: "{{ locale_timezone }}"
     hwclock: UTC
 
 - name: Generate locale
-  locale_gen:
+  community.general.locale_gen:
     name: "{{ locale_locale }}"
 
 - name: Set locale
-  shell: set -o pipefail || exit 1;
+  ansible.builtin.shell: set -o pipefail || exit 1;
     { localectl status &&
       localectl set-locale {{ locale_locale | quote }} &&
       localectl status
@@ -17,7 +18,7 @@
   changed_when: _locale_changed.stdout != ""
 
 - name: Set keymap
-  shell: set -o pipefail || exit 1;
+  ansible.builtin.shell: set -o pipefail || exit 1;
     { localectl status &&
       localectl set-keymap {{ locale_keymap | quote }} &&
       localectl status

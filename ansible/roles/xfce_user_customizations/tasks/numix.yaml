@@ -1,13 +1,14 @@
+---
 - name: Copy xfce's configuration for Numix
-  become: yes
+  become: true
   become_user: "{{ item }}"
-  copy:
+  ansible.builtin.copy:
     src: numix/xfconf/
     dest: "{{ users_created | user_home(item) }}/.config/xfce4/xfconf/"
     mode: "0644"
     directory_mode: "0755"
   loop: "{{ users_names }}"
-  when: item_theme.default | default(False, True) == True
+  when: item_theme.default | default(False, True)
   notify: Fix monitor name in XFCE settings
   register: _numix
   changed_when: _numix.changed or (run_handlers | default(false))

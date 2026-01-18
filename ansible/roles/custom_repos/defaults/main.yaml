@@ -1,3 +1,4 @@
+---
 # Add extra repositories (i.e. like `core` and `community`.
 # They will be added to `pacman.conf` _before_ standard repos, so
 # that packages with the same name as standard ones will take

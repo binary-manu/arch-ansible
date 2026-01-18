@@ -1,5 +1,6 @@
+---
 - name: Check bluetooth_override
-  assert:
+  ansible.builtin.assert:
     that: bluetooth_override | lower in ["active", "inactive", ""]
     fail_msg: Value '{{ bluetooth_override }}' is not
       supported for bluetooth_override
@@ -8,7 +9,7 @@
   when: >
     bluetooth_override == "active" or
     bluetooth_override == "" and ansible_facts.virtualization_role | lower != "guest"
-  pacman:
+  community.general.pacman:
     name:
       - bluez
       - bluez-utils

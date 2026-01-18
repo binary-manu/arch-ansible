@@ -1,14 +1,14 @@
+---
 - name: Check state variable
   vars:
     _state: "{{ state | default('present', True) }}"
-  assert:
+  ansible.builtin.assert:
     that: _state == 'present' or _state == 'absent'
     fail_msg: The state variable should be set to either present or absent
 
 - name: Dispatch to proper custom_repos implementation
-  import_tasks: "{{ state | default('present', True) }}.yaml"
-
+  ansible.builtin.import_tasks: "{{ state | default('present', True) }}.yaml"
 - name: Sync databases
-  pacman:
-    update_cache: yes
+  community.general.pacman:
+    update_cache: true
   when: custom_repos_list | length != 0 or custom_repos_servers | length != 0

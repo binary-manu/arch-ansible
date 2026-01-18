@@ -1,18 +1,19 @@
+---
 - name: Obtain regulatory domain country code from the locale
-  shell: >-
-    echo {{ locale_locale | quote }} |
+  ansible.builtin.shell: >-
+    set -o pipefail && echo {{ locale_locale | quote }} |
       grep -Po '(?<=^[[:lower:]]{2}_)[[:upper:]]{2}(?=\..*$|$)'
   register: _regdom_country
   when: wireless_regdom_country == ""
-  changed_when: no
+  changed_when: false
 
 - name: Override default regulatory domain
-  set_fact:
+  ansible.builtin.set_fact:
     wireless_regdom_country: "{{ _regdom_country.stdout }}"
   when: wireless_regdom_country == ""
 
 - name: Modify /etc/conf.d/wireless-regdom
-  lineinfile:
+  ansible.builtin.lineinfile:
     regexp: '^#?WIRELESS_REGDOM="{{ wireless_regdom_country }}"$'
     line: 'WIRELESS_REGDOM="{{ wireless_regdom_country }}"'
     path: /etc/conf.d/wireless-regdom

@@ -1,23 +1,24 @@
+---
 - name: Set GTK theming
   when: theme | default("", true) | length != 0
   block:
     - name: For GTK 2
-      become: yes
+      become: true
       become_user: "{{ item }}"
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: "{{ users_created | user_home(item) }}/.gtkrc-2.0"
-        create: yes
+        create: true
         mode: "0644"
-        regexp: '^\s*gtk-theme-name\s*='
+        regexp: "^\\s*gtk-theme-name\\s*="
         line: 'gtk-theme-name="{{ theme }}"'
       loop: "{{ users_names }}"
 
     - name: For GTK 3
-      become: yes
+      become: true
       become_user: "{{ item }}"
-      ini_file:
+      community.general.ini_file:
         path: "{{ users_created | user_home(item) }}/.config/gtk-3.0/settings.ini"
-        create: yes
+        create: true
         mode: "0644"
         section: Settings
         option: gtk-theme-name
@@ -25,11 +26,11 @@
       loop: "{{ users_names }}"
 
     - name: For GTK 4
-      become: yes
+      become: true
       become_user: "{{ item }}"
-      ini_file:
+      community.general.ini_file:
         path: "{{ users_created | user_home(item) }}/.config/gtk-4.0/settings.ini"
-        create: yes
+        create: true
         mode: "0644"
         section: Settings
         option: gtk-theme-name
@@ -40,22 +41,22 @@
   when: icon_theme | default("", true) | length != 0
   block:
     - name: For GTK 2
-      become: yes
+      become: true
       become_user: "{{ item }}"
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: "{{ users_created | user_home(item) }}/.gtkrc-2.0"
-        create: yes
+        create: true
         mode: "0644"
-        regexp: '^\s*gtk-icon-theme-name\s*='
+        regexp: "^\\s*gtk-icon-theme-name\\s*="
         line: 'gtk-icon-theme-name="{{ icon_theme }}"'
       loop: "{{ users_names }}"
 
     - name: For GTK 3
-      become: yes
+      become: true
       become_user: "{{ item }}"
-      ini_file:
+      community.general.ini_file:
         path: "{{ users_created | user_home(item) }}/.config/gtk-3.0/settings.ini"
-        create: yes
+        create: true
         mode: "0644"
         section: Settings
         option: gtk-icon-theme-name
@@ -63,11 +64,11 @@
       loop: "{{ users_names }}"
 
     - name: For GTK 4
-      become: yes
+      become: true
       become_user: "{{ item }}"
-      ini_file:
+      community.general.ini_file:
         path: "{{ users_created | user_home(item) }}/.config/gtk-4.0/settings.ini"
-        create: yes
+        create: true
         mode: "0644"
         section: Settings
         option: gtk-icon-theme-name
@@ -78,22 +79,22 @@
   when: cursor_theme | default("", true) | length != 0
   block:
     - name: For GTK 2
-      become: yes
+      become: true
       become_user: "{{ item }}"
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: "{{ users_created | user_home(item) }}/.gtkrc-2.0"
-        create: yes
+        create: true
         mode: "0644"
-        regexp: '^\s*gtk-cursor-theme-name\s*='
+        regexp: "^\\s*gtk-cursor-theme-name\\s*="
         line: 'gtk-cursor-theme-name="{{ cursor_theme }}"'
       loop: "{{ users_names }}"
 
     - name: For GTK 3
-      become: yes
+      become: true
       become_user: "{{ item }}"
-      ini_file:
+      community.general.ini_file:
         path: "{{ users_created | user_home(item) }}/.config/gtk-3.0/settings.ini"
-        create: yes
+        create: true
         mode: "0644"
         section: Settings
         option: gtk-cursor-theme-name
@@ -101,11 +102,11 @@
       loop: "{{ users_names }}"
 
     - name: For GTK 4
-      become: yes
+      become: true
       become_user: "{{ item }}"
-      ini_file:
+      community.general.ini_file:
         path: "{{ users_created | user_home(item) }}/.config/gtk-4.0/settings.ini"
-        create: yes
+        create: true
         mode: "0644"
         section: Settings
         option: gtk-cursor-theme-name

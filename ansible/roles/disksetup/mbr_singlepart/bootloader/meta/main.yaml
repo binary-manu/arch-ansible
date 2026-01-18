@@ -1,4 +1,5 @@
+---
 dependencies:
   - role: syslinux
     vars:
-      ipl: yes
+      ipl: true

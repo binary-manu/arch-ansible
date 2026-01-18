@@ -1,19 +1,20 @@
+---
 - name: Install packages for Numix theme
-  import_role:
+  ansible.builtin.import_role:
     name: packages
   vars:
-    packages:  "{{ de_eyecandy_packages_numix }}"
+    packages: "{{ de_eyecandy_packages_numix }}"
 
 - name: Set the theme as default
-  when: item_theme.default | default(False, True) == True
+  when: item_theme.default | default(False, True)
   block:
     - name: GTK
-      include_tasks: gtk_settings.yaml
+      ansible.builtin.include_tasks: gtk_settings.yaml
       vars:
-          theme: Numix
-          icon_theme: Numix
-          cursor_theme: Numix-Cursor-Light
+        theme: Numix
+        icon_theme: Numix
+        cursor_theme: Numix-Cursor-Light
     - name: X
-      include_tasks: x_settings.yaml
+      ansible.builtin.include_tasks: x_settings.yaml
       vars:
-          cursor_theme: Numix-Cursor-Light
+        cursor_theme: Numix-Cursor-Light

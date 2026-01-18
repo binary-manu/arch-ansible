@@ -1,4 +1,5 @@
+---
 all:
-    hosts:
-        192.168.99.104:
-            ansible_user: root
+  hosts:
+    192.168.99.104:
+      ansible_user: root

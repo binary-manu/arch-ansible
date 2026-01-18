@@ -1,3 +1,4 @@
+---
 nix_self_packages:
   - aws-sdk-cpp-iam
   - nix

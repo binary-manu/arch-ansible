@@ -1,15 +1,16 @@
+---
 - name: Add lvm2 hook to mkinitcpio config
-  lineinfile:
-    backrefs: yes
+  ansible.builtin.lineinfile:
+    backrefs: true
     regexp: ^(HOOKS=.*)(filesystems.*)$
     line: \1lvm2 \2
     path: "{{ partitioning_root_mount_point }}/etc/mkinitcpio.conf"
 
 - name: Ensure /etc/vconsole.conf exists
-  file:
+  ansible.builtin.file:
     state: touch
     path: "{{ partitioning_root_mount_point }}/etc/vconsole.conf"
     mode: "0644"
 
 - name: Regenerate initramfs
-  command: arch-chroot {{ partitioning_root_mount_point | quote }} mkinitcpio -P
+  ansible.builtin.command: arch-chroot {{ partitioning_root_mount_point | quote }} mkinitcpio -P

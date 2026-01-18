@@ -1,3 +1,5 @@
-- include_vars:
+---
+- name: Load API metadata
+  ansible.builtin.include_vars:
     dir: .
     name: "{{ namespace }}"

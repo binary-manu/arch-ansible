@@ -1,20 +1,20 @@
+---
 - name: Unexport proxy variables from shell profile
-  file:
+  ansible.builtin.file:
     path: /etc/profile.d/proxy.sh
     state: absent
 
 - name: Undo pass http{,s}_proxy through sudo
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/sudoers
     state: absent
     regexp: ^Defaults env_keep \+= "{{ global_proxy_env | list | join(' ') | regex_escape }}"$
-    validate: '/usr/sbin/visudo -cf %s'
+    validate: "/usr/sbin/visudo -cf %s"
 
 - name: Reset pacman's XferCommand to the default
-  lineinfile:
-    create: no
+  ansible.builtin.lineinfile:
+    create: false
     path: /etc/pacman.conf
-    backrefs: yes
-    regexp: '^(XferCommand = /usr/bin/curl.*)$'
-    line: '#\1'
-
+    backrefs: true
+    regexp: "^(XferCommand = /usr/bin/curl.*)$"
+    line: "#\\1"

@@ -1,2 +1,4 @@
-- when: _install_nix | default(True)
-  include_tasks: install-nix.yaml
+---
+- name: Install Nix if needed
+  when: _install_nix | default(True)
+  ansible.builtin.include_tasks: install-nix.yaml

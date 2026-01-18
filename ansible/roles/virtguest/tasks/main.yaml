@@ -1,5 +1,6 @@
+---
 - name: Check if hypervisor is supported
-  assert:
+  ansible.builtin.assert:
     that: ansible_facts.virtualization_role | lower != "guest" or
       (ansible_facts.virtualization_type | lower in virtguest_supported_hypervisors)
     fail_msg: Hypervisor {{ ansible_facts.virtualization_type }} is not supported
@@ -8,5 +9,5 @@
       Hypervisor is supported {%- else -%} Installation on bare metal {%- endif %}"
 
 - name: Dispatch to specific hypervisor backend
-  include_tasks: backend_{{ ansible_facts.virtualization_type | lower }}.yaml
+  ansible.builtin.include_tasks: backend_{{ ansible_facts.virtualization_type | lower }}.yaml
   when: ansible_facts.virtualization_role | lower == "guest"

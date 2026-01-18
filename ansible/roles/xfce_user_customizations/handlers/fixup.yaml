@@ -1,13 +1,16 @@
+---
 - name: Determine the name of the primary X display output
-  shell: xinit /usr/bin/env LC_ALL=C xrandr 2>/dev/null | sed -En 's/^([^[:blank:]]+) connected .*/\1/p'
+  ansible.builtin.shell: set -o pipefail &&
+    xinit /usr/bin/env LC_ALL=C xrandr 2>/dev/null | sed -En 's/^([^[:blank:]]+) connected .*/\1/p'
   register: _x_primary_output
-  changed_when: no
+  changed_when: false
   failed_when: _x_primary_output.stdout | length == 0
 
 - name: Fix XFCE4 desktop image property
-  become: yes
+  become: true
   become_user: "{{ item }}"
-  shell: |
-     find {{ users_created | user_home(item) | quote }}/.config/xfce4 -type f -name xfce4-desktop.xml |
-       xargs -I% sed -i 's/@MONITOR@/{{ _x_primary_output.stdout_lines[0] }}/g' %
+  ansible.builtin.shell: |
+    set -o pipefail &&
+    find {{ users_created | user_home(item) | quote }}/.config/xfce4 -type f -name xfce4-desktop.xml |
+      xargs -I% sed -i 's/@MONITOR@/{{ _x_primary_output.stdout_lines[0] }}/g' %
   loop: "{{ users_names }}"

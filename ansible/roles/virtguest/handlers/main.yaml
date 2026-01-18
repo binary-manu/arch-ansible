@@ -1,11 +1,12 @@
-  - name: Start VirtualBox service
-    systemd:
-      name: vboxservice
-      state: started
-      enabled: yes
+---
+- name: Start VirtualBox service
+  ansible.builtin.systemd:
+    name: vboxservice
+    state: started
+    enabled: true
 
-  - name: Enable QEMU guest agent
-    systemd:
-      name: qemu-guest-agent
-      state: stopped
-      enabled: yes
+- name: Enable QEMU guest agent
+  ansible.builtin.systemd:
+    name: qemu-guest-agent
+    state: stopped
+    enabled: true

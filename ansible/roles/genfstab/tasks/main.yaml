@@ -1,7 +1,8 @@
+---
 - name: Generate fstab
   vars:
     fstab: "{{ chroot | quote }}/etc/fstab"
-  shell: |
+  ansible.builtin.shell: |
     set -e
     set -o pipefail
     {

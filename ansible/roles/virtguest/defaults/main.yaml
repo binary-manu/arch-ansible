@@ -1,3 +1,4 @@
+---
 # The list of currently supported hypervisors
 virtguest_supported_hypervisors:
   - virtualbox

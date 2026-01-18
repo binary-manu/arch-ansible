@@ -1,28 +1,28 @@
+---
 - name: Enable services on installed system
-  command: arch-chroot {{ partitioning_root_mount_point | quote }}
-    systemctl enable {{ item | quote }}
+  ansible.builtin.command: arch-chroot {{ partitioning_root_mount_point | quote }} systemctl enable {{ item | quote }}
   loop:
     - sshd
     - NetworkManager
 
 - name: Create root's .ssh
-  file:
+  ansible.builtin.file:
     state: directory
-    path:  "{{ partitioning_root_mount_point }}/root/.ssh/"
+    path: "{{ partitioning_root_mount_point }}/root/.ssh/"
+    mode: "0755"
 
 - name: Check for root's autorized keys
-  stat:
+  ansible.builtin.stat:
     path: /root/.ssh/authorized_keys
   register: _root_auth_keys
 
 - name: Copy root's authorized keys
-  copy:
-    remote_src: yes
+  ansible.builtin.copy:
+    remote_src: true
     src: /root/.ssh/authorized_keys
     dest: "{{ partitioning_root_mount_point }}/root/.ssh/"
     mode: "preserve"
-  when: _root_auth_keys.stat.exists == true
+  when: _root_auth_keys.stat.exists
 
 - name: Copy ssh host keys
-  shell: cp -vp /etc/ssh/ssh_host_*_key /etc/ssh/ssh_host_*_key.pub
-      {{ partitioning_root_mount_point | quote }}/etc/ssh/
+  ansible.builtin.shell: cp -vp /etc/ssh/ssh_host_*_key /etc/ssh/ssh_host_*_key.pub {{ partitioning_root_mount_point | quote }}/etc/ssh/

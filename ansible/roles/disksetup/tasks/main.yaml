@@ -1,10 +1,11 @@
+---
 - name: Should we use a partitioning flow
-  set_fact:
-    partitioning_use_flow: yes
+  ansible.builtin.set_fact:
+    partitioning_use_flow: true
   tags: partitioning
 
 - name: Invoke partitioning method
-  include_tasks: >-
+  ansible.builtin.include_tasks: >-
     {%- if partitioning_use_flow | default(false) -%}
         flow.yaml
     {%- else -%}

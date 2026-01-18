@@ -1,3 +1,4 @@
+---
 dependencies:
   - role: passwordless_sudo_user
   - role: proxy

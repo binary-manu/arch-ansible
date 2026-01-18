@@ -1,5 +1,6 @@
+---
 - name: Install xorg-xev and xorg-xrandr
-  import_role:
+  ansible.builtin.import_role:
     name: packages
   vars:
     packages:
@@ -7,7 +8,7 @@
       - xorg-xrandr
 
 - name: Autostart xev & xrandr to resize the screen
-  copy:
+  ansible.builtin.copy:
     src: autoresizer.desktop
     dest: /etc/xdg/autostart/
     mode: "0644"

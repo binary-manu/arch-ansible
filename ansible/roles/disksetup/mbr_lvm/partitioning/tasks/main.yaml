@@ -1,16 +1,17 @@
+---
 - name: Create a MBR partition table and the boot partition
-  parted:
+  community.general.parted:
     device: "{{ partitioning_priv_device_node }}"
     state: present
     label: msdos
     number: 1
     part_start: "{{ 1024 * 1024 }}B"
-    part_end: "{{ partitioning_priv_boot_size | int + 1024 * 1024 - 1}}B"
+    part_end: "{{ partitioning_priv_boot_size | int + 1024 * 1024 - 1 }}B"
     flags:
       - boot
 
 - name: Create the partition to hold the PV
-  parted:
+  community.general.parted:
     device: "{{ partitioning_priv_device_node }}"
     state: present
     label: msdos
@@ -20,45 +21,45 @@
       - lvm
 
 - name: Enumerate created partitions
-  shell: lsblk -n -o PATH {{ partitioning_priv_device_node | quote }} | tail -n +2
+  ansible.builtin.shell: set -o pipefail && lsblk -n -o PATH {{ partitioning_priv_device_node | quote }} | tail -n +2
   register: _partitions
-  changed_when: no
+  changed_when: false
 
 - name: Assign partitions to variables
-  set_fact:
+  ansible.builtin.set_fact:
     partitioning_priv_boot_device_node: "{{ _partitions.stdout_lines[0] }}"
     partitioning_priv_root_device_node: "{{ _partitions.stdout_lines[1] }}"
 
 - name: Format the boot partition
-  filesystem:
-    dev:  "{{ partitioning_priv_boot_device_node }}"
+  community.general.filesystem:
+    dev: "{{ partitioning_priv_boot_device_node }}"
     fstype: ext4
     opts: -O ^64bit
 
 - name: Create a PV and VG for root
-  lvg:
+  community.general.lvg:
     vg: "{{ partitioning_priv_vg_name }}"
     pvs:
       - "{{ partitioning_priv_root_device_node }}"
 
 - name: Create a root LV
-  lvol:
+  community.general.lvol:
     vg: "{{ partitioning_priv_vg_name }}"
     lv: "{{ partitioning_priv_lv_name }}"
     size: "100%FREE"
 
 - name: Store root PV name
-  set_fact:
+  ansible.builtin.set_fact:
     partitioning_priv_root_lv_node: >-
       /dev/{{ partitioning_priv_vg_name }}/{{ partitioning_priv_lv_name }}
 
 - name: Format the root partition
-  filesystem:
-    dev:  "{{ partitioning_priv_root_lv_node }}"
+  community.general.filesystem:
+    dev: "{{ partitioning_priv_root_lv_node }}"
     fstype: ext4
 
 - name: Mount the root partition
-  mount:
+  ansible.posix.mount:
     state: mounted
     src: "{{ partitioning_priv_root_lv_node }}"
     path: "{{ partitioning_root_mount_point }}"
@@ -66,12 +67,13 @@
     opts: rw,relatime
 
 - name: Create /boot
-  file:
+  ansible.builtin.file:
     state: directory
     path: "{{ partitioning_root_mount_point }}/boot"
+    mode: "0755"
 
 - name: Mount the boot partition
-  mount:
+  ansible.posix.mount:
     state: mounted
     src: "{{ partitioning_priv_boot_device_node }}"
     path: "{{ partitioning_root_mount_point }}/boot"

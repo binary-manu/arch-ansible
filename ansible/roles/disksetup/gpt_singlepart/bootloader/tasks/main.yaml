@@ -1,5 +1,6 @@
+---
 - name: Install GRUB2 package
-  import_role:
+  ansible.builtin.import_role:
     name: pacstrap
   vars:
     chroot: "{{ partitioning_root_mount_point }}"
@@ -8,13 +9,13 @@
       - efibootmgr
 
 - name: Install GRUB2
-  command: arch-chroot {{ partitioning_root_mount_point | quote }} /usr/bin/grub-install --bootloader-id arch
+  ansible.builtin.command: arch-chroot {{ partitioning_root_mount_point | quote }} /usr/bin/grub-install --bootloader-id arch
 
 - name: Make GRUB2 the default bootloader
-  shell: |
+  ansible.builtin.shell: |
     cd {{ partitioning_root_mount_point | quote }}/boot/efi/EFI/
     mkdir Boot
     cp arch/grubx64.efi Boot/Bootx64.efi
 
 - name: Generate GRUB2 configuration file
-  command: arch-chroot {{ partitioning_root_mount_point | quote }} /usr/bin/grub-mkconfig -o /boot/grub/grub.cfg
+  ansible.builtin.command: arch-chroot {{ partitioning_root_mount_point | quote }} /usr/bin/grub-mkconfig -o /boot/grub/grub.cfg

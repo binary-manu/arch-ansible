@@ -1,44 +1,45 @@
+---
 # Inputs:
 # package_name: name of the package to download and build (i.e. yay-bin)
 # build_user: user we will sudo to when building. Must be able to use
 #             passwordless sudo
 
-- name: Check if package {{ package_name }} is already installed
-  shell: set -o pipefail || exit 1; pacman -Qsq |
+- name: Check if we have already installed package {{ package_name }}
+  ansible.builtin.shell: set -o pipefail || exit 1; pacman -Qsq |
     { grep '^'{{ package_name | quote }}'$' ; [ $? -lt 2 ]; }
   register: _package_installed
-  changed_when: no
+  changed_when: false
 
 - name: Make and install {{ package_name }}
-  become: yes
+  become: true
   become_user: "{{ build_user }}"
   when: _package_installed.stdout == ""
   block:
     - name: Create temporary build directory
-      tempfile:
+      ansible.builtin.tempfile:
         state: directory
       register: _tempdir
 
     - name: Download package from the AUR
       retries: 5
       delay: 5
-      get_url:
+      ansible.builtin.get_url:
         url: "{{ makepkg_aur_url }}{{ package_name }}.tar.gz"
         dest: "{{ _tempdir.path }}/{{ package_name }}.tar.gz"
-        decompress: no
+        decompress: false
         timeout: 300
+        mode: "0644"
 
     - name: Unarchive package
-      unarchive:
-        remote_src: yes
+      ansible.builtin.unarchive:
+        remote_src: true
         src: "{{ _tempdir.path }}/{{ package_name }}.tar.gz"
         dest: "{{ _tempdir.path }}"
 
     - name: Run makepkg
-      shell: cd '{{ _tempdir.path | quote }}/{{ package_name | quote }}' && makepkg -rsi --noconfirm
+      ansible.builtin.shell: cd '{{ _tempdir.path | quote }}/{{ package_name | quote }}' && makepkg -rsi --noconfirm
   always:
     - name: Remove temporary build directory
-      file:
+      ansible.builtin.file:
         state: absent
         path: "{{ _tempdir.path }}"
-

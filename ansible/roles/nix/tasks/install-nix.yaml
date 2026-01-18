@@ -1,20 +1,22 @@
+---
 - name: Install nix
-  import_role:
+  ansible.builtin.import_role:
     name: packages
   vars:
     packages: "{{ nix_self_packages }}"
 
 - name: Start nix-daemon
-  service:
-    enabled: yes
+  ansible.builtin.service:
+    enabled: true
     state: started
     name: nix-daemon
 
 - name: Add the default nix channel for all users
-  become: yes
+  become: true
   become_user: "{{ item }}"
-  shell: nix-channel --add {{ nix_default_channel | quote }} nixpkgs && nix-channel --update
+  ansible.builtin.shell: nix-channel --add {{ nix_default_channel | quote }} nixpkgs && nix-channel --update
   loop: "{{ users_names }}"
 
-- set_fact:
+- name: Set facts about Nix installation
+  ansible.builtin.set_fact:
     _install_nix: false

@@ -1,14 +1,15 @@
-- listen: Delete passwordless sudo user
-  name: Remove passwordless sudo user from sudoers
-  lineinfile:
+---
+- name: Remove passwordless sudo user from sudoers
+  listen: Delete passwordless sudo user
+  ansible.builtin.lineinfile:
     path: /etc/sudoers
     state: absent
     regexp: "^{{ passwordless_sudo_user_name | regex_escape }} ALL=\\(ALL\\) NOPASSWD: ALL$"
-    validate: '/usr/sbin/visudo -cf %s'
+    validate: "/usr/sbin/visudo -cf %s"
 
-- listen: Delete passwordless sudo user
-  name: Delete a user that can use passwordless sudo
-  user:
+- name: Delete a user that can use passwordless sudo
+  listen: Delete passwordless sudo user
+  ansible.builtin.user:
     name: "{{ passwordless_sudo_user_name }}"
     state: absent
-    remove: yes
+    remove: true

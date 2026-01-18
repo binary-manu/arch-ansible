@@ -1,20 +1,21 @@
+---
 - name: Export proxy variables from shell profile
-  template:
+  ansible.builtin.template:
     src: proxy.sh.j2
     dest: /etc/profile.d/proxy.sh
     mode: "0644"
 
 - name: Pass http{,s}_proxy through sudo
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/sudoers
     state: present
     line: Defaults env_keep += "{{ global_proxy_env | list | join(' ') }}"
-    validate: '/usr/sbin/visudo -cf %s'
+    validate: "/usr/sbin/visudo -cf %s"
 
 - name: Set pacman's XferCommand to curl
-  lineinfile:
-    create: no
+  ansible.builtin.lineinfile:
+    create: false
     path: /etc/pacman.conf
-    backrefs: yes
-    regexp: '^#(XferCommand = /usr/bin/curl.*)$'
-    line: '\1'
+    backrefs: true
+    regexp: "^#(XferCommand = /usr/bin/curl.*)$"
+    line: "\\1"

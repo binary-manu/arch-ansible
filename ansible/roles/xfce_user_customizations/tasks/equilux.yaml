@@ -1,12 +1,13 @@
+---
 - name: Copy xfce's configuration for Equilux
-  become: yes
+  become: true
   become_user: "{{ item }}"
-  copy:
+  ansible.builtin.copy:
     src: equilux/xfce4/
     dest: "{{ users_created | user_home(item) }}/.config/xfce4"
     mode: "0644"
   loop: "{{ users_names }}"
-  when: item_theme.default | default(False, True) == True
+  when: item_theme.default | default(False, True)
   notify: Fix monitor name in XFCE settings
   register: _equilux
   changed_when: _equilux.changed or (run_handlers | default(false))

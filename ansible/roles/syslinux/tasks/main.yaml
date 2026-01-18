@@ -1,57 +1,57 @@
+---
 - name: Create syslinux directory
-  file:
+  ansible.builtin.file:
     state: directory
     path: "{{ partitioning_root_mount_point }}/boot/syslinux"
+    mode: "0755"
 
 - name: Copy syslinux files to /boot
-  shell: cp {{ partitioning_root_mount_point | quote }}/usr/lib/syslinux/bios/*.c32
+  ansible.builtin.shell: cp {{ partitioning_root_mount_point | quote }}/usr/lib/syslinux/bios/*.c32
     {{ partitioning_root_mount_point | quote }}/usr/lib/syslinux/bios/memdisk
     {{ partitioning_root_mount_point | quote }}/boot/syslinux/
-
 - name: Install syslinux
-  command: arch-chroot {{ partitioning_root_mount_point | quote }} /usr/bin/extlinux --install /boot/syslinux
-
+  ansible.builtin.command: arch-chroot {{ partitioning_root_mount_point | quote }} /usr/bin/extlinux --install /boot/syslinux
 - name: Map / and /boot to their device nodes
-  shell: awk '$2 == "'"$(stat -c %m {{ item | quote }})"'" { print $1; }' /etc/mtab
+  ansible.builtin.shell: awk '$2 == "'"$(stat -c %m {{ item | quote }})"'" { print $1; }' /etc/mtab
   register: _mounts
   loop:
     - "{{ partitioning_root_mount_point }}"
     - "{{ partitioning_root_mount_point }}/boot"
-  changed_when: no
+  changed_when: false
 
 - name: "Get root's UUID"
-  command: lsblk -n -o UUID {{ _mounts.results[0].stdout_lines[0] | quote }}
+  ansible.builtin.command: lsblk -n -o UUID {{ _mounts.results[0].stdout_lines[0] | quote }}
   register: _uuid
   changed_when: false
 
 - name: List installed kernels
-  find:
+  ansible.builtin.find:
     paths: "{{ partitioning_root_mount_point }}/boot"
-    patterns: 'vmlinuz-*'
+    patterns: "vmlinuz-*"
   register: _kernels
-  changed_when: no
+  changed_when: false
 
 - name: List installed initramfs
-  find:
-    use_regex: yes
+  ansible.builtin.find:
+    use_regex: true
     paths: "{{ partitioning_root_mount_point }}/boot"
     patterns: 'initramfs-{{ item.path | basename | replace("vmlinuz-", "", 1) }}(?:-fallback)?.img'
   register: _ramdisks
   loop: "{{ _kernels.files }}"
-  changed_when: no
+  changed_when: false
 
 - name: Copy syslinux configuration
   vars:
     root_uuid: "{{ _uuid.stdout }}"
     kernels: "{{ _kernels }}"
     ramdisks: "{{ _ramdisks }}"
-  template:
+  ansible.builtin.template:
     src: syslinux.cfg.j2
     dest: "{{ partitioning_root_mount_point }}/boot/syslinux/syslinux.cfg"
     mode: "0644"
 
 - name: Install IPL
-  command: dd
+  ansible.builtin.command: dd
     if={{ partitioning_root_mount_point | quote }}/usr/lib/syslinux/bios/mbr.bin
     of={{ (_mounts.results[1].stdout | split_partition_number)[0] | quote }}
     bs=440

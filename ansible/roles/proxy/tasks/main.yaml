@@ -1,10 +1,11 @@
+---
 - name: Check state variable
   vars:
     _state: "{{ state | default('present', True) }}"
-  assert:
+  ansible.builtin.assert:
     that: _state == 'present' or _state == 'absent'
     fail_msg: The state variable should be set to either present or absent
 
 - name: Dispatch to proper proxy implementation
-  import_tasks: "{{ state | default('present', True) }}.yaml"
+  ansible.builtin.import_tasks: "{{ state | default('present', True) }}.yaml"
   when: global_proxy_env | length != 0

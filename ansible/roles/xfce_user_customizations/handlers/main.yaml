@@ -1,2 +1,4 @@
-- listen: Fix monitor name in XFCE settings
-  include_tasks: fixup.yaml
+---
+- name: Fix monitor name in XFCE settings
+  listen: Fix monitor name in XFCE settings
+  ansible.builtin.include_tasks: fixup.yaml

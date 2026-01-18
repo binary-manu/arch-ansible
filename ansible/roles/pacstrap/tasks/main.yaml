@@ -1,5 +1,6 @@
+---
 - name: Run pacstrap
-  command: >
+  ansible.builtin.command: >
     pacstrap {{ chroot | quote }} --needed
     {% for pkg in packages %}
       {{ pkg | quote }}

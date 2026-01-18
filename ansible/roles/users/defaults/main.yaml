@@ -1,7 +1,8 @@
+---
 # All user information pertaining to root. For the moment there's just the
 # password.
 users_root_info:
-    password: "abcd$1234_root"
+  password: "abcd$1234_root"
 
 # User info for all non-root users.
 #
@@ -20,4 +21,4 @@ users_info:
 
 # Apply a patch to PAM configuration to avoid locking accounts in face of
 # authentication errors that do not imply a wrong password.
-users_fixup_faillock: no
+users_fixup_faillock: false

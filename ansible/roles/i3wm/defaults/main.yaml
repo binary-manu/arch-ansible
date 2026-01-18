@@ -1,3 +1,4 @@
+---
 # List of packages to be installed if i3wm_enabled is true
 i3wm_packages:
   - i3-wm

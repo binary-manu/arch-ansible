@@ -1,6 +1,7 @@
+---
 # Compatibility shim: delegate to de_eyecandy while honoring old variable names
 - name: Install the themes
-  import_role:
+  ansible.builtin.import_role:
     name: de_eyecandy
   vars:
     de_eyecandy_packages_numix: "{{ xfce_user_customizations_packages_numix }}"
@@ -13,8 +14,8 @@
     de_eyecandy_qt_theme: "{{ xfce_user_customizations_kvantum_theme }}"
 
 - name: Copy the config files
-  include_tasks: "{{ item_theme.theme }}.yaml"
+  ansible.builtin.include_tasks: "{{ item_theme.theme }}.yaml"
   loop: "{{ xfce_user_customizations_themes }}"
   loop_control:
-      loop_var: item_theme
-  when: item_theme.installed | default(False, True) == True
+    loop_var: item_theme
+  when: item_theme.installed | default(False, True)

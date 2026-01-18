@@ -1,5 +1,6 @@
+---
 - name: Install nix packages
-  become: yes
+  become: true
   become_user: "{{ item }}"
-  shell: nix-env -iA {% for pkg in packages %}nixpkgs.{{ pkg | quote }} {% endfor %}
+  ansible.builtin.command: nix-env -iA {% for pkg in packages %}nixpkgs.{{ pkg | quote }} {% endfor %}
   loop: "{{ users_names }}"
