@@ -1,3 +1,6 @@
+- name: Clear pacman caches if there are leftover folders
+  shell: rm -rf /var/cache/pacman/pkg/download-*
+
 # Yay never gets its own input if we do something like:
 # printf "y\nn\ny\n" | LC_ALL=C yay -Scc
 # because pacman runs first and consumes all input.
