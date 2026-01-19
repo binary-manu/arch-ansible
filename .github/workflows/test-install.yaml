@@ -26,7 +26,7 @@ jobs:
       - name: Perform system installation
         run: |
           cd packer
-          ./packer-wrapper.sh build -only=${{ matrix.config.provider }} -timestamp-ui packer-template.json
+          sudo ./packer-wrapper.sh build -only=${{ matrix.config.provider }} -timestamp-ui packer-template.json
 
   vagrant_provision:
     runs-on: [self-hosted, linux]
@@ -39,5 +39,5 @@ jobs:
       - name: Bring Vagrant VM up
         run: |
           cd vagrant
-          vagrant up --provider ${{ matrix.provider }}
-          vagrant halt
+          sudo vagrant up --provider ${{ matrix.provider }}
+          sudo vagrant halt
