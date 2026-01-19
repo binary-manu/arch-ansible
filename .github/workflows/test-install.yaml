@@ -5,7 +5,7 @@ on:
 
 jobs:
   install_media:
-    runs-on: [self-hosted, linux]
+    runs-on: [self-hosted, Linux]
     strategy:
       matrix:
         config:
