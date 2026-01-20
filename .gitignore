@@ -8,3 +8,4 @@
 /packer/packer_cache/
 /packer/output-*/
 __pycache__/
+/tests/log-*.log
