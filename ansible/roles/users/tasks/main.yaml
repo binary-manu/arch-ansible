@@ -41,6 +41,15 @@
   loop: "{{ users_names }}"
   register: users_created
 
+- name: Create ~/.ansible/tmp for each user
+  become: true
+  become_user: "{{ item }}"
+  ansible.builtin.file:
+    state: directory
+    path: "{{ users_created | user_home(item) }}/.ansible/tmp"
+    mode: "0700"
+  loop: "{{ users_names }}"
+
 - name: Set user passwords
   ansible.builtin.shell: set -o pipefail && echo {{ item | quote }}:{{ users_info[item].password | quote }} | chpasswd
   loop: "{{ users_names }}"
