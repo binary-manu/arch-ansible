@@ -1226,7 +1226,6 @@ so if it already contains the loader for a different system, that system
 will no longer boot after the installation. If possible, you can then
 configure Syslinux to chainload the other system.
 
-
 The target will be rebooted multiple times during the installation and
 if you are using DHCP the IP may change across reboots. You may want to
 configure your local DHCP server to give the target a fixed IP by using
@@ -1278,90 +1277,6 @@ Apply any other customization via host/group variables. And finally run:
 
 After installation is complete, you can delete the key pair generated
 above, from both the controller and the target.
-
-## Continuous integration
-
-### Overview
-
-Since this playbook supports different hypervisors and partitioning flows, it has come
-to a point where manual tests on my machine are no longer feasible, as there are too
-many conbinations to check.
-
-For this reason, there is now a dedicated CI pipeline that tests that installation completes
-successfully in the most important scenarios. While it can't cover every possible
-configuration entry, it checks all the available partitioning flows, Vagrant and Packer.
-It should give reasonable confidence that stuff still works in face of upstream updates.
-
-The CI is provided by GitHub Actions, but since it needs to create VMs,
-it doesn't cope well with SaaS runners which run inside VMs and/or
-containers. Thus, a self-hosted runner is the best choice for the
-moment.
-
-To simplify the setup, a container image definition is provided under
-the `ci` folder. It will create a Debian-based image shipping
-VirtualBox, QEmu, libvirt, packer and Vagrant, plus obviously the GitHub
-agent. It can be run with `podman` (Docker is untested) in rootless
-mode. Once started, it allows running test Arch installations with
-minimal configuration of the runner host.
-
-However, the container cannot be totally independent from the host, as it depends on its ability to
-run VirtualBox, QEmu and libvirt with appropriate networking. Therefore:
-
-* hardware-assisted virtualization must be enabled (VT-x or SVM depending on the CPU maker);
-* KVM support must be enabled, and `/dev/kvm` must be accessible by the user the container runs as;
-* VirtualBox drivers must be installed, and `/dev/vbox*` nodes must be accessible by the user the
-  container runs as. Note that only the drivers are needed, as VirtualBox ships inside the container;
-* the system must allow the creation of `tun`/`tap` devices;
-* *VirtualBox host drivers MUST be built without hardening*: when
-  hardened, they prevent any non-root user from accessing
-  `/dev/vboxdrv`, no matter the file mode. But since an unprivileged
-  user is used to run the container, that user must be able to access
-  it. Therefore the drivers must be rebuilt without hardening and then
-  appropriate mode/ACLs/... must be used to allow authorized users.
-
-A script `ci/start.sh` can be used to start the CI container with approproate options (bindings,
-device nodes, capabilities). It will start as root in order to perform initial setup (bridges, `dbus`,
-libvirt and other stuff) then will drop privileges and impersonate the calling user to start the agent.
-Note that `root` here still means `root` inside a user namespace, as the container is meant to run rootless.
-
-GitHub agent configuration with valid tokens must be provided besides
-`start.sh` in a `config` folder. The files produced by running the agent
-configuration must be placed there and are copied into the container at
-boot:
-
-    config
-    ├── .credentials
-    ├── .credentials_rsaparams
-    ├── .env
-    ├── .path
-    └── .runner
-
-Note that they are all hidden.
-
-### Host ↔ Container UID mapping
-
-The following map associates external UIDs to internal UIDs and tells
-which user accesses which device node on the host. `$USER` is the host
-user that started the container:
-
-    Host                           Container      Accesses
-    $USER                          root           /dev/vboxdrv
-    $USER SubUID base + 1000 - 1   ci             /dev/kvm
-
-For VirtualBox, internal `root` is used to open `/dev/vbox*`, so that
-externally it looks like `$USER` is doing that. This happens
-because VirtualBox executables are suid root so they always try to open
-device nodes as root. As soon as those files are open, VirtualBox drops
-privileges and runs the VM as the unprivileged `ci` user.
-
-For qemu, emulators are always started as `ci`, so this user must be
-able to access /dev/kvm. VMs then run as `ci`, just like the GH agent.
-
-On the host, appropriate permissions (usually with ACLs) must exists to
-allow file access: `user:$USER:rw` for `/dev/vbox*` and `user:$USER SubUID
-base + 1000 - 1:rw`. The latter derives from the fact that `ci` is
-always 1000 inside the container and unless overridden, it is mapped to
-the 1000th subuid for `$USER`.
 
 ## Installing multiple DEs/WMs side by side
 
