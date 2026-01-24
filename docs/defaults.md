@@ -35,6 +35,7 @@ title: Defaults files index
 ## group_vars/all/00-default.yaml
 
 ```yaml
+---
 # Define the environment, then filter omitted fields. This is important so that
 # undefined variables do not pop up in process environments. To override this
 # settings, add a definition for specific fields (i.e. http_proxy), do not
@@ -43,18 +44,19 @@ global_proxy_env_:
   http_proxy: "{{ '{{' }} http_proxy | default(omit, true) }}"
   https_proxy: "{{ '{{' }} https_proxy | default(omit, true) }}"
   no_proxy: "{{ '{{' }} no_proxy | default(omit, true) }}"
-global_proxy_env : "{{ '{{' }} global_proxy_env_ | dict2items |
+global_proxy_env: "{{ '{{' }} global_proxy_env_ | dict2items |
   selectattr('value', 'ne', omit) | list | items2dict }}"
 
 # After everything is done, remove settings which would cause the image to be
-# non-portable to other systems. Currently this means removing cusom repos and
+# non-portable to other systems. Currently this means removing custom repos and
 # proxy settings.
-global_portable_image: False
+global_portable_image: false
 ```
 
 ## roles/base_packages/defaults/main.yaml
 
 ```yaml
+---
 base_packages_list:
   # Arch's base packages
   - base
@@ -95,6 +97,7 @@ base_packages_list:
 ## roles/bluetooth/defaults/main.yaml
 
 ```yaml
+---
 # Controls if Bluetooth support is installed or not:
 #
 # * leave it empty to use the default behaviour, which installs
@@ -109,6 +112,7 @@ bluetooth_override: ""
 ## roles/custom_repos/defaults/main.yaml
 
 ```yaml
+---
 # Add extra repositories (i.e. like `core` and `community`.
 # They will be added to `pacman.conf` _before_ standard repos, so
 # that packages with the same name as standard ones will take
@@ -132,6 +136,7 @@ custom_repos_servers: [
 ## roles/de_eyecandy/defaults/main.yaml
 
 ```yaml
+---
 # Additional packages to be installed for the Numix theme
 de_eyecandy_packages_numix:
   - gtk-engine-murrine
@@ -182,6 +187,7 @@ de_eyecandy_qt_theme: "KvFlat"
 ## roles/disksetup/bios_gpt_btrfs/partitioning/defaults/main.yaml
 
 ```yaml
+---
 ##### Public variables used by the rest of the playbook #####
 partitioning_root_mount_point: "/mnt"
 
@@ -226,15 +232,17 @@ partitioning_priv_core_subvolumes:
 ## roles/disksetup/defaults/main.yaml
 
 ```yaml
+---
 disksetup_roles_prefix: disksetup/mbr_singlepart/
 
 disksetup_supported_apis:
-    - partitioning.arch-ansible/v1
+  - partitioning.arch-ansible/v1
 ```
 
 ## roles/disksetup/gpt_singlepart/partitioning/defaults/main.yaml
 
 ```yaml
+---
 ##### Public variables used by the rest of the playbook #####
 partitioning_root_mount_point: "/mnt"
 
@@ -253,6 +261,7 @@ partitioning_priv_esp_size: "{{ '{{' }} 512 * 1024 * 1024 }}"
 ## roles/disksetup/mbr_lvm/partitioning/defaults/main.yaml
 
 ```yaml
+---
 ##### Public variables used by the rest of the playbook #####
 partitioning_root_mount_point: "/mnt"
 
@@ -275,6 +284,7 @@ partitioning_priv_lv_name: "root"
 ## roles/disksetup/mbr_singlepart/partitioning/defaults/main.yaml
 
 ```yaml
+---
 ##### Public variables used by the rest of the playbook #####
 partitioning_root_mount_point: "/mnt"
 
@@ -285,6 +295,7 @@ partitioning_priv_root_device_node: "/dev/sda1"
 ## roles/hostname/defaults/main.yaml
 
 ```yaml
+---
 # The installed system's hostname, as configured in `/etc/hostname` and
 # `/etc/hosts` for the loopback address. _Do not_ add the domain part.
 hostname_hostname: archlinux
@@ -293,6 +304,7 @@ hostname_hostname: archlinux
 ## roles/i3wm/defaults/main.yaml
 
 ```yaml
+---
 # List of packages to be installed if i3wm_enabled is true
 i3wm_packages:
   - i3-wm
@@ -331,6 +343,7 @@ i3wm_desktop_files_to_ignore:
 ## roles/locale/defaults/main.yaml
 
 ```yaml
+---
 locale_timezone: Europe/Rome
 locale_locale: it_IT.UTF-8
 locale_keymap: it
@@ -339,6 +352,7 @@ locale_keymap: it
 ## roles/makepkg/defaults/main.yaml
 
 ```yaml
+---
 # When downloading PKGBUILD tarball snapshots from the AUR, this
 # URL is used.
 makepkg_aur_url: https://aur.archlinux.org/cgit/aur.git/snapshot/
@@ -347,6 +361,7 @@ makepkg_aur_url: https://aur.archlinux.org/cgit/aur.git/snapshot/
 ## roles/nix/defaults/main.yaml
 
 ```yaml
+---
 nix_self_packages:
   - aws-sdk-cpp-iam
   - nix
@@ -357,6 +372,7 @@ nix_default_channel: https://nixos.org/channels/nixpkgs-unstable
 ## roles/passwordless_sudo_user/defaults/main.yaml
 
 ```yaml
+---
 # This user will be created during the setup to build AUR packages, and will be
 # removed before finalizing the installation.
 passwordless_sudo_user_name: sudonopw
@@ -365,6 +381,7 @@ passwordless_sudo_user_name: sudonopw
 ## roles/ttf_fonts/defaults/main.yaml
 
 ```yaml
+---
 # A list of font packages to install. Both AUR and regular packages can be
 # supplied here.
 ttf_fonts_packages:
@@ -380,10 +397,11 @@ ttf_fonts_packages:
 ## roles/users/defaults/main.yaml
 
 ```yaml
+---
 # All user information pertaining to root. For the moment there's just the
 # password.
 users_root_info:
-    password: "abcd$1234_root"
+  password: "abcd$1234_root"
 
 # User info for all non-root users.
 #
@@ -402,12 +420,13 @@ users_info:
 
 # Apply a patch to PAM configuration to avoid locking accounts in face of
 # authentication errors that do not imply a wrong password.
-users_fixup_faillock: no
+users_fixup_faillock: false
 ```
 
 ## roles/utils/defaults/main.yaml
 
 ```yaml
+---
 # A list of non-GUI packages to install. Both AUR and regular packages can be
 # supplied here.
 utils_packages:
@@ -424,6 +443,7 @@ utils_packages:
 ## roles/virtguest/defaults/main.yaml
 
 ```yaml
+---
 # The list of currently supported hypervisors
 virtguest_supported_hypervisors:
   - virtualbox
@@ -437,6 +457,7 @@ virtguest_virtualbox_packages:
 ## roles/virtguest_force/defaults/main.yaml
 
 ```yaml
+---
 # Set this to a value from virtguest_supported_hypervisors
 # to force the corresponding backend to be invoked
 virtguest_force: ""
@@ -445,6 +466,7 @@ virtguest_force: ""
 ## roles/wireless/defaults/main.yaml
 
 ```yaml
+---
 # Leave empty to use the same country specified for the locale.  Otherwise,
 # specify an ISO 3166-1 alpha-2 country code; for example:
 #
@@ -455,6 +477,7 @@ wireless_regdom_country: ""
 ## roles/xfce/defaults/main.yaml
 
 ```yaml
+---
 xfce_packages:
   - xfce4
   - xfce4-goodies
@@ -463,6 +486,7 @@ xfce_packages:
 ## roles/xfce_user_customizations/defaults/main.yaml
 
 ```yaml
+---
 # Additional packages to be installed for the Numix theme
 xfce_user_customizations_packages_numix:
   - gtk-engine-murrine
@@ -513,6 +537,7 @@ xfce_user_customizations_kvantum_theme: ""
 ## roles/xorg/defaults/main.yaml
 
 ```yaml
+---
 xorg_packages:
   - xorg
   - xorg-apps
@@ -520,12 +545,12 @@ xorg_packages:
   - xorg-apps
   - xorg-fonts
   - xorg-xinit
-
 ```
 
 ## roles/xscreensaver/defaults/main.yaml
 
 ```yaml
+---
 # Set to:
 # * `active` to force the screensaver to be enabled after installation
 # * `inactive` to force the screensaver to be disabled after installation
@@ -540,6 +565,7 @@ xscreensaver_override: ""
 ## roles/xutils/defaults/main.yaml
 
 ```yaml
+---
 # A list of GUI packages to install. Both AUR and regular packages can be
 # supplied here. X.org is already pulled in as a dependency.
 xutils_packages:
