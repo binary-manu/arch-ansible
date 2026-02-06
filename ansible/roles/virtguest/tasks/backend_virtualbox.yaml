@@ -1,7 +1,9 @@
 ---
 - name: Install VirtualBox guest additions
-  community.general.pacman:
-    name: "{{ virtguest_virtualbox_packages }}"
+  ansible.builtin.import_role:
+    name: packages
+  vars:
+    packages: "{{ virtguest_virtualbox_packages }}"
   notify: Start VirtualBox service
   register: _vboxinstalled
   changed_when: _vboxinstalled.changed or (run_handlers | default(false))

@@ -1,4 +1,6 @@
 ---
 - name: Install X.org
-  community.general.pacman:
-    name: "{{ xorg_packages }}"
+  ansible.builtin.import_role:
+    name: packages
+  vars:
+    packages: "{{ xorg_packages }}"

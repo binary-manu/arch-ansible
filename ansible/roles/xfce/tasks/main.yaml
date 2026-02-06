@@ -1,7 +1,9 @@
 ---
 - name: Install xfce
-  community.general.pacman:
-    name: "{{ xfce_packages }}"
+  ansible.builtin.import_role:
+    name: packages
+  vars:
+    packages: "{{ xfce_packages }}"
 
 # For the time being, I'll stick to xscreensaver
 - name: Uninstall xfce4-screensaver

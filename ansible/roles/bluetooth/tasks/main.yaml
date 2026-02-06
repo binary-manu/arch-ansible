@@ -9,8 +9,10 @@
   when: >
     bluetooth_override == "active" or
     bluetooth_override == "" and ansible_facts.virtualization_role | lower != "guest"
-  community.general.pacman:
-    name:
+  ansible.builtin.import_role:
+    name: packages
+  vars:
+    packages:
       - bluez
       - bluez-utils
       - pulseaudio-bluetooth

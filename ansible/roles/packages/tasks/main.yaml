@@ -1,13 +1,21 @@
 ---
+- name: Copy pacman wrapper
+  become: true
+  become_user: "{{ passwordless_sudo_user_name }}"
+  ansible.builtin.copy:
+    src: pacman-wrapper
+    dest: /tmp/pacman-wrapper
+    mode: "0755"
+
 - name: Install batch of packages
   become: true
   become_user: "{{ passwordless_sudo_user_name }}"
   retries: 5
   delay: 5
-  ansible.builtin.command: >
+  ansible.builtin.command:
     yay -S
       --answerclean none --answeredit none --answerupgrade none --answerdiff none
-      --removemake --noconfirm --combinedupgrade --needed
+      --removemake --noconfirm --combinedupgrade --needed --pacman /tmp/pacman-wrapper
       {% for pkg in packages %}
         {{ pkg | quote }}
       {% endfor %}
