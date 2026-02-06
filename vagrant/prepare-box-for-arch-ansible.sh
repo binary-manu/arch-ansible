@@ -42,11 +42,11 @@ fi
 # installs some packages because, again, the bootstrap phase of arch-ansible
 # would have done that. Ansible is installed here because Vagrant 2.2.5 fails
 # to install it.
-pacman -Syy --noconfirm --needed archlinux-keyring reflector
+pacman -Syy --noconfirm --needed --ask=6 archlinux-keyring reflector
 # Generate a new mirror list: I get a lot of timeouts with the one from the
 # base box.
 reflector -f 5 -l 5 -p http,https --save /etc/pacman.d/mirrorlist
-pacman -Su --noconfirm --needed base-devel networkmanager python-pip \
+pacman -Su --noconfirm --needed --ask=6 base-devel networkmanager python-pip \
     $EXTRA_BASE_PACKAGES
 python -m venv "$ANSIBLE_VENV"
 "$ANSIBLE_VENV/bin/pip" install ansible
