@@ -12,6 +12,13 @@ changes. For example, versions `0.2.x` are not compatible with `0.1.x`.
 
 ## [Unreleased]
 
+## [0.3.12] - 2026-02-06
+
+### Fixed
+
+* When installing packages, ensure that `pacman` is instructed to
+  proceed in face of package conflicts or replacements.
+
 ## [0.3.11] - 2026-01-22
 
 ### Changed
