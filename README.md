@@ -1,3 +1,5 @@
+⚠️ **Migrated to https://codeberg.org/binary-manu/arch-ansible** ⚠️
+
 # Arch-Ansible: an Ansible playbook to install Arch Linux
 
 [![Stars](https://img.shields.io/github/stars/binary-manu/arch-ansible.svg?style=social&label=Star)](https://github.com/binary-manu/arch-ansible/stargazers)
